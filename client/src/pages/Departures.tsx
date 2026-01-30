@@ -172,9 +172,34 @@ export default function Departures() {
   const { location: userLocation } = useUserLocation();
   const currentTime = useCurrentTime();
   const [zoom, setZoom] = useState(1);
+  const [showControls, setShowControls] = useState(true);
   
   const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
   const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
+  
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    
+    const hideControls = () => {
+      timeout = setTimeout(() => setShowControls(false), 60000);
+    };
+    
+    const handleActivity = () => {
+      setShowControls(true);
+      clearTimeout(timeout);
+      hideControls();
+    };
+    
+    hideControls();
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('touchstart', handleActivity);
+    
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
+    };
+  }, []);
   
   const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
@@ -193,10 +218,10 @@ export default function Departures() {
     <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
       <div className="bg-background/80 backdrop-blur-md border-b border-white/10">
         <div className="px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between">
-          <span className="text-sm sm:text-lg text-muted-foreground" data-testid="text-date">
+          <span className="text-lg sm:text-2xl text-muted-foreground" data-testid="text-date">
             {dateString}
           </span>
-          <span className="text-2xl sm:text-4xl font-bold tabular-nums text-white" data-testid="text-time">
+          <span className="text-4xl sm:text-6xl font-bold tabular-nums text-white" data-testid="text-time">
             {timeString}
           </span>
         </div>
@@ -246,7 +271,7 @@ export default function Departures() {
         MTA GTFS-Realtime • Updates every 30s
       </div>
       
-      <div className="fixed bottom-4 left-4 flex items-center gap-2 z-50">
+      <div className={cn("fixed bottom-4 left-4 flex items-center gap-2 z-50 transition-opacity duration-300", showControls ? "opacity-100" : "opacity-0 pointer-events-none")}>
         <Button
           variant="outline"
           size="icon"
