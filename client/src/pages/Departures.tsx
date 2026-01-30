@@ -57,9 +57,14 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   return (
     <Card className="bg-card/50 border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
-        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <PersonStanding className="w-4 h-4" />
-          <span>{walkingTime !== null ? `${walkingTime} min to ${stationName}` : stationName}</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-sm sm:text-base font-semibold truncate">{stationName}</span>
+          {walkingTime !== null && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
+              <PersonStanding className="w-3.5 h-3.5" />
+              <span>{walkingTime} min</span>
+            </div>
+          )}
         </div>
         <div className="flex items-center gap-1 flex-wrap">
           {availableLines.map((line, i) => (
