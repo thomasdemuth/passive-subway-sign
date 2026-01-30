@@ -54,10 +54,9 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
             </div>
           )}
         </div>
-        {availableLines.length > 1 && (
-          <div className="flex items-center gap-1 flex-wrap">
-            <span className="text-[9px] sm:text-[10px] text-muted-foreground mr-1">Filter:</span>
-            {availableLines.map((line, i) => (
+        <div className="flex items-center gap-1 flex-wrap">
+          {availableLines.map((line, i) => (
+            availableLines.length > 1 ? (
               <button
                 key={`${stationId}-filter-${line}-${i}`}
                 onClick={() => toggleLine(line)}
@@ -73,18 +72,25 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
                   className="w-5 h-5 sm:w-6 sm:h-6 text-[9px] sm:text-[10px] ring-1 ring-background" 
                 />
               </button>
-            ))}
-            {selectedLines.size < availableLines.length && (
-              <button
-                onClick={selectAllLines}
-                className="text-[9px] sm:text-[10px] text-primary hover:underline ml-1"
-                data-testid="button-show-all"
-              >
-                Show all
-              </button>
-            )}
-          </div>
-        )}
+            ) : (
+              <RouteIcon 
+                key={`${stationId}-line-${line}-${i}`}
+                routeId={line} 
+                size="sm" 
+                className="w-5 h-5 sm:w-6 sm:h-6 text-[9px] sm:text-[10px] ring-1 ring-background" 
+              />
+            )
+          ))}
+          {availableLines.length > 1 && selectedLines.size < availableLines.length && (
+            <button
+              onClick={selectAllLines}
+              className="text-[9px] sm:text-[10px] text-primary hover:underline ml-1"
+              data-testid="button-show-all"
+            >
+              Show all
+            </button>
+          )}
+        </div>
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 space-y-3 sm:space-y-4">
         {isLoading ? (
