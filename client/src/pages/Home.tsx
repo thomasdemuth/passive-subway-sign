@@ -9,47 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const FEED_GROUPS: Record<string, { name: string; lines: string }> = {
-  "123456S": { name: "1-6, S", lines: "1 2 3 4 5 6 S" },
-  "ACE": { name: "A, C, E", lines: "A C E" },
-  "BDFM": { name: "B, D, F, M", lines: "B D F M" },
-  "G": { name: "G", lines: "G" },
-  "JZ": { name: "J, Z", lines: "J Z" },
-  "L": { name: "L", lines: "L" },
-  "NQRW": { name: "N, Q, R, W", lines: "N Q R W" },
-  "SI": { name: "Staten Island", lines: "SIR" },
-};
-
-function getFeedGroup(stationId: string): string {
-  const firstChar = stationId.charAt(0);
-  const numericId = parseInt(stationId);
-  
-  if (!isNaN(numericId) && numericId >= 100 && numericId < 800) {
-    return "123456S";
-  }
-  if (firstChar === "A" || firstChar === "C" || firstChar === "E" || firstChar === "H") {
-    return "ACE";
-  }
-  if (firstChar === "B" || firstChar === "D" || firstChar === "F" || firstChar === "M") {
-    return "BDFM";
-  }
-  if (firstChar === "G") {
-    return "G";
-  }
-  if (firstChar === "J" || firstChar === "Z") {
-    return "JZ";
-  }
-  if (firstChar === "L") {
-    return "L";
-  }
-  if (firstChar === "N" || firstChar === "Q" || firstChar === "R" || firstChar === "W") {
-    return "NQRW";
-  }
-  if (firstChar === "S" && stationId.length > 1) {
-    return "SI";
-  }
-  return "123456S";
-}
 
 export default function Home() {
   const [selectedStationIds, setSelectedStationIds] = useState<Set<string>>(new Set());
@@ -63,28 +22,19 @@ export default function Home() {
     s.line.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  const groupedStations = useMemo(() => {
-    const groups: Record<string, typeof filteredStations> = {};
-    for (const station of filteredStations) {
-      const feedGroup = getFeedGroup(station.id);
-      if (!groups[feedGroup]) {
-        groups[feedGroup] = [];
-      }
-      groups[feedGroup].push(station);
+  const sortedStations = useMemo(() => {
+    const stationsCopy = [...filteredStations];
+    // Sort by walking time if location enabled, otherwise alphabetically
+    if (userLocation) {
+      stationsCopy.sort((a, b) => {
+        const timeA = a.lat && a.lng ? calculateWalkingTime(userLocation.lat, userLocation.lng, a.lat, a.lng) : Infinity;
+        const timeB = b.lat && b.lng ? calculateWalkingTime(userLocation.lat, userLocation.lng, b.lat, b.lng) : Infinity;
+        return (timeA ?? Infinity) - (timeB ?? Infinity);
+      });
+    } else {
+      stationsCopy.sort((a, b) => a.name.localeCompare(b.name));
     }
-    // Sort each group by walking time if location enabled, otherwise alphabetically
-    for (const key in groups) {
-      if (userLocation) {
-        groups[key].sort((a, b) => {
-          const timeA = a.lat && a.lng ? calculateWalkingTime(userLocation.lat, userLocation.lng, a.lat, a.lng) : Infinity;
-          const timeB = b.lat && b.lng ? calculateWalkingTime(userLocation.lat, userLocation.lng, b.lat, b.lng) : Infinity;
-          return (timeA ?? Infinity) - (timeB ?? Infinity);
-        });
-      } else {
-        groups[key].sort((a, b) => a.name.localeCompare(b.name));
-      }
-    }
-    return groups;
+    return stationsCopy;
   }, [filteredStations, userLocation]);
 
   const toggleStation = (id: string) => {
@@ -106,7 +56,6 @@ export default function Home() {
     }
   };
 
-  const feedOrder = ["123456S", "ACE", "BDFM", "G", "JZ", "L", "NQRW", "SI"];
 
   return (
     <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
@@ -185,90 +134,64 @@ export default function Home() {
           )}
         </div>
 
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-2">
           {isLoading ? (
             <div className="text-center py-12 text-muted-foreground">
               Loading stations...
             </div>
-          ) : filteredStations.length === 0 ? (
+          ) : sortedStations.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               No stations found matching "{searchQuery}"
             </div>
           ) : (
-            feedOrder.map(feedKey => {
-              const stationsInGroup = groupedStations[feedKey];
-              if (!stationsInGroup || stationsInGroup.length === 0) return null;
-              
-              const feedInfo = FEED_GROUPS[feedKey];
-              
-              return (
-                <div key={feedKey} className="space-y-2">
-                  <div className="flex items-center gap-2 sm:gap-3 px-1 pb-2 border-b border-white/10">
-                    <div className="flex -space-x-1">
-                      {feedInfo.lines.split(" ").slice(0, 4).map((line, i) => (
+            <div className="grid grid-cols-2 gap-1">
+              {sortedStations.map((station) => {
+                const isSelected = selectedStationIds.has(station.id);
+                const walkingTime = userLocation && station.lat && station.lng
+                  ? calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng)
+                  : null;
+                return (
+                  <motion.button
+                    key={station.id}
+                    onClick={() => toggleStation(station.id)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-2 sm:p-3 rounded-lg border transition-all duration-200 text-left gap-2",
+                      isSelected 
+                        ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
+                        : "bg-card/30 border-white/5 hover:bg-card/50 hover:border-white/10"
+                    )}
+                    whileTap={{ scale: 0.99 }}
+                    data-testid={`button-station-${station.id}`}
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                      <div className={cn(
+                        "w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0",
+                        isSelected ? "bg-primary border-primary" : "border-white/20"
+                      )}>
+                        {isSelected && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-foreground" />}
+                      </div>
+                      <span className="text-xs sm:text-sm text-white truncate">{station.name}</span>
+                      {walkingTime !== null && (
+                        <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0">
+                          {walkingTime} min
+                        </span>
+                      )}
+                    </div>
+                    
+                    <div className="flex -space-x-0.5 flex-wrap justify-end gap-y-0.5 shrink-0">
+                      {station.line.split(" ").map((route, i) => (
                         <RouteIcon 
-                          key={`${feedKey}-${line}-${i}`} 
-                          routeId={line} 
+                          key={`${station.id}-${route}-${i}`} 
+                          routeId={route} 
                           size="sm" 
-                          className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[10px] ring-1 ring-background" 
+                          className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[9px] ring-1 ring-background" 
                         />
                       ))}
                     </div>
-                    <span className="text-xs sm:text-sm font-semibold text-white">{feedInfo.name}</span>
-                    <span className="text-[10px] sm:text-xs text-muted-foreground">({stationsInGroup.length})</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-1">
-                    {stationsInGroup.map((station) => {
-                      const isSelected = selectedStationIds.has(station.id);
-                      const walkingTime = userLocation && station.lat && station.lng
-                        ? calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng)
-                        : null;
-                      return (
-                        <motion.button
-                          key={station.id}
-                          onClick={() => toggleStation(station.id)}
-                          className={cn(
-                            "w-full flex items-center justify-between p-2 sm:p-3 rounded-lg border transition-all duration-200 text-left gap-2",
-                            isSelected 
-                              ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
-                              : "bg-card/30 border-white/5 hover:bg-card/50 hover:border-white/10"
-                          )}
-                          whileTap={{ scale: 0.99 }}
-                          data-testid={`button-station-${station.id}`}
-                        >
-                          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                            <div className={cn(
-                              "w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0",
-                              isSelected ? "bg-primary border-primary" : "border-white/20"
-                            )}>
-                              {isSelected && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-foreground" />}
-                            </div>
-                            <span className="text-xs sm:text-sm text-white truncate">{station.name}</span>
-                            {walkingTime !== null && (
-                              <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0">
-                                {walkingTime} min
-                              </span>
-                            )}
-                          </div>
-                          
-                          <div className="flex -space-x-0.5 flex-wrap justify-end gap-y-0.5 shrink-0">
-                            {station.line.split(" ").map((route, i) => (
-                              <RouteIcon 
-                                key={`${station.id}-${route}-${i}`} 
-                                routeId={route} 
-                                size="sm" 
-                                className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[9px] ring-1 ring-background" 
-                              />
-                            ))}
-                          </div>
-                        </motion.button>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })
+                  </motion.button>
+                );
+              })}
+            </div>
           )}
         </div>
 

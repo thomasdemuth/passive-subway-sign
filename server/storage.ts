@@ -25,21 +25,21 @@ const LINE_MAPPINGS: Record<string, string> = {
   "217": "2 3 4 5", // Atlantic Av - Barclays Ctr
   "218": "2 3 4 5", // Franklin Av
   "219": "2 3", // Eastern Pkwy - Brooklyn Museum
-  "220": "2 3", // Crown Heights - Utica Av
-  "222": "2 3", // Sutter Av - Rutland Rd
-  "224": "2 3", // President St (2/3)
+  "220": "3 4", // Crown Heights - Utica Av
+  "222": "3", // Sutter Av - Rutland Rd
+  "224": "2 5", // President St
   "225": "2 3", // Sterling St
   "226": "2 3", // Winthrop St
   "227": "2 5", // Church Av (2/5)
-  "228": "2 3", // Nostrand Av
-  "229": "2 3", // Kingston Av
-  "230": "2 3", // Utica Av
+  "228": "3", // Nostrand Av
+  "229": "3", // Kingston Av
+  "230": "3 4", // Utica Av
   "231": "2 5", "232": "2 5", "233": "2 5",
   "234": "2 3", // Park Place
   "235": "2 3", // Franklin Av
-  "236": "2 3", // Botanic Garden
+  "236": "S", // Botanic Garden
   "237": "2 3", // Clark St
-  "238": "2 3", // Borough Hall / Court St
+  "238": "2 3 4 5", // Borough Hall / Court St
   "239": "2 3", // Wall St
   "240": "2 3", // Fulton St
   "241": "2 3", // Park Place
@@ -138,8 +138,8 @@ const LINE_MAPPINGS: Record<string, string> = {
   "R18": "N Q R W", "R19": "N Q R W", "R20": "N Q R W", "R21": "N R W",
   "R22": "N R W", "R23": "N R W", "R24": "R W", "R25": "R W", "R26": "R W", "R27": "R W",
   // Queens Blvd M R lines
-  "G08": "E M R", // Queens Plaza
-  "G09": "E M R", // 36 St
+  "G08": "E F R", // Queens Plaza
+  "G09": "M R", // 36 St
   "G10": "M R", // Steinway St
   "G11": "M R", // 46 St
   "G12": "M R", // Northern Blvd
@@ -149,18 +149,18 @@ const LINE_MAPPINGS: Record<string, string> = {
   "G16": "M R", // Woodhaven Blvd
   "G18": "M R", // 63 Dr - Rego Park
   "G19": "M R", // 67 Av
-  "G20": "M R", // Forest Hills - 71 Av
+  "G20": "E F M R", // Forest Hills - 71 Av
   "G21": "E F M R", // Jackson Hts - Roosevelt Av
   // E F lines
-  "F01": "E F", // Jamaica - 179 St
-  "F02": "E F", // 169 St
+  "F01": "F", // Jamaica - 179 St
+  "F02": "F", // 169 St
   "F03": "E F", // Parsons Blvd
   "F04": "E F", // Sutphin Blvd
   "F05": "E F", // Briarwood
   "F06": "E F", // Kew Gardens - Union Tpke
   "F07": "E F", // 75 Av
-  "F09": "F", // 63 Dr - Rego Park (F)
-  "F11": "E F", // Forest Hills - 71 Av
+  "F09": "M R", // 63 Dr - Rego Park (F)
+  "F11": "E F M R", // Forest Hills - 71 Av
   "F12": "E F M R", // Jackson Hts - Roosevelt Av
   // L line
   "L01": "L", "L02": "L", "L03": "L", "L05": "L", "L06": "L", "L08": "L",
