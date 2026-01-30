@@ -1,16 +1,16 @@
 
 import { type Station } from "@shared/schema";
 
-// Line mappings based on station ID prefixes
+// Line mappings based on station ID - each ID maps only to its specific platform's lines
 const LINE_MAPPINGS: Record<string, string> = {
   // 1 line
   "101": "1", "103": "1", "104": "1", "106": "1", "107": "1", "108": "1", "109": "1",
-  "110": "1", "111": "1", "112": "1 A C", "113": "1", "114": "1 3", "115": "1",
+  "110": "1", "111": "1", "112": "1", "113": "1", "114": "1 3", "115": "1",
   "116": "1", "117": "1", "118": "1", "119": "1", "120": "1 2 3", "121": "1",
-  "122": "1", "123": "1 2 3", "124": "1", "125": "1 A B C D", "126": "1",
-  "127": "1 2 3 N Q R W S 7", "128": "1 2 3", "129": "1", "130": "1",
+  "122": "1", "123": "1 2 3", "124": "1", "125": "1", "126": "1",
+  "127": "1 2 3", "128": "1 2 3", "129": "1", "130": "1",
   "131": "1", "132": "1 2 3", "133": "1", "134": "1", "135": "1", "136": "1",
-  "137": "1 2 3", "138": "1", "139": "1", "140": "1 R W", "142": "1",
+  "137": "1 2 3", "138": "1", "139": "1", "140": "1", "142": "1",
   // 2 3 lines
   "201": "2", "204": "2 5", "205": "2 5", "206": "2 5", "207": "2 5", "208": "2 5",
   "209": "2 5", "210": "2 5", "211": "2 5", "212": "2 5", "213": "2 5",
@@ -27,12 +27,66 @@ const LINE_MAPPINGS: Record<string, string> = {
   "609": "6", "610": "6", "611": "6", "612": "6", "613": "6", "614": "6", "615": "6",
   "616": "6", "617": "6", "618": "6", "619": "6", "621": "6", "622": "6", "623": "6",
   "624": "6", "625": "6", "626": "6 4 5", "627": "6", "628": "4 5 6", "629": "4 5 6",
-  "630": "4 5 6", "631": "4 5 6 7 S", "632": "4 5 6", "633": "4 5 6", "634": "4 5 6",
-  "635": "4 5 6 L N Q R W", "636": "4 5 6", "637": "4 5 6", "638": "4 5 6", "639": "4 5 6 J Z",
+  "630": "4 5 6", "631": "4 5 6", "632": "4 5 6", "633": "4 5 6", "634": "4 5 6",
+  "635": "4 5 6", "636": "4 5 6", "637": "4 5 6", "638": "4 5 6", "639": "4 5 6 J Z",
   "640": "4 5", "701": "7", "702": "7", "705": "7", "706": "7", "707": "7",
   "708": "7", "709": "7", "710": "7", "711": "7", "712": "7", "713": "7", "714": "7",
   "715": "7", "716": "7", "718": "7", "719": "7", "720": "7", "721": "7", "723": "7",
-  "724": "7", "725": "7 N Q R W S 1 2 3", "726": "7",
+  "724": "7", "725": "7", "726": "7",
+  // Shuttle
+  "901": "S", "902": "S",
+  // A C E lines - split from combined
+  "A12": "A C", "A15": "A C", "A16": "A C", "A17": "A C", "A18": "A C", "A19": "A C",
+  "A20": "A C", "A21": "A C", "A22": "A C", "A24": "A C E", "A25": "A C E",
+  "A27": "A C E", "A28": "A C E", "A30": "A C", "A31": "B C", "A32": "B C",
+  // N Q R W lines
+  "R14": "N Q R W", "R15": "N Q R W", "R16": "N Q R W S", "R17": "N Q R W",
+  "R18": "N Q R W", "R19": "N Q R W", "R20": "N Q R W", "R21": "N R W",
+  "R22": "N R W", "R23": "N R W", "R24": "R W", "R25": "R W", "R26": "R W", "R27": "R W",
+  // L line
+  "L01": "L", "L02": "L", "L03": "L", "L05": "L", "L06": "L", "L08": "L",
+  "L10": "L", "L11": "L", "L12": "L", "L13": "L", "L14": "L", "L15": "L",
+  "L16": "L", "L17": "L", "L19": "L", "L20": "L", "L21": "L", "L22": "L",
+  "L24": "L", "L25": "L", "L26": "L", "L27": "L", "L28": "L", "L29": "L",
+};
+
+// Stations that share the same physical location but have different platform IDs
+// Maps display name to the additional platform IDs that should be added as separate stations
+const SPLIT_STATIONS: Record<string, { id: string; lines: string }[]> = {
+  "14 St - Union Sq": [
+    { id: "L03", lines: "L" },
+    { id: "R20", lines: "N Q R W" }
+  ],
+  "Times Sq - 42 St": [
+    { id: "R16", lines: "N Q R W S" },
+    { id: "725", lines: "7" },
+    { id: "902", lines: "S" }
+  ],
+  "Grand Central - 42 St": [
+    { id: "725", lines: "7" },
+    { id: "901", lines: "S" }
+  ],
+  "34 St - Penn Station": [
+    { id: "A28", lines: "A C E" }
+  ],
+  "59 St": [
+    { id: "R17", lines: "N Q R W" }
+  ],
+  "Whitehall St": [
+    { id: "R27", lines: "R W" }
+  ],
+  "96 St": [
+    { id: "A32", lines: "B C" }
+  ],
+  "72 St": [
+    { id: "A31", lines: "B C" }
+  ],
+  "168 St": [
+    { id: "A12", lines: "A C" }
+  ],
+  "125 St": [
+    { id: "A15", lines: "A B C D" }
+  ],
 };
 
 export interface IStorage {
@@ -54,8 +108,6 @@ export class MemStorage implements IStorage {
       if (response.ok) {
         const data = await response.json();
         Object.entries(data).forEach(([id, station]: [string, any]) => {
-          // Infer line from the station ID prefix or use a default
-          const prefix = id.replace(/[A-Z]/g, '').slice(0, 3);
           let line = LINE_MAPPINGS[id] || "";
           
           // Infer from letter prefix
@@ -91,6 +143,21 @@ export class MemStorage implements IStorage {
             name: station.name,
             line: line.trim()
           });
+          
+          // Add split stations for this location
+          const splitEntries = SPLIT_STATIONS[station.name];
+          if (splitEntries) {
+            splitEntries.forEach(({ id: splitId, lines }) => {
+              // Only add if not already in the map
+              if (!this.stations.has(splitId)) {
+                this.stations.set(splitId, {
+                  id: splitId,
+                  name: station.name,
+                  line: lines
+                });
+              }
+            });
+          }
         });
         console.log(`Initialized ${this.stations.size} stations from MTA data.`);
       } else {
@@ -100,9 +167,13 @@ export class MemStorage implements IStorage {
       console.error("Failed to fetch stations, using fallback:", e);
       // Fallback list
       const fallback: Station[] = [
-        { id: "127", name: "Times Sq - 42 St", line: "1 2 3 N Q R W S" },
-        { id: "631", name: "Grand Central - 42 St", line: "4 5 6 7 S" },
-        { id: "128", name: "34 St - Penn Station", line: "1 2 3 A C E" },
+        { id: "127", name: "Times Sq - 42 St", line: "1 2 3" },
+        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W S" },
+        { id: "725", name: "Times Sq - 42 St", line: "7" },
+        { id: "631", name: "Grand Central - 42 St", line: "4 5 6" },
+        { id: "901", name: "Grand Central - 42 St", line: "S" },
+        { id: "128", name: "34 St - Penn Station", line: "1 2 3" },
+        { id: "A28", name: "34 St - Penn Station", line: "A C E" },
       ];
       fallback.forEach(s => this.stations.set(s.id, s));
     }
