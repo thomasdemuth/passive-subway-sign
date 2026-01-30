@@ -60,7 +60,6 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
               <div className="flex items-center gap-2 pb-1 border-b border-white/10">
                 <ArrowUpCircle className="w-4 h-4 text-white" />
                 <span className="text-xs font-semibold text-white">Uptown</span>
-                <span className="ml-auto text-[10px] text-muted-foreground">{uptownArrivals.length}</span>
               </div>
               <div className="space-y-1.5">
                 {uptownArrivals.length > 0 ? (
@@ -83,7 +82,6 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
               <div className="flex items-center gap-2 pb-1 border-b border-white/10">
                 <ArrowDownCircle className="w-4 h-4 text-white" />
                 <span className="text-xs font-semibold text-white">Downtown</span>
-                <span className="ml-auto text-[10px] text-muted-foreground">{downtownArrivals.length}</span>
               </div>
               <div className="space-y-1.5">
                 {downtownArrivals.length > 0 ? (

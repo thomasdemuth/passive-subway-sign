@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useStations } from "@/hooks/use-stations";
 import { RouteIcon } from "@/components/RouteIcon";
@@ -8,6 +7,48 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+
+const FEED_GROUPS: Record<string, { name: string; lines: string }> = {
+  "123456S": { name: "1-6, S", lines: "1 2 3 4 5 6 S" },
+  "ACE": { name: "A, C, E", lines: "A C E" },
+  "BDFM": { name: "B, D, F, M", lines: "B D F M" },
+  "G": { name: "G", lines: "G" },
+  "JZ": { name: "J, Z", lines: "J Z" },
+  "L": { name: "L", lines: "L" },
+  "NQRW": { name: "N, Q, R, W", lines: "N Q R W" },
+  "SI": { name: "Staten Island", lines: "SIR" },
+};
+
+function getFeedGroup(stationId: string): string {
+  const firstChar = stationId.charAt(0);
+  const numericId = parseInt(stationId);
+  
+  if (!isNaN(numericId) && numericId >= 100 && numericId < 800) {
+    return "123456S";
+  }
+  if (firstChar === "A" || firstChar === "C" || firstChar === "E" || firstChar === "H") {
+    return "ACE";
+  }
+  if (firstChar === "B" || firstChar === "D" || firstChar === "F" || firstChar === "M") {
+    return "BDFM";
+  }
+  if (firstChar === "G") {
+    return "G";
+  }
+  if (firstChar === "J" || firstChar === "Z") {
+    return "JZ";
+  }
+  if (firstChar === "L") {
+    return "L";
+  }
+  if (firstChar === "N" || firstChar === "Q" || firstChar === "R" || firstChar === "W") {
+    return "NQRW";
+  }
+  if (firstChar === "S" && stationId.length > 1) {
+    return "SI";
+  }
+  return "123456S";
+}
 
 export default function Home() {
   const [selectedStationIds, setSelectedStationIds] = useState<Set<string>>(new Set());
@@ -19,6 +60,18 @@ export default function Home() {
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     s.line.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
+
+  const groupedStations = useMemo(() => {
+    const groups: Record<string, typeof filteredStations> = {};
+    for (const station of filteredStations) {
+      const feedGroup = getFeedGroup(station.id);
+      if (!groups[feedGroup]) {
+        groups[feedGroup] = [];
+      }
+      groups[feedGroup].push(station);
+    }
+    return groups;
+  }, [filteredStations]);
 
   const toggleStation = (id: string) => {
     setSelectedStationIds(prev => {
@@ -38,6 +91,8 @@ export default function Home() {
       navigate(`/departures/${ids}`);
     }
   };
+
+  const feedOrder = ["123456S", "ACE", "BDFM", "G", "JZ", "L", "NQRW", "SI"];
 
   return (
     <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
@@ -92,7 +147,7 @@ export default function Home() {
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-6">
           {isLoading ? (
             <div className="text-center py-12 text-muted-foreground">
               Loading stations...
@@ -102,42 +157,75 @@ export default function Home() {
               No stations found matching "{searchQuery}"
             </div>
           ) : (
-            filteredStations.map((station) => {
-              const isSelected = selectedStationIds.has(station.id);
+            feedOrder.map(feedKey => {
+              const stationsInGroup = groupedStations[feedKey];
+              if (!stationsInGroup || stationsInGroup.length === 0) return null;
+              
+              const feedInfo = FEED_GROUPS[feedKey];
+              
               return (
-                <motion.button
-                  key={station.id}
-                  onClick={() => toggleStation(station.id)}
-                  className={cn(
-                    "w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-200 text-left",
-                    isSelected 
-                      ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
-                      : "bg-card/50 border-white/5 hover:bg-card hover:border-white/10"
-                  )}
-                  whileTap={{ scale: 0.99 }}
-                  data-testid={`button-station-${station.id}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors",
-                      isSelected ? "bg-primary border-primary" : "border-white/20"
-                    )}>
-                      {isSelected && <Check className="w-4 h-4 text-primary-foreground" />}
+                <div key={feedKey} className="space-y-2">
+                  <div className="flex items-center gap-3 px-1 pb-2 border-b border-white/10">
+                    <div className="flex -space-x-1">
+                      {feedInfo.lines.split(" ").slice(0, 4).map((line, i) => (
+                        <RouteIcon 
+                          key={`${feedKey}-${line}-${i}`} 
+                          routeId={line} 
+                          size="sm" 
+                          className="w-5 h-5 text-[10px] ring-1 ring-background" 
+                        />
+                      ))}
                     </div>
-                    <span className="font-medium text-white">{station.name}</span>
+                    <span className="text-sm font-semibold text-white">{feedInfo.name}</span>
+                    <span className="text-xs text-muted-foreground">({stationsInGroup.length})</span>
                   </div>
                   
-                  <div className="flex -space-x-1">
-                    {station.line.split(" ").map((route, i) => (
-                      <RouteIcon 
-                        key={`${station.id}-${route}-${i}`} 
-                        routeId={route} 
-                        size="sm" 
-                        className="w-6 h-6 text-xs ring-1 ring-background" 
-                      />
-                    ))}
+                  <div className="space-y-1">
+                    {stationsInGroup.map((station) => {
+                      const isSelected = selectedStationIds.has(station.id);
+                      return (
+                        <motion.button
+                          key={station.id}
+                          onClick={() => toggleStation(station.id)}
+                          className={cn(
+                            "w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 text-left",
+                            isSelected 
+                              ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
+                              : "bg-card/30 border-white/5 hover:bg-card/50 hover:border-white/10"
+                          )}
+                          whileTap={{ scale: 0.99 }}
+                          data-testid={`button-station-${station.id}`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={cn(
+                              "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
+                              isSelected ? "bg-primary border-primary" : "border-white/20"
+                            )}>
+                              {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
+                            </div>
+                            <span className="text-sm text-white">{station.name}</span>
+                          </div>
+                          
+                          <div className="flex -space-x-0.5">
+                            {station.line.split(" ").slice(0, 4).map((route, i) => (
+                              <RouteIcon 
+                                key={`${station.id}-${route}-${i}`} 
+                                routeId={route} 
+                                size="sm" 
+                                className="w-5 h-5 text-[9px] ring-1 ring-background" 
+                              />
+                            ))}
+                            {station.line.split(" ").length > 4 && (
+                              <div className="w-5 h-5 rounded-full bg-zinc-700 ring-1 ring-background flex items-center justify-center text-[8px] text-zinc-300">
+                                +{station.line.split(" ").length - 4}
+                              </div>
+                            )}
+                          </div>
+                        </motion.button>
+                      );
+                    })}
                   </div>
-                </motion.button>
+                </div>
               );
             })
           )}
@@ -149,7 +237,7 @@ export default function Home() {
           transition={{ delay: 0.5 }}
           className="text-center text-sm text-muted-foreground/50 mt-16"
         >
-          Data provided by MTA GTFS-Realtime Feed. Covers lines 1-6, A, C, E, G, and S.
+          Data provided by MTA GTFS-Realtime Feed
         </motion.div>
       </div>
     </div>
