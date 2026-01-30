@@ -35,16 +35,16 @@ Preferred communication style: Simple, everyday language.
 ```
 client/           # React frontend
   src/
-    components/   # UI components (ArrivalCard, RouteIcon, StationSearch)
+    components/   # UI components (ArrivalCard, RouteIcon, StationSearch, ServiceAlertBanner)
     pages/        # Route pages (Home, Departures)
-    hooks/        # React Query hooks (use-stations, use-arrivals)
+    hooks/        # React Query hooks (use-stations, use-arrivals, use-alerts)
     lib/          # Utilities (queryClient, cn helper)
 server/           # Express backend
-  routes.ts       # API route handlers
+  routes.ts       # API route handlers (arrivals, alerts)
   storage.ts      # In-memory station storage
   db.ts           # Database connection (Drizzle + PostgreSQL)
 shared/           # Shared types and schemas
-  schema.ts       # Drizzle schema + Zod types
+  schema.ts       # Drizzle schema + Zod types (Station, Arrival, ServiceAlert)
   routes.ts       # API route definitions with Zod validation
 ```
 
@@ -56,10 +56,15 @@ shared/           # Shared types and schemas
 ## External Dependencies
 
 ### MTA GTFS-realtime API
-- **Feeds**: Three separate endpoints for different subway lines
+- **Arrival Feeds**: Multiple endpoints for different subway lines
   - `https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs` (1-6, S)
   - `https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace` (A, C, E)
   - `https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g` (G)
+  - Additional feeds for N/Q/R/W, L, J/Z, B/D/F/M, and SI
+- **Service Alerts Feed**: `https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fall-alerts`
+  - Returns real-time service alerts for all subway lines
+  - Includes delay notices, service changes, planned work, suspensions
+  - Parsed with severity levels (higher = more severe)
 - **Authentication**: Optional API key via `MTA_API_KEY` environment variable (passed as x-api-key header)
 - **Data Format**: Protocol Buffers (parsed with gtfs-realtime-bindings)
 

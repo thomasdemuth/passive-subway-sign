@@ -35,6 +35,40 @@ export const api = {
       },
     },
   },
+  alerts: {
+    list: {
+      method: 'GET' as const,
+      path: '/api/alerts',
+      responses: {
+        200: z.array(z.object({
+          id: z.string(),
+          routeId: z.string(),
+          alertType: z.string(),
+          headerText: z.string(),
+          descriptionText: z.string(),
+          activePeriodStart: z.string().optional(),
+          activePeriodEnd: z.string().optional(),
+          severity: z.number()
+        })),
+      },
+    },
+    byRoute: {
+      method: 'GET' as const,
+      path: '/api/alerts/:routeId',
+      responses: {
+        200: z.array(z.object({
+          id: z.string(),
+          routeId: z.string(),
+          alertType: z.string(),
+          headerText: z.string(),
+          descriptionText: z.string(),
+          activePeriodStart: z.string().optional(),
+          activePeriodEnd: z.string().optional(),
+          severity: z.number()
+        })),
+      },
+    },
+  },
 };
 
 export function buildUrl(path: string, params?: Record<string, string | number>): string {

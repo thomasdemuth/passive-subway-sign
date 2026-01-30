@@ -4,7 +4,9 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
-import { type Arrival } from "@shared/schema";
+import { type Arrival, type ServiceAlert } from "@shared/schema";
+
+const ALERTS_FEED = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fall-alerts";
 
 const FEEDS = [
   "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs",      // 1-6, S
@@ -186,6 +188,185 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error processing MTA data:", error);
       res.status(500).json({ message: "Failed to fetch real-time data" });
+    }
+  });
+
+  // Service alerts endpoint - fetches all subway alerts
+  app.get(api.alerts.list.path, async (req, res) => {
+    try {
+      const headers: Record<string, string> = {};
+      if (process.env.MTA_API_KEY) {
+        headers["x-api-key"] = process.env.MTA_API_KEY;
+      }
+
+      const response = await fetch(ALERTS_FEED, { headers });
+      if (!response.ok) {
+        return res.status(502).json({ message: "Failed to fetch alerts from MTA" });
+      }
+
+      const buffer = await response.arrayBuffer();
+      const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+        new Uint8Array(buffer)
+      );
+
+      const alerts: ServiceAlert[] = [];
+      
+      feed.entity.forEach((entity) => {
+        if (entity.alert) {
+          const alert = entity.alert;
+          
+          // Get affected routes
+          const affectedRoutes = new Set<string>();
+          alert.informedEntity?.forEach((ie) => {
+            if (ie.routeId) {
+              affectedRoutes.add(ie.routeId);
+            }
+          });
+
+          // Only include subway alerts (single letter/number route IDs)
+          const subwayRoutes = Array.from(affectedRoutes).filter(r => 
+            /^[1-7ABCDEFGJLMNQRSWZ]X?$/.test(r)
+          );
+
+          if (subwayRoutes.length === 0) return;
+
+          // Get header and description text
+          const headerText = alert.headerText?.translation?.[0]?.text || "";
+          const descriptionText = alert.descriptionText?.translation?.[0]?.text || "";
+          
+          // Skip if no meaningful content
+          if (!headerText && !descriptionText) return;
+
+          // Get active period
+          const activePeriod = alert.activePeriod?.[0];
+          const activePeriodStart = activePeriod?.start 
+            ? new Date(Number(activePeriod.start) * 1000).toISOString() 
+            : undefined;
+          const activePeriodEnd = activePeriod?.end 
+            ? new Date(Number(activePeriod.end) * 1000).toISOString() 
+            : undefined;
+
+          // Determine alert type from header text
+          let alertType = "Service Alert";
+          const headerLower = headerText.toLowerCase();
+          if (headerLower.includes("delay")) alertType = "Delays";
+          else if (headerLower.includes("suspend")) alertType = "Suspended";
+          else if (headerLower.includes("planned work")) alertType = "Planned Work";
+          else if (headerLower.includes("service change")) alertType = "Service Change";
+          else if (headerLower.includes("slow")) alertType = "Slow Speeds";
+
+          // Estimate severity based on alert type
+          let severity = 10;
+          if (alertType === "Delays") severity = 22;
+          else if (alertType === "Suspended") severity = 39;
+          else if (alertType === "Slow Speeds") severity = 16;
+          else if (alertType === "Service Change") severity = 20;
+          else if (alertType === "Planned Work") severity = 15;
+
+          // Create an alert for each affected subway route
+          subwayRoutes.forEach((routeId) => {
+            alerts.push({
+              id: `${entity.id}-${routeId}`,
+              routeId,
+              alertType,
+              headerText,
+              descriptionText,
+              activePeriodStart,
+              activePeriodEnd,
+              severity
+            });
+          });
+        }
+      });
+
+      // Sort by severity (highest first)
+      alerts.sort((a, b) => b.severity - a.severity);
+      res.json(alerts);
+    } catch (error) {
+      console.error("Error fetching service alerts:", error);
+      res.status(500).json({ message: "Failed to fetch service alerts" });
+    }
+  });
+
+  // Service alerts by route endpoint
+  app.get(api.alerts.byRoute.path, async (req, res) => {
+    const routeId = req.params.routeId as string;
+    
+    try {
+      const headers: Record<string, string> = {};
+      if (process.env.MTA_API_KEY) {
+        headers["x-api-key"] = process.env.MTA_API_KEY;
+      }
+
+      const response = await fetch(ALERTS_FEED, { headers });
+      if (!response.ok) {
+        return res.status(502).json({ message: "Failed to fetch alerts from MTA" });
+      }
+
+      const buffer = await response.arrayBuffer();
+      const feed = GtfsRealtimeBindings.transit_realtime.FeedMessage.decode(
+        new Uint8Array(buffer)
+      );
+
+      const alerts: ServiceAlert[] = [];
+      
+      feed.entity.forEach((entity) => {
+        if (entity.alert) {
+          const alert = entity.alert;
+          
+          // Check if this alert affects the requested route
+          const affectsRoute = alert.informedEntity?.some((ie) => 
+            ie.routeId === routeId || ie.routeId === routeId.replace('X', '')
+          );
+
+          if (!affectsRoute) return;
+
+          const headerText = alert.headerText?.translation?.[0]?.text || "";
+          const descriptionText = alert.descriptionText?.translation?.[0]?.text || "";
+          
+          if (!headerText && !descriptionText) return;
+
+          const activePeriod = alert.activePeriod?.[0];
+          const activePeriodStart = activePeriod?.start 
+            ? new Date(Number(activePeriod.start) * 1000).toISOString() 
+            : undefined;
+          const activePeriodEnd = activePeriod?.end 
+            ? new Date(Number(activePeriod.end) * 1000).toISOString() 
+            : undefined;
+
+          let alertType = "Service Alert";
+          const headerLower = headerText.toLowerCase();
+          if (headerLower.includes("delay")) alertType = "Delays";
+          else if (headerLower.includes("suspend")) alertType = "Suspended";
+          else if (headerLower.includes("planned work")) alertType = "Planned Work";
+          else if (headerLower.includes("service change")) alertType = "Service Change";
+          else if (headerLower.includes("slow")) alertType = "Slow Speeds";
+
+          let severity = 10;
+          if (alertType === "Delays") severity = 22;
+          else if (alertType === "Suspended") severity = 39;
+          else if (alertType === "Slow Speeds") severity = 16;
+          else if (alertType === "Service Change") severity = 20;
+          else if (alertType === "Planned Work") severity = 15;
+
+          alerts.push({
+            id: `${entity.id}-${routeId}`,
+            routeId,
+            alertType,
+            headerText,
+            descriptionText,
+            activePeriodStart,
+            activePeriodEnd,
+            severity
+          });
+        }
+      });
+
+      alerts.sort((a, b) => b.severity - a.severity);
+      res.json(alerts);
+    } catch (error) {
+      console.error("Error fetching service alerts:", error);
+      res.status(500).json({ message: "Failed to fetch service alerts" });
     }
   });
 

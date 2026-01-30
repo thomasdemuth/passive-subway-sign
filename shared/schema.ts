@@ -31,3 +31,17 @@ export type Arrival = {
 
 export type StationResponse = Station;
 export type ArrivalsResponse = Arrival[];
+
+// Service Alerts
+export type ServiceAlert = {
+  id: string;
+  routeId: string;        // Affected route (e.g., "1", "A")
+  alertType: string;      // e.g., "Delays", "Service Change", "Planned Work"
+  headerText: string;     // Short summary
+  descriptionText: string; // Full description
+  activePeriodStart?: string;
+  activePeriodEnd?: string;
+  severity: number;       // Higher = more severe
+};
+
+export type AlertsResponse = ServiceAlert[];

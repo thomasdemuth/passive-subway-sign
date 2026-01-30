@@ -5,6 +5,7 @@ import { useStations, useArrivals } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
+import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
 import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -207,6 +208,14 @@ export default function Departures() {
   const stationIds = params.ids?.split(",") || [];
   const selectedStations = stations?.filter(s => stationIds.includes(s.id)) || [];
   
+  const allRouteIds = useMemo(() => {
+    const routes = new Set<string>();
+    selectedStations.forEach(station => {
+      station.line.split(" ").forEach(line => routes.add(line));
+    });
+    return Array.from(routes);
+  }, [selectedStations]);
+  
   const getWalkingTime = (station: { lat?: number | null; lng?: number | null }) => {
     if (!userLocation || !station.lat || !station.lng) return null;
     const baseTime = calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng);
@@ -226,6 +235,11 @@ export default function Departures() {
           </span>
         </div>
       </div>
+      
+      {allRouteIds.length > 0 && (
+        <ServiceAlertBanner routeIds={allRouteIds} />
+      )}
+      
       <div className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
         {stationsLoading ? (
           <div className="flex items-center justify-center h-full">

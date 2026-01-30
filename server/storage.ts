@@ -241,6 +241,10 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   "135 St": [
     { id: "135_23", lines: "2 3" }
   ],
+  "145 St": [
+    { id: "D13", lines: "B D" },
+    { id: "301", lines: "3" }
+  ],
   "168 St": [
     { id: "A09", lines: "A C" }
   ],
