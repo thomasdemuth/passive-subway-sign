@@ -11,13 +11,46 @@ const LINE_MAPPINGS: Record<string, string> = {
   "127": "1 2 3", "128": "1 2 3", "129": "1", "130": "1",
   "131": "1", "132": "1 2 3", "133": "1", "134": "1", "135": "1", "136": "1",
   "137": "1 2 3", "138": "1", "139": "1", "140": "1", "142": "1",
-  // 2 3 lines
-  "201": "2", "204": "2 5", "205": "2 5", "206": "2 5", "207": "2 5", "208": "2 5",
-  "209": "2 3", "210": "2 3", "211": "2 3", "212": "2 5", "213": "2 5",
-  "220": "2 3", "222": "2 3", "224": "2 3", "225": "2 5", "226": "2 5", "227": "2 5",
-  "228": "2 3", "229": "2 3", "230": "2 3", "231": "2 5", "232": "2 5", "233": "2 5",
-  "234": "2 3", "235": "2 3", "236": "2 3", "237": "2 3", "238": "2 5", "239": "2 3", "241": "2 3",
-  "247": "3", "248": "3", "249": "3", "250": "3", "251": "3",
+  // 2 3 lines - Brooklyn IRT
+  "201": "2 5", // Flatbush Av - terminal for 2 and 5
+  "204": "2 5", "205": "2 5", "206": "2 5", "207": "2 5", "208": "2 5",
+  "209": "2 5", // Winthrop St
+  "210": "2 5", // Sterling St
+  "211": "2 5", // President St
+  "212": "2 5", // Church Av
+  "213": "2 5", // Beverly Rd
+  "214": "2 5", // Newkirk Av
+  "215": "2 3 4 5", // Nevins St
+  "216": "2 3", // Hoyt St
+  "217": "2 3 4 5", // Atlantic Av - Barclays Ctr
+  "218": "2 3 4 5", // Franklin Av
+  "219": "2 3", // Eastern Pkwy - Brooklyn Museum
+  "220": "2 3", // Crown Heights - Utica Av
+  "222": "2 3", // Sutter Av - Rutland Rd
+  "224": "2 3", // President St (2/3)
+  "225": "2 3", // Sterling St
+  "226": "2 3", // Winthrop St
+  "227": "2 5", // Church Av (2/5)
+  "228": "2 3", // Nostrand Av
+  "229": "2 3", // Kingston Av
+  "230": "2 3", // Utica Av
+  "231": "2 5", "232": "2 5", "233": "2 5",
+  "234": "2 3", // Park Place
+  "235": "2 3", // Franklin Av
+  "236": "2 3", // Botanic Garden
+  "237": "2 3", // Clark St
+  "238": "2 3", // Borough Hall / Court St
+  "239": "2 3", // Wall St
+  "240": "2 3", // Fulton St
+  "241": "2 3", // Park Place
+  // 3 train Harlem
+  "247": "3", // 145 St
+  "248": "3", // Harlem - 148 St
+  "249": "3", "250": "3", "251": "3",
+  // Manhattan 2/3 stations
+  "224M": "2 3", // 110 St
+  "225M": "2 3", // 116 St
+  "226M": "2 3", // 125 St
   // 4 5 6 lines
   "401": "4", "402": "4", "405": "4", "406": "4", "407": "4", "408": "4", "409": "4",
   "410": "4", "411": "4", "412": "4", "413": "4", "414": "4", "415": "4", "416": "4 5",
@@ -35,14 +68,100 @@ const LINE_MAPPINGS: Record<string, string> = {
   "724": "7", "725": "7", "726": "7",
   // Shuttle
   "901": "S", "902": "S",
-  // A C E lines - split from combined
-  "A12": "A C", "A15": "A C", "A16": "A C", "A17": "A C", "A18": "A C", "A19": "A C",
-  "A20": "A C", "A21": "A C", "A22": "A C", "A24": "A C E", "A25": "A C E",
-  "A27": "A C E", "A28": "A C E", "A30": "A C", "A31": "B C", "A32": "B C",
+  // Rockaway Shuttle and A train at Broad Channel
+  "H01": "A S", // Broad Channel
+  "H02": "S", // Beach 90 St
+  "H03": "S", // Beach 98 St
+  "H04": "S", // Rockaway Park - Beach 116 St
+  "H11": "A", // Far Rockaway - Mott Av
+  "H12": "A", // Beach 25 St
+  "H13": "A", // Beach 36 St
+  "H14": "A", // Beach 44 St
+  "H15": "A", // Beach 60 St
+  "H19": "A", // Howard Beach - JFK Airport
+  // A C E lines
+  "A02": "A", // Inwood - 207 St
+  "A03": "A", // Dyckman St
+  "A05": "A", // 190 St
+  "A06": "A", // 181 St
+  "A07": "A", // 175 St
+  "A09": "A C", // 168 St
+  "A10": "A C", // 163 St - Amsterdam Av
+  "A11": "A C", // 155 St
+  "A12": "A C", // 145 St
+  "A14": "A B C D", // 125 St
+  "A15": "A B C D", // 125 St
+  "A16": "B C", // 116 St
+  "A17": "B C", // 110 St - Cathedral Pkwy
+  "A18": "B C", // 103 St
+  "A19": "B C", // 96 St
+  "A20": "B C", // 86 St
+  "A21": "B C", // 81 St - Museum of Natural History
+  "A22": "B C", // 72 St
+  "A24": "A C E", // 50 St
+  "A25": "C E", // 50 St - correct: only C and E stop here
+  "A27": "A C E", // 42 St - Port Authority
+  "A28": "A C E", // 34 St - Penn Station
+  "A30": "A C E", // 23 St
+  "A31": "A C E", // 14 St
+  "A32": "A C E", // W 4 St - Washington Sq
+  "A33": "A C E", // Spring St
+  "A34": "A C E", // Canal St
+  "A36": "E", // World Trade Center
+  "A38": "A C", // Chambers St
+  "A40": "A C", // Fulton St
+  "A41": "A C", // High St
+  "A42": "A C", // Jay St - MetroTech
+  "A43": "A C", // Hoyt - Schermerhorn Sts
+  "A44": "A C", // Lafayette Av
+  "A45": "A C", // Clinton - Washington Avs
+  "A46": "A C", // Franklin Av
+  "A47": "A C", // Nostrand Av
+  "A48": "A C", // Kingston - Throop Avs
+  "A49": "A C", // Utica Av
+  "A50": "A C", // Ralph Av
+  "A51": "A C", // Rockaway Av
+  "A52": "A C", // Broadway Junction
+  "A53": "A C", // Liberty Av
+  "A54": "A C", // Van Siclen Av
+  "A55": "A C", // Shepherd Av
+  "A57": "A", // Euclid Av
+  "A59": "A", // Grant Av
+  "A60": "A", // 80 St
+  "A61": "A", // 88 St
+  "A63": "A", // Rockaway Blvd
+  "A64": "A", // 104 St
+  "A65": "A", // 111 St
+  "A55C": "C", // Ozone Park - Lefferts Blvd (C terminal)
   // N Q R W lines
   "R14": "N Q R W", "R15": "N Q R W", "R16": "N Q R W S", "R17": "N Q R W",
   "R18": "N Q R W", "R19": "N Q R W", "R20": "N Q R W", "R21": "N R W",
   "R22": "N R W", "R23": "N R W", "R24": "R W", "R25": "R W", "R26": "R W", "R27": "R W",
+  // Queens Blvd M R lines
+  "G08": "E M R", // Queens Plaza
+  "G09": "E M R", // 36 St
+  "G10": "M R", // Steinway St
+  "G11": "M R", // 46 St
+  "G12": "M R", // Northern Blvd
+  "G13": "M R", // 65 St
+  "G14": "M R", // Elmhurst Av
+  "G15": "M R", // Grand Av - Newtown
+  "G16": "M R", // Woodhaven Blvd
+  "G18": "M R", // 63 Dr - Rego Park
+  "G19": "M R", // 67 Av
+  "G20": "M R", // Forest Hills - 71 Av
+  "G21": "E F M R", // Jackson Hts - Roosevelt Av
+  // E F lines
+  "F01": "E F", // Jamaica - 179 St
+  "F02": "E F", // 169 St
+  "F03": "E F", // Parsons Blvd
+  "F04": "E F", // Sutphin Blvd
+  "F05": "E F", // Briarwood
+  "F06": "E F", // Kew Gardens - Union Tpke
+  "F07": "E F", // 75 Av
+  "F09": "F", // 63 Dr - Rego Park (F)
+  "F11": "E F", // Forest Hills - 71 Av
+  "F12": "E F M R", // Jackson Hts - Roosevelt Av
   // L line
   "L01": "L", "L02": "L", "L03": "L", "L05": "L", "L06": "L", "L08": "L",
   "L10": "L", "L11": "L", "L12": "L", "L13": "L", "L14": "L", "L15": "L",
@@ -50,9 +169,17 @@ const LINE_MAPPINGS: Record<string, string> = {
   "L24": "L", "L25": "L", "L26": "L", "L27": "L", "L28": "L", "L29": "L",
 };
 
+// Station name overrides for correct display names
+const STATION_NAME_OVERRIDES: Record<string, string> = {
+  "218": "Franklin Av", // Was "Franklin Av / Botanic Garden"
+  "235": "Franklin Av", // On 2/3
+  "236": "Franklin Av", // Franklin Av, not Botanic Garden
+  "224": "110 St-Malcom X Plaza", // Was "Central Park North 110 St"
+};
+
 // Stations that share the same physical location but have different platform IDs
 // Maps display name to the additional platform IDs that should be added as separate stations
-const SPLIT_STATIONS: Record<string, { id: string; lines: string }[]> = {
+const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string }[]> = {
   "14 St - Union Sq": [
     { id: "L03", lines: "L" },
     { id: "R20", lines: "N Q R W" }
@@ -76,16 +203,37 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string }[]> = {
     { id: "R27", lines: "R W" }
   ],
   "96 St": [
-    { id: "A32", lines: "B C" }
+    { id: "A19", lines: "B C" }
   ],
   "72 St": [
-    { id: "A31", lines: "B C" }
+    { id: "A22", lines: "B C" }
+  ],
+  "86 St": [
+    { id: "A20", lines: "B C" }
+  ],
+  "81 St - Museum of Natural History": [
+    { id: "A21", lines: "B C" }
+  ],
+  "110 St - Cathedral Pkwy": [
+    { id: "A17", lines: "B C" }
+  ],
+  "116 St": [
+    { id: "A16", lines: "B C" }
+  ],
+  "135 St": [
+    { id: "A_135", lines: "B C" }
   ],
   "168 St": [
-    { id: "A12", lines: "A C" }
+    { id: "A09", lines: "A C" }
   ],
   "125 St": [
-    { id: "A15", lines: "A B C D" }
+    { id: "A14", lines: "A B C D" }
+  ],
+  "14 St": [
+    { id: "A31", lines: "A C E", name: "14 St-8 Av" }
+  ],
+  "World Trade Center": [
+    { id: "A36", lines: "E" }
   ],
 };
 
@@ -114,9 +262,9 @@ export class MemStorage implements IStorage {
           if (id.startsWith("A")) line = line || "A C";
           if (id.startsWith("B")) line = line || "B D";
           if (id.startsWith("D")) line = line || "B D F M";
-          if (id.startsWith("F")) line = line || "F";
-          if (id.startsWith("G")) line = line || "G";
-          if (id.startsWith("H")) line = line || "S";
+          if (id.startsWith("F")) line = line || "E F";
+          if (id.startsWith("G")) line = line || "M R"; // Queens Blvd M/R stations
+          if (id.startsWith("H")) line = line || "A S"; // Rockaway branch
           if (id.startsWith("J")) line = line || "J Z";
           if (id.startsWith("L")) line = line || "L";
           if (id.startsWith("M")) line = line || "M J Z";
@@ -138,9 +286,12 @@ export class MemStorage implements IStorage {
             else line = "?";
           }
 
+          // Use name override if available
+          const displayName = STATION_NAME_OVERRIDES[id] || station.name;
+          
           this.stations.set(id, {
             id,
-            name: station.name,
+            name: displayName,
             line: line.trim(),
             lat: station.location?.[0] || null,
             lng: station.location?.[1] || null,
@@ -149,12 +300,12 @@ export class MemStorage implements IStorage {
           // Add split stations for this location
           const splitEntries = SPLIT_STATIONS[station.name];
           if (splitEntries) {
-            splitEntries.forEach(({ id: splitId, lines }) => {
+            splitEntries.forEach(({ id: splitId, lines, name: splitName }) => {
               // Only add if not already in the map
               if (!this.stations.has(splitId)) {
                 this.stations.set(splitId, {
                   id: splitId,
-                  name: station.name,
+                  name: splitName || station.name,
                   line: lines,
                   lat: station.location?.[0] || null,
                   lng: station.location?.[1] || null,
