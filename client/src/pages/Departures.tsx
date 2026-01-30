@@ -7,6 +7,7 @@ import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, RefreshCw } from "l
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 function StationDepartures({ stationId, stationName, stationLine }: { stationId: string; stationName: string; stationLine: string }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
@@ -15,48 +16,53 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
   const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown").slice(0, 5) || [];
 
   return (
-    <Card className="bg-card/50 border-white/10">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex -space-x-1">
-              {stationLine.split(" ").slice(0, 4).map((route, i) => (
+    <Card className="bg-card/50 border-white/10 min-w-[320px] max-w-[400px] flex-shrink-0">
+      <CardHeader className="pb-2 px-4 pt-4">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-3 overflow-hidden">
+            <div className="flex -space-x-1 flex-shrink-0">
+              {stationLine.split(" ").slice(0, 3).map((route, i) => (
                 <RouteIcon 
                   key={`${stationId}-${route}-${i}`} 
                   routeId={route} 
                   size="sm" 
-                  className="w-6 h-6 text-xs ring-2 ring-background" 
+                  className="w-5 h-5 text-[10px] ring-1 ring-background" 
                 />
               ))}
+              {stationLine.split(" ").length > 3 && (
+                <div className="w-5 h-5 rounded-full bg-zinc-700 ring-1 ring-background flex items-center justify-center text-[9px] text-zinc-300">
+                  +{stationLine.split(" ").length - 3}
+                </div>
+              )}
             </div>
-            <CardTitle className="text-xl">{stationName}</CardTitle>
+            <CardTitle className="text-base truncate">{stationName}</CardTitle>
           </div>
           {dataUpdatedAt && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground flex-shrink-0">
               <RefreshCw className="w-3 h-3" />
-              Updated {new Date(dataUpdatedAt).toLocaleTimeString()}
+              {new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           )}
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="px-4 pb-4 pt-2 space-y-4">
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-5 h-5 animate-spin text-primary" />
           </div>
         ) : arrivals?.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            No active trains at this station
+          <div className="text-center py-6 text-sm text-muted-foreground">
+            No active trains
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                <ArrowUpCircle className="w-5 h-5 text-white" />
-                <h3 className="font-semibold text-white">Uptown / Queens</h3>
-                <span className="ml-auto text-xs text-muted-foreground">{uptownArrivals.length} trains</span>
+          <>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 pb-1 border-b border-white/10">
+                <ArrowUpCircle className="w-4 h-4 text-white" />
+                <span className="text-xs font-semibold text-white">Uptown</span>
+                <span className="ml-auto text-[10px] text-muted-foreground">{uptownArrivals.length}</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {uptownArrivals.length > 0 ? (
                   uptownArrivals.map((arrival, i) => (
                     <ArrivalCard 
@@ -66,20 +72,20 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
                     />
                   ))
                 ) : (
-                  <div className="py-6 text-center text-sm text-muted-foreground italic">
-                    No upcoming Uptown trains
+                  <div className="py-3 text-center text-xs text-muted-foreground italic">
+                    No Uptown trains
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                <ArrowDownCircle className="w-5 h-5 text-white" />
-                <h3 className="font-semibold text-white">Downtown / Brooklyn</h3>
-                <span className="ml-auto text-xs text-muted-foreground">{downtownArrivals.length} trains</span>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 pb-1 border-b border-white/10">
+                <ArrowDownCircle className="w-4 h-4 text-white" />
+                <span className="text-xs font-semibold text-white">Downtown</span>
+                <span className="ml-auto text-[10px] text-muted-foreground">{downtownArrivals.length}</span>
               </div>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {downtownArrivals.length > 0 ? (
                   downtownArrivals.map((arrival, i) => (
                     <ArrivalCard 
@@ -89,13 +95,13 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
                     />
                   ))
                 ) : (
-                  <div className="py-6 text-center text-sm text-muted-foreground italic">
-                    No upcoming Downtown trains
+                  <div className="py-3 text-center text-xs text-muted-foreground italic">
+                    No Downtown trains
                   </div>
                 )}
               </div>
             </div>
-          </div>
+          </>
         )}
       </CardContent>
     </Card>
@@ -105,49 +111,37 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
 export default function Departures() {
   const params = useParams<{ ids: string }>();
   const [, navigate] = useLocation();
-  const { data: stations } = useStations();
+  const { data: stations, isLoading: stationsLoading } = useStations();
 
   const stationIds = params.ids?.split(",") || [];
   const selectedStations = stations?.filter(s => stationIds.includes(s.id)) || [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate("/")}
-            className="gap-2"
-            data-testid="button-back"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Selection
-          </Button>
-          <div className="flex-1" />
-          <span className="text-sm text-muted-foreground">
-            Tracking {selectedStations.length} station{selectedStations.length !== 1 ? 's' : ''}
-          </span>
-        </div>
+    <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
+      <div className="flex items-center gap-4 px-4 py-3 border-b border-white/10">
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => navigate("/")}
+          className="gap-2"
+          data-testid="button-back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back
+        </Button>
+        <div className="flex-1" />
+        <span className="text-xs text-muted-foreground">
+          {selectedStations.length} station{selectedStations.length !== 1 ? 's' : ''}
+        </span>
+      </div>
 
-        <AnimatePresence>
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
-          >
-            {selectedStations.map((station) => (
-              <StationDepartures 
-                key={station.id}
-                stationId={station.id}
-                stationName={station.name}
-                stationLine={station.line}
-              />
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {selectedStations.length === 0 && (
-          <div className="text-center py-24 text-muted-foreground">
+      <div className="flex-1 overflow-hidden">
+        {stationsLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        ) : selectedStations.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
             <p className="text-lg">No stations selected</p>
             <Button 
               variant="outline" 
@@ -158,11 +152,31 @@ export default function Departures() {
               Select Stations
             </Button>
           </div>
+        ) : (
+          <ScrollArea className="h-full w-full">
+            <AnimatePresence>
+              <motion.div 
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex gap-4 p-4"
+              >
+                {selectedStations.map((station) => (
+                  <StationDepartures 
+                    key={station.id}
+                    stationId={station.id}
+                    stationName={station.name}
+                    stationLine={station.line}
+                  />
+                ))}
+              </motion.div>
+            </AnimatePresence>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         )}
+      </div>
 
-        <div className="text-center text-xs text-muted-foreground/50 mt-12">
-          Data provided by MTA GTFS-Realtime Feed. Updates every 30s.
-        </div>
+      <div className="text-center text-[10px] text-muted-foreground/50 py-2 border-t border-white/10">
+        MTA GTFS-Realtime • Updates every 30s
       </div>
     </div>
   );
