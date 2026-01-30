@@ -58,7 +58,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     <Card className="bg-card/50 border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-sm sm:text-base font-semibold truncate">{stationName}</span>
+          <span className="text-base sm:text-lg font-semibold truncate">{stationName}</span>
           {walkingTime !== null && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
               <PersonStanding className="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                 <RouteIcon 
                   routeId={line} 
                   size="sm" 
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-[9px] sm:text-[10px] ring-1 ring-background" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[9px] ring-1 ring-background" 
                 />
               </button>
             ) : (
@@ -89,7 +89,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                 key={`${stationId}-line-${line}-${i}`}
                 routeId={line} 
                 size="sm" 
-                className="w-5 h-5 sm:w-6 sm:h-6 text-[9px] sm:text-[10px] ring-1 ring-background" 
+                className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[9px] ring-1 ring-background" 
               />
             )
           ))}
