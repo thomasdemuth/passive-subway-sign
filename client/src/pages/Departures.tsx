@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStations, useArrivals } from "@/hooks/use-stations";
 import { ArrivalCard } from "@/components/ArrivalCard";
@@ -10,6 +10,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+
+function useCurrentTime() {
+  const [now, setNow] = useState(new Date());
+  
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  return now;
+}
 
 function StationDepartures({ stationId, stationName, stationLine }: { stationId: string; stationName: string; stationLine: string }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
@@ -157,12 +168,26 @@ export default function Departures() {
   const params = useParams<{ ids: string }>();
   const [, navigate] = useLocation();
   const { data: stations, isLoading: stationsLoading } = useStations();
+  const currentTime = useCurrentTime();
+  
+  const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
   const stationIds = params.ids?.split(",") || [];
   const selectedStations = stations?.filter(s => stationIds.includes(s.id)) || [];
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
+      <div className="bg-background/80 backdrop-blur-md border-b border-white/10">
+        <div className="px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between">
+          <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
+            {dateString}
+          </span>
+          <span className="text-lg sm:text-2xl font-bold tabular-nums text-white" data-testid="text-time">
+            {timeString}
+          </span>
+        </div>
+      </div>
       <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-2 sm:py-3 border-b border-white/10">
         <Button 
           variant="ghost" 

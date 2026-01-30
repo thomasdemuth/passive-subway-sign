@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useStations } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
@@ -8,17 +8,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
-function useCurrentTime() {
-  const [now, setNow] = useState(new Date());
-  
-  useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-  
-  return now;
-}
 
 const FEED_GROUPS: Record<string, { name: string; lines: string }> = {
   "123456S": { name: "1-6, S", lines: "1 2 3 4 5 6 S" },
@@ -68,10 +57,6 @@ export default function Home() {
   const { data: stations, isLoading } = useStations();
   const [, navigate] = useLocation();
   const { location: userLocation, loading: locationLoading, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
-  const currentTime = useCurrentTime();
-  
-  const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
   const filteredStations = stations?.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -125,17 +110,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-white/10">
-        <div className="max-w-4xl mx-auto px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between">
-          <span className="text-lg sm:text-2xl font-bold tabular-nums text-white" data-testid="text-time">
-            {timeString}
-          </span>
-          <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
-            {dateString}
-          </span>
-        </div>
-      </div>
-      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-12">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-16">
         
         <div className="text-center mb-6 sm:mb-12 space-y-2 sm:space-y-4">
           <motion.div
