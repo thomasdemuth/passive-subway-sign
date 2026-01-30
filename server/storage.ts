@@ -141,7 +141,9 @@ export class MemStorage implements IStorage {
           this.stations.set(id, {
             id,
             name: station.name,
-            line: line.trim()
+            line: line.trim(),
+            lat: station.location?.[0] || null,
+            lng: station.location?.[1] || null,
           });
           
           // Add split stations for this location
@@ -153,7 +155,9 @@ export class MemStorage implements IStorage {
                 this.stations.set(splitId, {
                   id: splitId,
                   name: station.name,
-                  line: lines
+                  line: lines,
+                  lat: station.location?.[0] || null,
+                  lng: station.location?.[1] || null,
                 });
               }
             });
@@ -167,13 +171,13 @@ export class MemStorage implements IStorage {
       console.error("Failed to fetch stations, using fallback:", e);
       // Fallback list
       const fallback: Station[] = [
-        { id: "127", name: "Times Sq - 42 St", line: "1 2 3" },
-        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W S" },
-        { id: "725", name: "Times Sq - 42 St", line: "7" },
-        { id: "631", name: "Grand Central - 42 St", line: "4 5 6" },
-        { id: "901", name: "Grand Central - 42 St", line: "S" },
-        { id: "128", name: "34 St - Penn Station", line: "1 2 3" },
-        { id: "A28", name: "34 St - Penn Station", line: "A C E" },
+        { id: "127", name: "Times Sq - 42 St", line: "1 2 3", lat: 40.755983, lng: -73.986229 },
+        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W S", lat: 40.755983, lng: -73.986229 },
+        { id: "725", name: "Times Sq - 42 St", line: "7", lat: 40.755983, lng: -73.986229 },
+        { id: "631", name: "Grand Central - 42 St", line: "4 5 6", lat: 40.751776, lng: -73.976848 },
+        { id: "901", name: "Grand Central - 42 St", line: "S", lat: 40.751776, lng: -73.976848 },
+        { id: "128", name: "34 St - Penn Station", line: "1 2 3", lat: 40.750373, lng: -73.991057 },
+        { id: "A28", name: "34 St - Penn Station", line: "A C E", lat: 40.750373, lng: -73.991057 },
       ];
       fallback.forEach(s => this.stations.set(s.id, s));
     }

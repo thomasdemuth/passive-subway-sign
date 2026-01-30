@@ -1,8 +1,9 @@
 import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useStations } from "@/hooks/use-stations";
+import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { RouteIcon } from "@/components/RouteIcon";
-import { Train, Search, Check, ArrowRight } from "lucide-react";
+import { Train, Search, Check, ArrowRight, MapPin, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: stations, isLoading } = useStations();
   const [, navigate] = useLocation();
+  const { location: userLocation, loading: locationLoading, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
 
   const filteredStations = stations?.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -119,16 +121,39 @@ export default function Home() {
         </div>
 
         <div className="mb-4 sm:mb-8 space-y-3 sm:space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
-            <Input 
-              placeholder="Search stations or lines..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 sm:pl-12 h-11 sm:h-14 bg-secondary/50 border-white/10 text-sm sm:text-base"
-              data-testid="input-search"
-            />
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+              <Input 
+                placeholder="Search stations or lines..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 sm:pl-12 h-11 sm:h-14 bg-secondary/50 border-white/10 text-sm sm:text-base"
+                data-testid="input-search"
+              />
+            </div>
+            <Button
+              variant={locationEnabled ? "default" : "outline"}
+              size="icon"
+              className="h-11 sm:h-14 w-11 sm:w-14 shrink-0"
+              onClick={locationEnabled ? disableLocation : requestLocation}
+              disabled={locationLoading}
+              data-testid="button-toggle-location"
+            >
+              {locationLoading ? (
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+              ) : (
+                <MapPin className={cn("w-4 h-4 sm:w-5 sm:h-5", locationEnabled && "fill-current")} />
+              )}
+            </Button>
           </div>
+          
+          {locationEnabled && userLocation && (
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground">
+              <MapPin className="w-3 h-3" />
+              <span>Showing walking times from your location</span>
+            </div>
+          )}
 
           {selectedStationIds.size > 0 && (
             <motion.div 
@@ -188,6 +213,9 @@ export default function Home() {
                   <div className="space-y-1">
                     {stationsInGroup.map((station) => {
                       const isSelected = selectedStationIds.has(station.id);
+                      const walkingTime = userLocation && station.lat && station.lng
+                        ? calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng)
+                        : null;
                       return (
                         <motion.button
                           key={station.id}
@@ -209,6 +237,11 @@ export default function Home() {
                               {isSelected && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-foreground" />}
                             </div>
                             <span className="text-xs sm:text-sm text-white truncate">{station.name}</span>
+                            {walkingTime !== null && (
+                              <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0">
+                                {walkingTime} min
+                              </span>
+                            )}
                           </div>
                           
                           <div className="flex -space-x-0.5 flex-wrap justify-end gap-y-0.5 shrink-0">

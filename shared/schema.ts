@@ -1,5 +1,5 @@
 
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, doublePrecision } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -11,6 +11,8 @@ export const stations = pgTable("stations", {
   id: text("id").primaryKey(), // GTFS Stop ID (e.g., "120")
   name: text("name").notNull(),
   line: text("line").notNull(), // e.g., "1 2 3"
+  lat: doublePrecision("lat"),
+  lng: doublePrecision("lng"),
 });
 
 // === SCHEMAS ===
