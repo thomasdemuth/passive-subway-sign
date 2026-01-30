@@ -17,6 +17,26 @@ const FEEDS = [
   "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-si"    // Staten Island Railway
 ];
 
+// Combined stations - maps a station ID to additional GTFS stop IDs to query
+const COMBINED_STATIONS: Record<string, string[]> = {
+  "140": ["R27"],  // South Ferry / Whitehall St (1 + R W)
+  "127": ["725", "R16", "902"],  // Times Sq - 42 St (1 2 3 + N Q R W S + 7)
+  "631": ["725", "901"],  // Grand Central - 42 St (4 5 6 + 7 + S)
+  "635": ["L03", "R20"],  // 14 St - Union Sq (4 5 6 + L + N Q R W)
+  "132": ["A32"],  // 96 St (1 2 3 + B C)
+  "120": ["A31"],  // 72 St (1 2 3 + B C)
+  "128": ["A28"],  // 34 St - Penn Station (1 2 3 + A C E)
+  "629": ["R17"],  // Lexington Av / 59 St (4 5 6 + N Q R W)
+  "R14": ["629"],  // Lexington Av / 59 St reverse lookup
+  "725": ["127", "R16"],  // Times Sq reverse from 7
+  "R16": ["127", "725"],  // Times Sq reverse from NQRW
+  "R20": ["635", "L03"],  // Union Sq reverse
+  "L03": ["635", "R20"],  // Union Sq reverse from L
+  "A28": ["128"],  // Penn Station reverse
+  "R17": ["629"],  // 59 St reverse
+  "R27": ["140"],  // Whitehall reverse
+};
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -45,6 +65,9 @@ export async function registerRoutes(
 
       const allArrivals: Arrival[] = [];
       const now = Date.now() / 1000;
+      
+      // Get all stop IDs to query (primary + combined stations)
+      const stopIdsToQuery = [stationId, ...(COMBINED_STATIONS[stationId] || [])];
 
       // Fetch from all relevant feeds in parallel
       await Promise.all(FEEDS.map(async (url) => {
@@ -61,7 +84,9 @@ export async function registerRoutes(
             if (entity.tripUpdate && entity.tripUpdate.stopTimeUpdate) {
               entity.tripUpdate.stopTimeUpdate.forEach((update) => {
                 const stopId = update.stopId;
-                if (stopId && stopId.startsWith(stationId)) {
+                // Check if this stop matches any of our station IDs
+                const matchesStation = stopId && stopIdsToQuery.some(id => stopId.startsWith(id));
+                if (matchesStation) {
                    const directionChar = stopId.slice(-1);
                    const direction = directionChar === 'N' ? "Uptown" : "Downtown";
                    
