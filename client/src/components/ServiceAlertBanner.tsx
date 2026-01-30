@@ -84,7 +84,17 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
     return null;
   }
   
-  const uniqueAlerts = alerts.reduce<ServiceAlert[]>((acc, alert) => {
+  // Filter out planned work alerts - only show emergency/active alerts
+  const activeAlerts = alerts.filter(alert => 
+    alert.alertType !== "Planned Work" && 
+    !alert.headerText.toLowerCase().includes("planned work")
+  );
+  
+  if (activeAlerts.length === 0) {
+    return null;
+  }
+  
+  const uniqueAlerts = activeAlerts.reduce<ServiceAlert[]>((acc, alert) => {
     const exists = acc.some(a => a.headerText === alert.headerText);
     if (!exists) acc.push(alert);
     return acc;
@@ -95,7 +105,7 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   const affectedRoutes = Array.from(new Set(uniqueAlerts.map(a => a.routeId)));
   
   return (
-    <div className="bg-background/90 backdrop-blur-md border-b border-white/10">
+    <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
       <div className="px-3 sm:px-6 py-2">
         <div className="flex items-center justify-between gap-2">
           <button 
