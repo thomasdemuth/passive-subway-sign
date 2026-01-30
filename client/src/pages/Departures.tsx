@@ -5,7 +5,7 @@ import { useStations, useArrivals } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -171,6 +171,10 @@ export default function Departures() {
   const { data: stations, isLoading: stationsLoading } = useStations();
   const { location: userLocation } = useUserLocation();
   const currentTime = useCurrentTime();
+  const [zoom, setZoom] = useState(1);
+  
+  const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
+  const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
   
   const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
@@ -197,24 +201,7 @@ export default function Departures() {
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-2 sm:py-3 border-b border-white/10">
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => navigate("/")}
-          className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
-          Back
-        </Button>
-        <div className="flex-1" />
-        <span className="text-[10px] sm:text-xs text-muted-foreground">
-          {selectedStations.length} station{selectedStations.length !== 1 ? 's' : ''}
-        </span>
-      </div>
-
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
         {stationsLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -257,6 +244,36 @@ export default function Departures() {
 
       <div className="text-center text-[9px] sm:text-[10px] text-muted-foreground/50 py-1.5 sm:py-2 border-t border-white/10">
         MTA GTFS-Realtime • Updates every 30s
+      </div>
+      
+      <div className="fixed bottom-4 left-4 flex items-center gap-2 z-50">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigate("/")}
+          className="bg-background/80 backdrop-blur-md"
+          data-testid="button-back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={zoomOut}
+          className="bg-background/80 backdrop-blur-md"
+          data-testid="button-zoom-out"
+        >
+          <ZoomOut className="w-4 h-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={zoomIn}
+          className="bg-background/80 backdrop-blur-md"
+          data-testid="button-zoom-in"
+        >
+          <ZoomIn className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );
