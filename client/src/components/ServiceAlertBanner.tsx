@@ -84,9 +84,10 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
     return null;
   }
   
-  // Filter out planned work alerts - only show emergency/active alerts
+  // Filter out planned work and generic service alerts - only show emergency/active alerts
   const activeAlerts = alerts.filter(alert => 
     alert.alertType !== "Planned Work" && 
+    alert.alertType !== "Service Alert" &&
     !alert.headerText.toLowerCase().includes("planned work")
   );
   
