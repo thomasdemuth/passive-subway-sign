@@ -25,7 +25,7 @@ export async function registerRoutes(
   });
 
   app.get(api.stations.getArrivals.path, async (req, res) => {
-    const stationId = req.params.id;
+    const stationId = req.params.id as string;
     const station = await storage.getStation(stationId);
     
     if (!station) {
