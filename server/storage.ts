@@ -72,7 +72,7 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string }[]> = {
   "59 St": [
     { id: "R17", lines: "N Q R W" }
   ],
-  "Whitehall St": [
+  "South Ferry / Whitehall St": [
     { id: "R27", lines: "R W" }
   ],
   "96 St": [
