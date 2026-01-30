@@ -226,7 +226,7 @@ export default function Departures() {
           </span>
         </div>
       </div>
-      <div className="flex-1 overflow-hidden" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
+      <div className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
         {stationsLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
