@@ -12,8 +12,8 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 function StationDepartures({ stationId, stationName, stationLine }: { stationId: string; stationName: string; stationLine: string }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
 
-  const uptownArrivals = arrivals?.filter(a => a.direction === "Uptown").slice(0, 5) || [];
-  const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown").slice(0, 5) || [];
+  const uptownArrivals = arrivals?.filter(a => a.direction === "Uptown").slice(0, 3) || [];
+  const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown").slice(0, 3) || [];
 
   return (
     <Card className="bg-card/50 border-white/10 min-w-[320px] max-w-[400px] flex-shrink-0">
