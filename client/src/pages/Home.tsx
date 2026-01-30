@@ -70,6 +70,10 @@ export default function Home() {
       }
       groups[feedGroup].push(station);
     }
+    // Sort each group alphabetically
+    for (const key in groups) {
+      groups[key].sort((a, b) => a.name.localeCompare(b.name));
+    }
     return groups;
   }, [filteredStations]);
 
@@ -206,8 +210,8 @@ export default function Home() {
                             <span className="text-sm text-white">{station.name}</span>
                           </div>
                           
-                          <div className="flex -space-x-0.5">
-                            {station.line.split(" ").slice(0, 4).map((route, i) => (
+                          <div className="flex -space-x-0.5 flex-wrap justify-end gap-y-0.5">
+                            {station.line.split(" ").map((route, i) => (
                               <RouteIcon 
                                 key={`${station.id}-${route}-${i}`} 
                                 routeId={route} 
@@ -215,11 +219,6 @@ export default function Home() {
                                 className="w-5 h-5 text-[9px] ring-1 ring-background" 
                               />
                             ))}
-                            {station.line.split(" ").length > 4 && (
-                              <div className="w-5 h-5 rounded-full bg-zinc-700 ring-1 ring-background flex items-center justify-center text-[8px] text-zinc-300">
-                                +{station.line.split(" ").length - 4}
-                              </div>
-                            )}
                           </div>
                         </motion.button>
                       );
