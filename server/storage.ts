@@ -39,7 +39,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "235": "2 3", // Franklin Av
   "236": "S", // Botanic Garden
   "237": "2 3", // Clark St
-  "238": "2 3 4 5", // Borough Hall / Court St
+  "238": "2 3", // Borough Hall / Court St - just 2/3
   "239": "2 3", // Wall St
   "240": "2 3", // Fulton St
   "241": "2 3", // Park Place
@@ -54,7 +54,10 @@ const LINE_MAPPINGS: Record<string, string> = {
   // 4 5 6 lines
   "401": "4", "402": "4", "405": "4", "406": "4", "407": "4", "408": "4", "409": "4",
   "410": "4", "411": "4", "412": "4", "413": "4", "414": "4", "415": "4", "416": "4 5",
-  "418": "4 5", "419": "4 5", "420": "4 5", "423": "4 5",
+  "418": "4 5", // Borough Hall 4/5
+  "419": "4 5", // Atlantic Av - Barclays Ctr
+  "420": "4 5", // Franklin Av
+  "423": "4 5", // Crown Heights - Utica Av
   "501": "5", "502": "5", "503": "5", "504": "5", "505": "5",
   "601": "6", "602": "6", "603": "6", "604": "6", "606": "6", "607": "6", "608": "6",
   "609": "6", "610": "6", "611": "6", "612": "6", "613": "6", "614": "6", "615": "6",
@@ -246,6 +249,9 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   ],
   "World Trade Center": [
     { id: "A36", lines: "E" }
+  ],
+  "Borough Hall": [
+    { id: "418", lines: "4 5" }
   ],
   "W 4 St-Wash Sq": [
     { id: "D21", lines: "B D F M" }
