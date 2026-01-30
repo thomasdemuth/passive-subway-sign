@@ -18,23 +18,61 @@ const FEEDS = [
 ];
 
 // Combined stations - maps a station ID to additional GTFS stop IDs to query
+// This allows showing all trains at a physical location regardless of which platform entry is selected
 const COMBINED_STATIONS: Record<string, string[]> = {
-  "140": ["R27"],  // South Ferry / Whitehall St (1 + R W)
-  "127": ["725", "R16", "902"],  // Times Sq - 42 St (1 2 3 + N Q R W S + 7)
-  "631": ["725", "901"],  // Grand Central - 42 St (4 5 6 + 7 + S)
-  "635": ["L03", "R20"],  // 14 St - Union Sq (4 5 6 + L + N Q R W)
-  "132": ["A32"],  // 96 St (1 2 3 + B C)
-  "120": ["A31"],  // 72 St (1 2 3 + B C)
-  "128": ["A28"],  // 34 St - Penn Station (1 2 3 + A C E)
-  "629": ["R17"],  // Lexington Av / 59 St (4 5 6 + N Q R W)
-  "R14": ["629"],  // Lexington Av / 59 St reverse lookup
-  "725": ["127", "R16"],  // Times Sq reverse from 7
-  "R16": ["127", "725"],  // Times Sq reverse from NQRW
-  "R20": ["635", "L03"],  // Union Sq reverse
-  "L03": ["635", "R20"],  // Union Sq reverse from L
-  "A28": ["128"],  // Penn Station reverse
-  "R17": ["629"],  // 59 St reverse
-  "R27": ["140"],  // Whitehall reverse
+  // South Ferry / Whitehall St
+  "140": ["R27"], "R27": ["140"],
+  // Times Sq - 42 St
+  "127": ["725", "R16", "902", "A27"], "725": ["127", "R16", "902", "A27"], 
+  "R16": ["127", "725", "902", "A27"], "902": ["127", "725", "R16", "A27"],
+  "A27": ["127", "725", "R16", "902"],
+  // Grand Central - 42 St
+  "631": ["725", "901"], "901": ["631", "725"],
+  // 14 St - Union Sq
+  "635": ["L03", "R20"], "L03": ["635", "R20"], "R20": ["635", "L03"],
+  // 96 St (1 2 3 + B C)
+  "132": ["A19"], "A19": ["132"],
+  // 86 St (1 + B C)
+  "131": ["A20"], "A20": ["131"],
+  // 81 St
+  "A21": [],
+  // 72 St (1 2 3 + B C)
+  "120": ["A22"], "A22": ["120"],
+  // 34 St - Penn Station
+  "128": ["A28"], "A28": ["128"],
+  // 14 St - 8 Av
+  "A31": [],
+  // Lexington Av / 59 St
+  "629": ["R17"], "R17": ["629"],
+  // Borough Hall / Court St (2 3 + 4 5)
+  "238": ["418"], "418": ["238"],
+  // Atlantic Av - Barclays Ctr
+  "217": ["D24", "B37", "R36"], "D24": ["217", "B37", "R36"], 
+  "B37": ["217", "D24", "R36"], "R36": ["217", "D24", "B37"],
+  // Jay St - MetroTech
+  "A42": ["R28"], "R28": ["A42"],
+  // Fulton St
+  "A40": ["639", "232"], "639": ["A40", "232"], "232": ["A40", "639"],
+  // DeKalb Av
+  "D22": ["R30"], "R30": ["D22"],
+  // W 4 St - Wash Sq
+  "A32": ["D21"], "D21": ["A32"],
+  // Broadway Junction
+  "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
+  // Nevins St
+  "215": [],
+  // Franklin Av
+  "218": ["S04"], "S04": ["218"],
+  // Hoyt-Schermerhorn
+  "A43": ["G36"], "G36": ["A43"],
+  // 125 St (various lines)
+  "A14": ["224"], "224": ["A14"],
+  // Jackson Hts - Roosevelt Av
+  "G21": ["F12", "721"], "F12": ["G21", "721"], "721": ["G21", "F12"],
+  // Forest Hills - 71 Av
+  "G20": ["F11"], "F11": ["G20"],
+  // Queens Plaza
+  "G08": ["E01", "R09"], "E01": ["G08", "R09"], "R09": ["G08", "E01"],
 };
 
 export async function registerRoutes(
