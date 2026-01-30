@@ -16,46 +16,34 @@ export class MemStorage implements IStorage {
 
   async initStations(): Promise<void> {
     try {
-      // Fallback to a few major stations if fetch fails or for immediate availability
+      // Hardcoded base list of important stations across multiple lines
       const initialStations: Station[] = [
+        // 1 2 3
         { id: "127", name: "Times Sq - 42 St", line: "1 2 3 N Q R W S" },
-        { id: "631", name: "Grand Central - 42 St", line: "4 5 6 7 S" },
         { id: "128", name: "34 St - Penn Station", line: "1 2 3 A C E" },
-        { id: "635", name: "14 St - Union Sq", line: "4 5 6 L N Q R W" },
         { id: "120", name: "96 St", line: "1 2 3" },
         { id: "137", name: "Chambers St", line: "1 2 3" },
-        { id: "101", name: "Van Cortlandt Park - 242 St", line: "1" },
-        { id: "142", name: "South Ferry", line: "1" },
+        // 4 5 6
+        { id: "631", name: "Grand Central - 42 St", line: "4 5 6 7 S" },
+        { id: "635", name: "14 St - Union Sq", line: "4 5 6 L N Q R W" },
         { id: "628", name: "86 St", line: "4 5 6" },
-        { id: "601", name: "Pelham Bay Park", line: "6" },
+        // A C E
+        { id: "A27", name: "42 St - Port Authority Bus Terminal", line: "A C E" },
+        { id: "A31", name: "14 St", line: "A C E L" },
+        { id: "A32", name: "W 4 St - Wash Sq", line: "A C E B D F M" },
+        { id: "A41", name: "Fulton St", line: "A C J Z 2 3 4 5" },
+        // G
+        { id: "G22", name: "Court Sq", line: "G E M 7" },
+        { id: "G29", name: "Nassau Av", line: "G" },
+        { id: "G30", name: "Metropolitan Av", line: "G L" },
+        { id: "G36", name: "Classon Av", line: "G" },
+        { id: "G26", name: "Greenpoint Av", line: "G" }
       ];
 
-      // Try to fetch a more complete list
-      // Using a known reliable source for station data
-      const response = await fetch("https://raw.githubusercontent.com/jonthornton/MTAPI/master/data/stations.json");
-      if (response.ok) {
-        const data = await response.json();
-        // data is object keyed by ID
-        Object.entries(data).forEach(([id, station]: [string, any]) => {
-            // We only want parent stations (usually numeric or specific format), 
-            // the JSON usually has structure like: "127": { name: "...", stop_lat: ..., stop_lon: ... }
-            // We need to infer lines or just use the name.
-            // For MVP, we'll just use the name and assume lines are not easily available in this simple JSON 
-            // without complex parsing.
-            // Let's stick to the hardcoded list for reliability for the demo 
-            // unless we can parse lines properly. 
-            // Actually, let's just use the hardcoded list extended with the fetched data if it looks good.
-            // The jonthornton data doesn't seem to have lines easily accessible in the top level.
-        });
-        // For this demo, let's rely on the hardcoded list to ensure "Lines" are displayed correctly 
-        // as parsing that from raw GTFS without stops.txt/routes.txt join is hard.
-        // We will just use the hardcoded list above which covers the main requested lines (1-6, S).
-      }
-      
       initialStations.forEach(s => this.stations.set(s.id, s));
-      console.log(`Initialized ${this.stations.size} stations.`);
+      console.log(`Initialized ${this.stations.size} stations including ACE and G lines.`);
     } catch (e) {
-      console.error("Failed to fetch stations, using defaults", e);
+      console.error("Failed to initialize stations", e);
     }
   }
 
