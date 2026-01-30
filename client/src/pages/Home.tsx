@@ -72,12 +72,20 @@ export default function Home() {
       }
       groups[feedGroup].push(station);
     }
-    // Sort each group alphabetically
+    // Sort each group by walking time if location enabled, otherwise alphabetically
     for (const key in groups) {
-      groups[key].sort((a, b) => a.name.localeCompare(b.name));
+      if (userLocation) {
+        groups[key].sort((a, b) => {
+          const timeA = a.lat && a.lng ? calculateWalkingTime(userLocation.lat, userLocation.lng, a.lat, a.lng) : Infinity;
+          const timeB = b.lat && b.lng ? calculateWalkingTime(userLocation.lat, userLocation.lng, b.lat, b.lng) : Infinity;
+          return (timeA ?? Infinity) - (timeB ?? Infinity);
+        });
+      } else {
+        groups[key].sort((a, b) => a.name.localeCompare(b.name));
+      }
     }
     return groups;
-  }, [filteredStations]);
+  }, [filteredStations, userLocation]);
 
   const toggleStation = (id: string) => {
     setSelectedStationIds(prev => {
