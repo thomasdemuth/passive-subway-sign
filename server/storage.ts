@@ -34,7 +34,9 @@ const LINE_MAPPINGS: Record<string, string> = {
   "228": "3", // Nostrand Av
   "229": "3", // Kingston Av
   "230": "3 4", // Utica Av
-  "231": "2 5", "232": "2 5", "233": "2 5",
+  "231": "2 3", // Clark St
+  "232": "2 3", // Court St / Borough Hall
+  "233": "2 3", // Hoyt St
   "234": "2 3", // Park Place
   "235": "2 3", // Franklin Av
   "236": "S", // Botanic Garden
@@ -111,6 +113,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "A33": "A C E", // Spring St
   "A34": "A C E", // Canal St
   "A36": "E", // World Trade Center
+  "E01": "E", // World Trade Center
   "A38": "A C", // Chambers St
   "A40": "A C", // Fulton St
   "A41": "A C", // High St
