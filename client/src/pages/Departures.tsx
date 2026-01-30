@@ -16,7 +16,7 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
   const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown").slice(0, 3) || [];
 
   return (
-    <Card className="bg-card/50 border-white/10 min-w-[280px] sm:min-w-[320px] max-w-[360px] sm:max-w-[400px] flex-shrink-0">
+    <Card className="bg-card/50 border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
@@ -156,7 +156,7 @@ export default function Departures() {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex gap-3 sm:gap-4 p-3 sm:p-4"
+                className="flex gap-3 p-3 sm:p-4"
               >
                 {selectedStations.map((station) => (
                   <StationDepartures 
