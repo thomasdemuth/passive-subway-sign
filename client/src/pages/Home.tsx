@@ -1,26 +1,48 @@
+
 import { useState } from "react";
-import { StationSearch } from "@/components/StationSearch";
-import { ArrivalCard } from "@/components/ArrivalCard";
-import { useArrivals, useStations } from "@/hooks/use-stations";
-import { ArrowDownCircle, ArrowUpCircle, Train, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
+import { useStations } from "@/hooks/use-stations";
+import { RouteIcon } from "@/components/RouteIcon";
+import { Train, Search, Check, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export default function Home() {
-  const [selectedStationId, setSelectedStationId] = useState<string | undefined>();
-  const { data: arrivals, isLoading } = useArrivals(selectedStationId || null);
-  const { data: stations } = useStations();
+  const [selectedStationIds, setSelectedStationIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: stations, isLoading } = useStations();
+  const [, navigate] = useLocation();
 
-  const selectedStation = stations?.find(s => s.id === selectedStationId);
+  const filteredStations = stations?.filter(s => 
+    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    s.line.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
-  // Group arrivals by direction
-  const uptownArrivals = arrivals?.filter(a => a.direction === "Uptown") || [];
-  const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown") || [];
+  const toggleStation = (id: string) => {
+    setSelectedStationIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const handleViewDepartures = () => {
+    if (selectedStationIds.size > 0) {
+      const ids = Array.from(selectedStationIds).join(",");
+      navigate(`/departures/${ids}`);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
         
-        {/* Header Section */}
         <div className="text-center mb-12 space-y-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -33,111 +55,102 @@ export default function Home() {
             NYC Subway Tracker
           </h1>
           <p className="text-lg text-muted-foreground max-w-lg mx-auto">
-            Real-time arrival estimates for the New York City Subway system. 
-            Select a station to see upcoming trains.
+            Select one or more stations to view real-time subway arrivals.
           </p>
         </div>
 
-        {/* Search Section */}
-        <div className="max-w-xl mx-auto mb-16 relative z-20">
-          <StationSearch 
-            onSelect={setSelectedStationId} 
-            selectedStationId={selectedStationId} 
-          />
-        </div>
+        <div className="mb-8 space-y-4">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Input 
+              placeholder="Search stations or lines (e.g. 'Times Sq', 'A C E')..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-12 h-14 bg-secondary/50 border-white/10 text-base"
+              data-testid="input-search"
+            />
+          </div>
 
-        {/* Results Section */}
-        <AnimatePresence mode="wait">
-          {selectedStationId && (
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
+          {selectedStationIds.size > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-              className="space-y-12"
+              className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-xl"
             >
-              {isLoading ? (
-                <div className="flex flex-col items-center justify-center py-24 space-y-4 text-muted-foreground">
-                  <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                  <p>Fetching real-time data from MTA...</p>
-                </div>
-              ) : arrivals?.length === 0 ? (
-                <div className="text-center py-24 border border-dashed border-white/10 rounded-2xl bg-white/5">
-                  <p className="text-xl font-medium text-white">No active trains found</p>
-                  <p className="text-muted-foreground mt-2">There might be service changes or no upcoming arrivals.</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                  
-                  {/* Uptown Column */}
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                      <ArrowUpCircle className="w-6 h-6 text-white" />
-                      <h2 className="text-xl font-bold text-white">Uptown / Queens</h2>
-                      <span className="ml-auto text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground">
-                        {uptownArrivals.length} trains
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {uptownArrivals.length > 0 ? (
-                        uptownArrivals.map((arrival, i) => (
-                          <ArrivalCard 
-                            key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
-                            arrival={arrival} 
-                            index={i} 
-                          />
-                        ))
-                      ) : (
-                        <div className="py-8 text-center text-sm text-muted-foreground italic">
-                          No upcoming Uptown trains
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Downtown Column */}
-                  <div className="space-y-6">
-                    <div className="flex items-center gap-3 pb-4 border-b border-white/10">
-                      <ArrowDownCircle className="w-6 h-6 text-white" />
-                      <h2 className="text-xl font-bold text-white">Downtown / Brooklyn</h2>
-                      <span className="ml-auto text-xs font-mono px-2 py-1 rounded bg-white/5 text-muted-foreground">
-                        {downtownArrivals.length} trains
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-3">
-                      {downtownArrivals.length > 0 ? (
-                        downtownArrivals.map((arrival, i) => (
-                          <ArrivalCard 
-                            key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
-                            arrival={arrival} 
-                            index={i} 
-                          />
-                        ))
-                      ) : (
-                        <div className="py-8 text-center text-sm text-muted-foreground italic">
-                          No upcoming Downtown trains
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+              <span className="text-sm text-white">
+                {selectedStationIds.size} station{selectedStationIds.size !== 1 ? 's' : ''} selected
+              </span>
+              <Button 
+                onClick={handleViewDepartures}
+                className="gap-2"
+                data-testid="button-view-departures"
+              >
+                View Departures
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </motion.div>
           )}
-        </AnimatePresence>
-        
-        {!selectedStationId && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-center text-sm text-muted-foreground/50 mt-24"
-          >
-            Data provided by MTA GTFS-Realtime Feed. Updates every 30s.
-          </motion.div>
-        )}
+        </div>
+
+        <div className="space-y-2">
+          {isLoading ? (
+            <div className="text-center py-12 text-muted-foreground">
+              Loading stations...
+            </div>
+          ) : filteredStations.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No stations found matching "{searchQuery}"
+            </div>
+          ) : (
+            filteredStations.map((station) => {
+              const isSelected = selectedStationIds.has(station.id);
+              return (
+                <motion.button
+                  key={station.id}
+                  onClick={() => toggleStation(station.id)}
+                  className={cn(
+                    "w-full flex items-center justify-between p-4 rounded-xl border transition-all duration-200 text-left",
+                    isSelected 
+                      ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
+                      : "bg-card/50 border-white/5 hover:bg-card hover:border-white/10"
+                  )}
+                  whileTap={{ scale: 0.99 }}
+                  data-testid={`button-station-${station.id}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={cn(
+                      "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors",
+                      isSelected ? "bg-primary border-primary" : "border-white/20"
+                    )}>
+                      {isSelected && <Check className="w-4 h-4 text-primary-foreground" />}
+                    </div>
+                    <span className="font-medium text-white">{station.name}</span>
+                  </div>
+                  
+                  <div className="flex -space-x-1">
+                    {station.line.split(" ").map((route, i) => (
+                      <RouteIcon 
+                        key={`${station.id}-${route}-${i}`} 
+                        routeId={route} 
+                        size="sm" 
+                        className="w-6 h-6 text-xs ring-1 ring-background" 
+                      />
+                    ))}
+                  </div>
+                </motion.button>
+              );
+            })
+          )}
+        </div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center text-sm text-muted-foreground/50 mt-16"
+        >
+          Data provided by MTA GTFS-Realtime Feed. Covers lines 1-6, A, C, E, G, and S.
+        </motion.div>
       </div>
     </div>
   );
