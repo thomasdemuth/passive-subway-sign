@@ -100,32 +100,32 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
+      <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-16">
         
-        <div className="text-center mb-12 space-y-4">
+        <div className="text-center mb-6 sm:mb-12 space-y-2 sm:space-y-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="inline-flex items-center justify-center p-3 bg-white/5 rounded-full ring-1 ring-white/10 mb-4 shadow-2xl"
+            className="inline-flex items-center justify-center p-2 sm:p-3 bg-white/5 rounded-full ring-1 ring-white/10 mb-2 sm:mb-4 shadow-2xl"
           >
-            <Train className="w-8 h-8 text-white" />
+            <Train className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </motion.div>
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
             NYC Subway Tracker
           </h1>
-          <p className="text-lg text-muted-foreground max-w-lg mx-auto">
+          <p className="text-sm sm:text-lg text-muted-foreground max-w-lg mx-auto">
             Select one or more stations to view real-time subway arrivals.
           </p>
         </div>
 
-        <div className="mb-8 space-y-4">
+        <div className="mb-4 sm:mb-8 space-y-3 sm:space-y-4">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
             <Input 
-              placeholder="Search stations or lines (e.g. 'Times Sq', 'A C E')..."
+              placeholder="Search stations or lines..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 bg-secondary/50 border-white/10 text-base"
+              className="pl-10 sm:pl-12 h-11 sm:h-14 bg-secondary/50 border-white/10 text-sm sm:text-base"
               data-testid="input-search"
             />
           </div>
@@ -134,24 +134,25 @@ export default function Home() {
             <motion.div 
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between p-4 bg-primary/10 border border-primary/20 rounded-xl"
+              className="flex items-center justify-between p-3 sm:p-4 bg-primary/10 border border-primary/20 rounded-xl"
             >
-              <span className="text-sm text-white">
+              <span className="text-xs sm:text-sm text-white">
                 {selectedStationIds.size} station{selectedStationIds.size !== 1 ? 's' : ''} selected
               </span>
               <Button 
                 onClick={handleViewDepartures}
-                className="gap-2"
+                className="gap-1 sm:gap-2 text-xs sm:text-sm"
+                size="sm"
                 data-testid="button-view-departures"
               >
                 View Departures
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </Button>
             </motion.div>
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {isLoading ? (
             <div className="text-center py-12 text-muted-foreground">
               Loading stations...
@@ -169,19 +170,19 @@ export default function Home() {
               
               return (
                 <div key={feedKey} className="space-y-2">
-                  <div className="flex items-center gap-3 px-1 pb-2 border-b border-white/10">
+                  <div className="flex items-center gap-2 sm:gap-3 px-1 pb-2 border-b border-white/10">
                     <div className="flex -space-x-1">
                       {feedInfo.lines.split(" ").slice(0, 4).map((line, i) => (
                         <RouteIcon 
                           key={`${feedKey}-${line}-${i}`} 
                           routeId={line} 
                           size="sm" 
-                          className="w-5 h-5 text-[10px] ring-1 ring-background" 
+                          className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[10px] ring-1 ring-background" 
                         />
                       ))}
                     </div>
-                    <span className="text-sm font-semibold text-white">{feedInfo.name}</span>
-                    <span className="text-xs text-muted-foreground">({stationsInGroup.length})</span>
+                    <span className="text-xs sm:text-sm font-semibold text-white">{feedInfo.name}</span>
+                    <span className="text-[10px] sm:text-xs text-muted-foreground">({stationsInGroup.length})</span>
                   </div>
                   
                   <div className="space-y-1">
@@ -192,7 +193,7 @@ export default function Home() {
                           key={station.id}
                           onClick={() => toggleStation(station.id)}
                           className={cn(
-                            "w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 text-left",
+                            "w-full flex items-center justify-between p-2 sm:p-3 rounded-lg border transition-all duration-200 text-left gap-2",
                             isSelected 
                               ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
                               : "bg-card/30 border-white/5 hover:bg-card/50 hover:border-white/10"
@@ -200,23 +201,23 @@ export default function Home() {
                           whileTap={{ scale: 0.99 }}
                           data-testid={`button-station-${station.id}`}
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                             <div className={cn(
-                              "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
+                              "w-4 h-4 sm:w-5 sm:h-5 rounded border-2 flex items-center justify-center transition-colors shrink-0",
                               isSelected ? "bg-primary border-primary" : "border-white/20"
                             )}>
-                              {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
+                              {isSelected && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary-foreground" />}
                             </div>
-                            <span className="text-sm text-white">{station.name}</span>
+                            <span className="text-xs sm:text-sm text-white truncate">{station.name}</span>
                           </div>
                           
-                          <div className="flex -space-x-0.5 flex-wrap justify-end gap-y-0.5">
+                          <div className="flex -space-x-0.5 flex-wrap justify-end gap-y-0.5 shrink-0">
                             {station.line.split(" ").map((route, i) => (
                               <RouteIcon 
                                 key={`${station.id}-${route}-${i}`} 
                                 routeId={route} 
                                 size="sm" 
-                                className="w-5 h-5 text-[9px] ring-1 ring-background" 
+                                className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[9px] ring-1 ring-background" 
                               />
                             ))}
                           </div>
@@ -234,7 +235,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-sm text-muted-foreground/50 mt-16"
+          className="text-center text-[10px] sm:text-sm text-muted-foreground/50 mt-8 sm:mt-16 pb-4"
         >
           Data provided by MTA GTFS-Realtime Feed
         </motion.div>

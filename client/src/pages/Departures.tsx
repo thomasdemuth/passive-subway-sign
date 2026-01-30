@@ -16,36 +16,36 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
   const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown").slice(0, 3) || [];
 
   return (
-    <Card className="bg-card/50 border-white/10 min-w-[320px] max-w-[400px] flex-shrink-0">
-      <CardHeader className="pb-2 px-4 pt-4">
+    <Card className="bg-card/50 border-white/10 min-w-[280px] sm:min-w-[320px] max-w-[360px] sm:max-w-[400px] flex-shrink-0">
+      <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
             <div className="flex -space-x-1 flex-shrink-0">
               {stationLine.split(" ").slice(0, 3).map((route, i) => (
                 <RouteIcon 
                   key={`${stationId}-${route}-${i}`} 
                   routeId={route} 
                   size="sm" 
-                  className="w-5 h-5 text-[10px] ring-1 ring-background" 
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[10px] ring-1 ring-background" 
                 />
               ))}
               {stationLine.split(" ").length > 3 && (
-                <div className="w-5 h-5 rounded-full bg-zinc-700 ring-1 ring-background flex items-center justify-center text-[9px] text-zinc-300">
+                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-zinc-700 ring-1 ring-background flex items-center justify-center text-[8px] sm:text-[9px] text-zinc-300">
                   +{stationLine.split(" ").length - 3}
                 </div>
               )}
             </div>
-            <CardTitle className="text-base truncate">{stationName}</CardTitle>
+            <CardTitle className="text-sm sm:text-base truncate">{stationName}</CardTitle>
           </div>
           {dataUpdatedAt && (
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground flex-shrink-0">
-              <RefreshCw className="w-3 h-3" />
+            <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground flex-shrink-0">
+              <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
               {new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           )}
         </div>
       </CardHeader>
-      <CardContent className="px-4 pb-4 pt-2 space-y-4">
+      <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 space-y-3 sm:space-y-4">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="w-5 h-5 animate-spin text-primary" />
@@ -58,8 +58,8 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
           <>
             <div className="space-y-2">
               <div className="flex items-center gap-2 pb-1 border-b border-white/10">
-                <ArrowUpCircle className="w-4 h-4 text-white" />
-                <span className="text-xs font-semibold text-white">Uptown</span>
+                <ArrowUpCircle className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                <span className="text-[10px] sm:text-xs font-semibold text-white">Uptown</span>
               </div>
               <div className="space-y-1.5">
                 {uptownArrivals.length > 0 ? (
@@ -80,8 +80,8 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
 
             <div className="space-y-2">
               <div className="flex items-center gap-2 pb-1 border-b border-white/10">
-                <ArrowDownCircle className="w-4 h-4 text-white" />
-                <span className="text-xs font-semibold text-white">Downtown</span>
+                <ArrowDownCircle className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                <span className="text-[10px] sm:text-xs font-semibold text-white">Downtown</span>
               </div>
               <div className="space-y-1.5">
                 {downtownArrivals.length > 0 ? (
@@ -116,19 +116,19 @@ export default function Departures() {
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
-      <div className="flex items-center gap-4 px-4 py-3 border-b border-white/10">
+      <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-4 py-2 sm:py-3 border-b border-white/10">
         <Button 
           variant="ghost" 
           size="sm"
           onClick={() => navigate("/")}
-          className="gap-2"
+          className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-3"
           data-testid="button-back"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4" />
           Back
         </Button>
         <div className="flex-1" />
-        <span className="text-xs text-muted-foreground">
+        <span className="text-[10px] sm:text-xs text-muted-foreground">
           {selectedStations.length} station{selectedStations.length !== 1 ? 's' : ''}
         </span>
       </div>
@@ -156,7 +156,7 @@ export default function Departures() {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex gap-4 p-4"
+                className="flex gap-3 sm:gap-4 p-3 sm:p-4"
               >
                 {selectedStations.map((station) => (
                   <StationDepartures 
@@ -173,7 +173,7 @@ export default function Departures() {
         )}
       </div>
 
-      <div className="text-center text-[10px] text-muted-foreground/50 py-2 border-t border-white/10">
+      <div className="text-center text-[9px] sm:text-[10px] text-muted-foreground/50 py-1.5 sm:py-2 border-t border-white/10">
         MTA GTFS-Realtime • Updates every 30s
       </div>
     </div>
