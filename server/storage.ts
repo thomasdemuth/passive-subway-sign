@@ -136,7 +136,19 @@ const LINE_MAPPINGS: Record<string, string> = {
   // N Q R W lines
   "R14": "N Q R W", "R15": "N Q R W", "R16": "N Q R W S", "R17": "N Q R W",
   "R18": "N Q R W", "R19": "N Q R W", "R20": "N Q R W", "R21": "N R W",
-  "R22": "N R W", "R23": "N R W", "R24": "R W", "R25": "R W", "R26": "R W", "R27": "R W",
+  "R22": "N R", // 28 St
+  "R23": "N R", // 23 St  
+  "R24": "N R", // 8 St-NYU
+  "R25": "N R", // Prince St
+  "R26": "R W", "R27": "R W",
+  "R28": "N R", // Canal St
+  "R29": "N R W", // City Hall
+  "R30": "N R W", // Cortlandt St
+  "R31": "N R W", // Rector St
+  "R13": "N R W", // 49 St
+  // Brooklyn N/Q/R lines
+  "R24B": "N R", // 8 St-NYU
+  "R30B": "B Q R", // DeKalb Av
   // Queens Blvd M R lines
   "G08": "E F R", // Queens Plaza
   "G09": "M R", // 36 St
@@ -235,6 +247,12 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   "World Trade Center": [
     { id: "A36", lines: "E" }
   ],
+  "W 4 St - Wash Sq": [
+    { id: "D21", lines: "B D F M" }
+  ],
+  "DeKalb Av": [
+    { id: "R30B", lines: "B Q R" }
+  ],
 };
 
 export interface IStorage {
@@ -260,7 +278,7 @@ export class MemStorage implements IStorage {
           
           // Infer from letter prefix
           if (id.startsWith("A")) line = line || "A C";
-          if (id.startsWith("B")) line = line || "B D";
+          if (id.startsWith("B")) line = line || "B Q";
           if (id.startsWith("D")) line = line || "B D F M";
           if (id.startsWith("F")) line = line || "E F";
           if (id.startsWith("G")) line = line || "M R"; // Queens Blvd M/R stations
