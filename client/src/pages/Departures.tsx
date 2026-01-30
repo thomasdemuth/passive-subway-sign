@@ -1,4 +1,5 @@
 
+import { useState, useMemo } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStations, useArrivals } from "@/hooks/use-stations";
 import { ArrivalCard } from "@/components/ArrivalCard";
@@ -8,35 +9,44 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 function StationDepartures({ stationId, stationName, stationLine }: { stationId: string; stationName: string; stationLine: string }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
+  const availableLines = stationLine.split(" ");
+  const [selectedLines, setSelectedLines] = useState<Set<string>>(new Set(availableLines));
+  
+  const toggleLine = (line: string) => {
+    setSelectedLines(prev => {
+      const next = new Set(prev);
+      if (next.has(line)) {
+        if (next.size > 1) {
+          next.delete(line);
+        }
+      } else {
+        next.add(line);
+      }
+      return next;
+    });
+  };
+  
+  const selectAllLines = () => {
+    setSelectedLines(new Set(availableLines));
+  };
 
-  const uptownArrivals = arrivals?.filter(a => a.direction === "Uptown").slice(0, 3) || [];
-  const downtownArrivals = arrivals?.filter(a => a.direction === "Downtown").slice(0, 3) || [];
+  const filteredArrivals = useMemo(() => {
+    if (!arrivals) return [];
+    return arrivals.filter(a => selectedLines.has(a.routeId) || selectedLines.has(a.routeId.replace('X', '')));
+  }, [arrivals, selectedLines]);
+
+  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, 3);
+  const downtownArrivals = filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
 
   return (
     <Card className="bg-card/50 border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0">
-      <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4">
+      <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
-            <div className="flex -space-x-1 flex-shrink-0">
-              {stationLine.split(" ").slice(0, 3).map((route, i) => (
-                <RouteIcon 
-                  key={`${stationId}-${route}-${i}`} 
-                  routeId={route} 
-                  size="sm" 
-                  className="w-4 h-4 sm:w-5 sm:h-5 text-[8px] sm:text-[10px] ring-1 ring-background" 
-                />
-              ))}
-              {stationLine.split(" ").length > 3 && (
-                <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-zinc-700 ring-1 ring-background flex items-center justify-center text-[8px] sm:text-[9px] text-zinc-300">
-                  +{stationLine.split(" ").length - 3}
-                </div>
-              )}
-            </div>
-            <CardTitle className="text-sm sm:text-base truncate">{stationName}</CardTitle>
-          </div>
+          <CardTitle className="text-sm sm:text-base truncate">{stationName}</CardTitle>
           {dataUpdatedAt && (
             <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground flex-shrink-0">
               <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
@@ -44,6 +54,37 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
             </div>
           )}
         </div>
+        {availableLines.length > 1 && (
+          <div className="flex items-center gap-1 flex-wrap">
+            <span className="text-[9px] sm:text-[10px] text-muted-foreground mr-1">Filter:</span>
+            {availableLines.map((line, i) => (
+              <button
+                key={`${stationId}-filter-${line}-${i}`}
+                onClick={() => toggleLine(line)}
+                className={cn(
+                  "transition-all duration-200",
+                  selectedLines.has(line) ? "opacity-100 scale-100" : "opacity-30 scale-90"
+                )}
+                data-testid={`button-filter-${line}`}
+              >
+                <RouteIcon 
+                  routeId={line} 
+                  size="sm" 
+                  className="w-5 h-5 sm:w-6 sm:h-6 text-[9px] sm:text-[10px] ring-1 ring-background" 
+                />
+              </button>
+            ))}
+            {selectedLines.size < availableLines.length && (
+              <button
+                onClick={selectAllLines}
+                className="text-[9px] sm:text-[10px] text-primary hover:underline ml-1"
+                data-testid="button-show-all"
+              >
+                Show all
+              </button>
+            )}
+          </div>
+        )}
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 space-y-3 sm:space-y-4">
         {isLoading ? (
