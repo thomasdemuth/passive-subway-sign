@@ -103,14 +103,23 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   
   const highSeverityCount = uniqueAlerts.filter(a => a.severity >= 30).length;
   const mediumSeverityCount = uniqueAlerts.filter(a => a.severity >= 20 && a.severity < 30).length;
-  const affectedRoutes = Array.from(new Set(uniqueAlerts.map(a => a.routeId)));
+  
+  // Group alerts by type and collect affected routes
+  const alertsByType = uniqueAlerts.reduce<Record<string, string[]>>((acc, alert) => {
+    const type = alert.alertType;
+    if (!acc[type]) acc[type] = [];
+    if (!acc[type].includes(alert.routeId)) {
+      acc[type].push(alert.routeId);
+    }
+    return acc;
+  }, {});
   
   return (
     <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
       <div className="px-3 sm:px-6 py-2">
         <div className="flex items-center justify-between gap-2">
           <button 
-            className="flex items-center gap-2 flex-1"
+            className="flex items-center gap-2 flex-1 flex-wrap"
             onClick={() => setExpanded(!expanded)}
             data-testid="button-toggle-alerts"
           >
@@ -118,29 +127,24 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
               "w-4 h-4 flex-shrink-0",
               highSeverityCount > 0 ? "text-red-500" : mediumSeverityCount > 0 ? "text-orange-500" : "text-yellow-500"
             )} />
-            <span 
-              className="text-xs sm:text-sm font-medium"
-              data-testid="text-alert-summary"
-            >
-              {uniqueAlerts.length} Service Alert{uniqueAlerts.length !== 1 ? "s" : ""}
-            </span>
-            <div className="flex items-center gap-1" data-testid="container-affected-routes">
-              {affectedRoutes.slice(0, 6).map((routeId, index) => (
-                <RouteIcon 
-                  key={routeId}
-                  routeId={routeId} 
-                  size="sm" 
-                  className="w-4 h-4 text-[8px]" 
-                  data-testid={`icon-route-alert-${index}`}
-                />
+            <div className="flex items-center gap-3 flex-wrap" data-testid="text-alert-summary">
+              {Object.entries(alertsByType).map(([type, routes]) => (
+                <div key={type} className="flex items-center gap-1">
+                  <span className="text-xs sm:text-sm font-medium">{type}:</span>
+                  <div className="flex items-center gap-0.5">
+                    {routes.map((routeId) => (
+                      <RouteIcon 
+                        key={routeId}
+                        routeId={routeId} 
+                        size="sm" 
+                        className="w-4 h-4 text-[8px]" 
+                      />
+                    ))}
+                  </div>
+                </div>
               ))}
-              {affectedRoutes.length > 6 && (
-                <span className="text-xs text-muted-foreground" data-testid="text-more-routes">
-                  +{affectedRoutes.length - 6}
-                </span>
-              )}
             </div>
-            {expanded ? <ChevronUp className="w-3 h-3 ml-auto" /> : <ChevronDown className="w-3 h-3 ml-auto" />}
+            {expanded ? <ChevronUp className="w-3 h-3 ml-auto flex-shrink-0" /> : <ChevronDown className="w-3 h-3 ml-auto flex-shrink-0" />}
           </button>
           <Button
             variant="ghost"
