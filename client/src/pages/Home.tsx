@@ -218,7 +218,7 @@ export default function Home() {
                     <span className="text-[10px] sm:text-xs text-muted-foreground">({stationsInGroup.length})</span>
                   </div>
                   
-                  <div className="space-y-1">
+                  <div className="grid grid-cols-2 gap-1">
                     {stationsInGroup.map((station) => {
                       const isSelected = selectedStationIds.has(station.id);
                       const walkingTime = userLocation && station.lat && station.lng
