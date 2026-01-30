@@ -250,8 +250,8 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   "World Trade Center": [
     { id: "A36", lines: "E" }
   ],
-  "Borough Hall": [
-    { id: "418", lines: "4 5" }
+  "Court St / Borough Hall": [
+    { id: "418", lines: "4 5", name: "Borough Hall" }
   ],
   "W 4 St-Wash Sq": [
     { id: "D21", lines: "B D F M" }
