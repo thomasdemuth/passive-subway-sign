@@ -247,7 +247,7 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   "World Trade Center": [
     { id: "A36", lines: "E" }
   ],
-  "W 4 St - Wash Sq": [
+  "W 4 St-Wash Sq": [
     { id: "D21", lines: "B D F M" }
   ],
   "DeKalb Av": [
