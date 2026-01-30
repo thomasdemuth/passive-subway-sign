@@ -57,14 +57,14 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   return (
     <Card className="bg-card/50 border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
+        {walkingTime !== null && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <PersonStanding className="w-4 h-4" />
+            <span>{walkingTime} min to {stationName}</span>
+          </div>
+        )}
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm sm:text-base truncate">{stationName}</CardTitle>
-          {walkingTime !== null && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
-              <PersonStanding className="w-3 h-3" />
-              <span>{walkingTime} min</span>
-            </div>
-          )}
           {dataUpdatedAt && (
             <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground flex-shrink-0">
               <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
@@ -186,7 +186,9 @@ export default function Departures() {
   
   const getWalkingTime = (station: { lat?: number | null; lng?: number | null }) => {
     if (!userLocation || !station.lat || !station.lng) return null;
-    return calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng);
+    const baseTime = calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng);
+    if (baseTime === null) return null;
+    return baseTime + 2; // Add 2-minute buffer
   };
 
   return (
