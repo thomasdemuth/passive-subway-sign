@@ -181,7 +181,7 @@ export default function Departures() {
     let timeout: NodeJS.Timeout;
     
     const hideControls = () => {
-      timeout = setTimeout(() => setShowControls(false), 60000);
+      timeout = setTimeout(() => setShowControls(false), 10000);
     };
     
     const handleActivity = () => {
