@@ -2,9 +2,10 @@
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStations, useArrivals } from "@/hooks/use-stations";
+import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, RefreshCw } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, RefreshCw, PersonStanding } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -22,7 +23,7 @@ function useCurrentTime() {
   return now;
 }
 
-function StationDepartures({ stationId, stationName, stationLine }: { stationId: string; stationName: string; stationLine: string }) {
+function StationDepartures({ stationId, stationName, stationLine, walkingTime }: { stationId: string; stationName: string; stationLine: string; walkingTime: number | null }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
   const availableLines = stationLine.split(" ");
   const [selectedLines, setSelectedLines] = useState<Set<string>>(new Set(availableLines));
@@ -58,6 +59,12 @@ function StationDepartures({ stationId, stationName, stationLine }: { stationId:
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-sm sm:text-base truncate">{stationName}</CardTitle>
+          {walkingTime !== null && (
+            <div className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
+              <PersonStanding className="w-3 h-3" />
+              <span>{walkingTime} min</span>
+            </div>
+          )}
           {dataUpdatedAt && (
             <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground flex-shrink-0">
               <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
@@ -168,6 +175,7 @@ export default function Departures() {
   const params = useParams<{ ids: string }>();
   const [, navigate] = useLocation();
   const { data: stations, isLoading: stationsLoading } = useStations();
+  const { location: userLocation } = useUserLocation();
   const currentTime = useCurrentTime();
   
   const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -175,6 +183,11 @@ export default function Departures() {
 
   const stationIds = params.ids?.split(",") || [];
   const selectedStations = stations?.filter(s => stationIds.includes(s.id)) || [];
+  
+  const getWalkingTime = (station: { lat?: number | null; lng?: number | null }) => {
+    if (!userLocation || !station.lat || !station.lng) return null;
+    return calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng);
+  };
 
   return (
     <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
@@ -236,6 +249,7 @@ export default function Departures() {
                     stationId={station.id}
                     stationName={station.name}
                     stationLine={station.line}
+                    walkingTime={getWalkingTime(station)}
                   />
                 ))}
               </motion.div>
