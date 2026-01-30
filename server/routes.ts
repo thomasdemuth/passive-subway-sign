@@ -7,9 +7,13 @@ import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 import { type Arrival } from "@shared/schema";
 
 const FEEDS = [
-  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs",     // 1-6, S
-  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace", // A, C, E
-  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g"    // G
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs",      // 1-6, S
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace",  // A, C, E
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-g",    // G
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-nqrw", // N, Q, R, W
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-l",    // L
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-jz",   // J, Z
+  "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-bdfm"  // B, D, F, M
 ];
 
 export async function registerRoutes(
@@ -80,6 +84,17 @@ export async function registerRoutes(
                           'C': direction === 'Uptown' ? "168 St" : "Euclid Av",
                           'E': direction === 'Uptown' ? "Jamaica Center" : "World Trade Center",
                           'G': direction === 'Uptown' ? "Court Sq" : "Church Av",
+                          'N': direction === 'Uptown' ? "Ditmars Blvd" : "Coney Island",
+                          'Q': direction === 'Uptown' ? "96 St" : "Coney Island",
+                          'R': direction === 'Uptown' ? "Forest Hills" : "Bay Ridge",
+                          'W': direction === 'Uptown' ? "Ditmars Blvd" : "Whitehall St",
+                          'L': direction === 'Uptown' ? "8 Av" : "Canarsie",
+                          'J': direction === 'Uptown' ? "Jamaica Center" : "Broad St",
+                          'Z': direction === 'Uptown' ? "Jamaica Center" : "Broad St",
+                          'B': direction === 'Uptown' ? "145 St" : "Brighton Beach",
+                          'D': direction === 'Uptown' ? "Norwood - 205 St" : "Coney Island",
+                          'F': direction === 'Uptown' ? "Jamaica - 179 St" : "Coney Island",
+                          'M': direction === 'Uptown' ? "Forest Hills" : "Middle Village",
                           'S': "Shuttle"
                         };
                         destination = dests[routeId] || direction;

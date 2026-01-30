@@ -16,7 +16,7 @@ export class MemStorage implements IStorage {
 
   async initStations(): Promise<void> {
     try {
-      // Hardcoded base list of important stations across multiple lines
+      // Base list of important stations across multiple lines
       const initialStations: Station[] = [
         // 1 2 3
         { id: "127", name: "Times Sq - 42 St", line: "1 2 3 N Q R W S" },
@@ -37,11 +37,26 @@ export class MemStorage implements IStorage {
         { id: "G29", name: "Nassau Av", line: "G" },
         { id: "G30", name: "Metropolitan Av", line: "G L" },
         { id: "G36", name: "Classon Av", line: "G" },
-        { id: "G26", name: "Greenpoint Av", line: "G" }
+        { id: "G26", name: "Greenpoint Av", line: "G" },
+        // N Q R W
+        { id: "R16", name: "57 St - 7 Av", line: "N Q R W" },
+        { id: "R20", name: "34 St - Herald Sq", line: "B D F M N Q R W" },
+        { id: "R31", name: "Atlantic Av - Barclays Ctr", line: "B Q 2 3 4 5 D N R" },
+        // L
+        { id: "L06", name: "Bedford Av", line: "L" },
+        { id: "L08", name: "1 Av", line: "L" },
+        // J Z
+        { id: "M18", name: "Delancey St - Essex St", line: "F J M Z" },
+        { id: "M20", name: "Bowery", line: "J Z" },
+        // B D F M
+        { id: "D15", name: "161 St - Yankee Stadium", line: "B D 4" },
+        { id: "D17", name: "125 St", line: "A B C D" },
+        { id: "D21", name: "Columbus Circle", line: "A B C D 1" },
+        { id: "F14", name: "23 St", line: "F M" }
       ];
 
       initialStations.forEach(s => this.stations.set(s.id, s));
-      console.log(`Initialized ${this.stations.size} stations including ACE and G lines.`);
+      console.log(`Initialized ${this.stations.size} stations including all major lines.`);
     } catch (e) {
       console.error("Failed to initialize stations", e);
     }
