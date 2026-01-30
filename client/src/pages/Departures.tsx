@@ -5,9 +5,9 @@ import { useStations, useArrivals } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, RefreshCw, PersonStanding } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -57,20 +57,9 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   return (
     <Card className="bg-card/50 border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
-        {walkingTime !== null && (
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <PersonStanding className="w-4 h-4" />
-            <span>{walkingTime} min to {stationName}</span>
-          </div>
-        )}
-        <div className="flex items-center justify-between gap-2">
-          <CardTitle className="text-sm sm:text-base truncate">{stationName}</CardTitle>
-          {dataUpdatedAt && (
-            <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground flex-shrink-0">
-              <RefreshCw className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-              {new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-            </div>
-          )}
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <PersonStanding className="w-4 h-4" />
+          <span>{walkingTime !== null ? `${walkingTime} min to ${stationName}` : stationName}</span>
         </div>
         <div className="flex items-center gap-1 flex-wrap">
           {availableLines.map((line, i) => (
