@@ -112,8 +112,11 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   const DOWNTOWN_TERMINALS = ["G05", "F01"]; // Jamaica Center, Jamaica-179 St
   const isDowntownTerminal = DOWNTOWN_TERMINALS.includes(stationId);
   
-  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? (isDowntownTerminal ? 0 : 7) : 3);
-  const downtownArrivals = isTerminalStation ? (isDowntownTerminal ? filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 7) : []) : filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
+  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? 7 : 3);
+  const downtownArrivals = filteredArrivals.filter(a => a.direction === "Downtown").slice(0, isTerminalStation ? 7 : 3);
+  
+  // For terminals, show the appropriate direction's departures
+  const terminalArrivals = isDowntownTerminal ? downtownArrivals : uptownArrivals;
 
   return (
     <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] h-[420px] sm:h-[450px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15 flex flex-col">
@@ -167,7 +170,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 flex-1 overflow-hidden flex flex-col">
         <div className="flex-1 flex flex-col">
-          {/* Uptown Section */}
+          {/* Uptown Section (or Departures for terminals) */}
           <div className={isTerminalStation ? "flex-1" : "flex-1"}>
             <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
               <ArrowUpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
@@ -182,9 +185,9 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                 </div>
               ) : (
                 <AnimatePresence mode="popLayout">
-                  {uptownArrivals.length > 0 ? (
+                  {(isTerminalStation ? terminalArrivals : uptownArrivals).length > 0 ? (
                     <div className="space-y-0.5">
-                      {uptownArrivals.map((arrival, i) => (
+                      {(isTerminalStation ? terminalArrivals : uptownArrivals).map((arrival, i) => (
                         <ArrivalCard 
                           key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
                           arrival={arrival} 
