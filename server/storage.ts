@@ -116,7 +116,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "M13": "J M", // Lorimer St
   "M14": "J M", // Hewes St
   "M16": "J Z M", // Marcy Av
-  "M18": "J Z M", // Delancey St-Essex St
+  "M18": "M", // Myrtle-Wyckoff Avs
   "M19": "J Z", // Bowery
   "M20": "J Z", // Canal St
   "M21": "J Z", // Chambers St
@@ -720,6 +720,16 @@ export class MemStorage implements IStorage {
           { id: "R27", name: "Whitehall St-South Ferry", line: "R W", lat: 40.703087, lng: -74.012994 },
         ];
         missingRStations.forEach(s => {
+          if (!this.stations.has(s.id)) {
+            this.stations.set(s.id, s);
+          }
+        });
+        
+        // Manually add M line terminal station
+        const mLineStations: Station[] = [
+          { id: "M18", name: "Myrtle-Wyckoff Avs", line: "M", lat: 40.699814, lng: -73.912701 },
+        ];
+        mLineStations.forEach(s => {
           if (!this.stations.has(s.id)) {
             this.stations.set(s.id, s);
           }
