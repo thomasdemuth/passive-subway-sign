@@ -164,7 +164,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
           >
             <div className="space-y-2">
               <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
-                <ArrowUpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+                <ArrowUpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Uptown</span>
               </div>
               <div className="space-y-0.5">
@@ -192,7 +192,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
 
             <div className="space-y-2">
               <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
-                <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-400" />
+                <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Downtown</span>
               </div>
               <div className="space-y-0.5">
@@ -375,25 +375,14 @@ export default function Departures() {
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
             </Button>
           </div>
-          <motion.div 
-            className="flex flex-col items-center"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.span 
-              key={timeString}
-              initial={{ opacity: 0.8 }}
-              animate={{ opacity: 1 }}
-              className="text-3xl sm:text-5xl font-bold tabular-nums text-white" 
-              data-testid="text-time"
-            >
+          <div className="flex flex-col items-center">
+            <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
               {timeString}
-            </motion.span>
+            </span>
             <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
               {dateString}
             </span>
-          </motion.div>
+          </div>
         </div>
       </div>
       
