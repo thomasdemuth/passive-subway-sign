@@ -201,10 +201,9 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
   // Nevins St
   "215": ["418N"], "418N": ["215"],
-  // Franklin Av (Franklin Shuttle + 2/3/4/5)
-  "218": ["S01"], "S01": ["218", "239"], "239": ["S01"],
-  // Botanic Garden / Prospect Park (Franklin Shuttle + B/Q)
-  "S04": ["D26"], "D26": ["S04"],
+  // Franklin Av area - S01 (shuttle at Fulton St) is separate from 239 (2/3/4/5 at Botanic Garden)
+  // Botanic Garden / Prospect Park area - S04 connects to both 239 (2/3/4/5) and D26 (B/Q)
+  "S04": ["239", "D26"], "239": ["S04"], "D26": ["S04"],
   // Hoyt-Schermerhorn
   "A43": ["G36"], "G36": ["A43"],
   // 125 St (various lines)
