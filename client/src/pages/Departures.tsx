@@ -6,7 +6,8 @@ import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
 import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX } from "lucide-react";
+import { useSoundEffects } from "@/hooks/use-sound";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,6 +27,7 @@ function useCurrentTime() {
 
 function StationDepartures({ stationId, stationName, stationLine, walkingTime }: { stationId: string; stationName: string; stationLine: string; walkingTime: number | null }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
+  const { playSound } = useSoundEffects();
   
   // Combine static lines with dynamically detected lines from arrivals
   const availableLines = useMemo(() => {
@@ -54,6 +56,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   }, [availableLines]);
   
   const toggleLine = (line: string) => {
+    playSound("toggle");
     setSelectedLines(prev => {
       const next = new Set(prev);
       if (next.has(line)) {
@@ -299,9 +302,16 @@ export default function Departures() {
   const contentRef = useRef<HTMLDivElement>(null);
   const [autoScale, setAutoScale] = useState(1);
   const initialScaleCalculated = useRef(false);
+  const { isMuted, toggleMute, playSound } = useSoundEffects();
   
-  const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
-  const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
+  const zoomIn = () => {
+    playSound("zoom");
+    setZoom(prev => Math.min(prev + 0.1, 1.5));
+  };
+  const zoomOut = () => {
+    playSound("zoom");
+    setZoom(prev => Math.max(prev - 0.1, 0.5));
+  };
   
   // Calculate auto-scale only once on initial load and on window resize
   // Don't recalculate when data refreshes to prevent box size jumping
@@ -347,12 +357,23 @@ export default function Departures() {
   const effectiveScale = autoScale * zoom;
   
   const toggleFullscreen = async () => {
+    playSound("toggle");
     if (!document.fullscreenElement) {
       await document.documentElement.requestFullscreen();
       setIsFullscreen(true);
     } else {
       await document.exitFullscreen();
       setIsFullscreen(false);
+    }
+  };
+  
+  const handleToggleMute = () => {
+    if (isMuted) {
+      toggleMute();
+      setTimeout(() => playSound("click"), 50);
+    } else {
+      playSound("click");
+      toggleMute();
     }
   };
   
@@ -417,7 +438,7 @@ export default function Departures() {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => navigate("/")}
+              onClick={() => { playSound("click"); navigate("/"); }}
               className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
               data-testid="button-back"
             >
@@ -450,6 +471,15 @@ export default function Departures() {
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
             </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleToggleMute}
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
+              data-testid="button-mute"
+            >
+              {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            </Button>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
@@ -476,7 +506,7 @@ export default function Departures() {
             <p className="text-lg">No stations selected</p>
             <Button 
               variant="outline" 
-              onClick={() => navigate("/")} 
+              onClick={() => { playSound("click"); navigate("/"); }} 
               className="mt-4"
               data-testid="button-select-stations"
             >

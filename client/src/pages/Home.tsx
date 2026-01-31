@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { useLocation } from "wouter";
 import { useStations } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
+import { useSoundEffects } from "@/hooks/use-sound";
 import { RouteIcon } from "@/components/RouteIcon";
 import { Train, Search, Check, ArrowRight, MapPin, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -19,6 +20,7 @@ export default function Home() {
   const [, navigate] = useLocation();
   const { location: userLocation, loading: locationLoading, error: locationError, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
   const { showTutorial, completeTutorial, dismissTutorial, startTutorial } = useTutorial();
+  const { playSound } = useSoundEffects();
 
   const filteredStations = stations?.filter(s => {
     const query = searchQuery.toLowerCase();
@@ -44,6 +46,7 @@ export default function Home() {
   }, [filteredStations, userLocation]);
 
   const toggleStation = (id: string) => {
+    playSound("toggle");
     setSelectedStationIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
@@ -57,8 +60,18 @@ export default function Home() {
 
   const handleViewDepartures = () => {
     if (selectedStationIds.size > 0) {
+      playSound("click");
       const ids = Array.from(selectedStationIds).join(",");
       navigate(`/departures/${ids}`);
+    }
+  };
+  
+  const handleLocationToggle = () => {
+    playSound("click");
+    if (locationEnabled) {
+      disableLocation();
+    } else {
+      requestLocation();
     }
   };
 
@@ -115,7 +128,7 @@ export default function Home() {
               variant={locationEnabled ? "default" : "outline"}
               size="icon"
               className="h-11 sm:h-14 w-11 sm:w-14 shrink-0"
-              onClick={locationEnabled ? disableLocation : requestLocation}
+              onClick={handleLocationToggle}
               disabled={locationLoading}
               data-testid="button-toggle-location"
             >
@@ -239,7 +252,7 @@ export default function Home() {
           className="text-center text-[10px] sm:text-sm text-muted-foreground/50 mt-8 sm:mt-16 pb-4 space-y-2"
         >
           <div>Data provided by MTA GTFS-Realtime Feed - Made by Thomas Demuth</div>
-          <TutorialButton onClick={startTutorial} />
+          <TutorialButton onClick={() => { playSound("click"); startTutorial(); }} />
         </motion.div>
       </div>
 
