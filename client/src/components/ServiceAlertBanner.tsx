@@ -12,7 +12,8 @@ interface ServiceAlertBannerProps {
 }
 
 // Detect when an alert affects service based on active period
-function getAlertTiming(alert: ServiceAlert): string {
+// Returns null if alert should not be shown (more than 1 hour away)
+function getAlertTiming(alert: ServiceAlert): string | null {
   const now = new Date();
   const startTime = alert.activePeriodStart ? new Date(alert.activePeriodStart) : null;
   const endTime = alert.activePeriodEnd ? new Date(alert.activePeriodEnd) : null;
@@ -22,48 +23,31 @@ function getAlertTiming(alert: ServiceAlert): string {
     return "Now";
   }
   
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  // Don't show alerts that start more than 1 hour from now
+  const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+  if (startTime > oneHourFromNow) {
+    return null;
+  }
+  
   const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
-  const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-  const endOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 23, 59, 59);
   
   // Currently active (started and not ended yet)
   if (startTime <= now && (!endTime || endTime > now)) {
     return "Now";
   }
   
-  // Starts later today
-  if (startTime > now && startTime <= endOfToday) {
+  // Starts within the next hour
+  if (startTime > now && startTime <= oneHourFromNow) {
     const hour = startTime.getHours();
-    if (hour >= 20) {
+    if (hour >= 20 || hour < 5) {
       return "Tonight";
     } else if (hour >= 17) {
       return "This Evening";
     } else if (hour >= 12) {
       return "This Afternoon";
     } else {
-      return "Later Today";
+      return "Soon";
     }
-  }
-  
-  // Starts tomorrow
-  if (startTime >= startOfTomorrow && startTime <= endOfTomorrow) {
-    return "Tomorrow";
-  }
-  
-  // Starts this weekend
-  const dayOfWeek = now.getDay();
-  const daysUntilWeekend = dayOfWeek === 0 ? 6 : (dayOfWeek === 6 ? 0 : 6 - dayOfWeek);
-  const weekendStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilWeekend);
-  const weekendEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilWeekend + 1, 23, 59, 59);
-  
-  if (startTime >= weekendStart && startTime <= weekendEnd && startTime > endOfTomorrow) {
-    return "This Weekend";
-  }
-  
-  // Starts in the future
-  if (startTime > now) {
-    return "Upcoming";
   }
   
   return "";
@@ -71,7 +55,7 @@ function getAlertTiming(alert: ServiceAlert): string {
 
 function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: boolean }) {
   const [expanded, setExpanded] = useState(false);
-  const timing = getAlertTiming(alert);
+  const timing = getAlertTiming(alert) || "";
   
   const severityColor = alert.severity >= 30 
     ? "bg-red-500/20 border-red-500/50" 
@@ -174,12 +158,19 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
     return acc;
   }, []);
   
-  const highSeverityCount = uniqueAlerts.filter(a => a.severity >= 30).length;
-  const mediumSeverityCount = uniqueAlerts.filter(a => a.severity >= 20 && a.severity < 30).length;
+  // Filter out alerts that are more than 1 hour away (timing is null)
+  const visibleAlerts = uniqueAlerts.filter(alert => getAlertTiming(alert) !== null);
+  
+  if (visibleAlerts.length === 0) {
+    return null;
+  }
+  
+  const highSeverityCount = visibleAlerts.filter(a => a.severity >= 30).length;
+  const mediumSeverityCount = visibleAlerts.filter(a => a.severity >= 20 && a.severity < 30).length;
   
   // Group alerts by timing + type and collect affected routes
-  const alertsByTimingAndType = uniqueAlerts.reduce<Record<string, { timing: string; type: string; routes: string[] }>>((acc, alert) => {
-    const timing = getAlertTiming(alert);
+  const alertsByTimingAndType = visibleAlerts.reduce<Record<string, { timing: string; type: string; routes: string[] }>>((acc, alert) => {
+    const timing = getAlertTiming(alert) || "";
     const type = alert.alertType;
     const key = `${timing}-${type}`;
     if (!acc[key]) acc[key] = { timing, type, routes: [] };
@@ -195,11 +186,8 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
     "Tonight": 1,
     "This Evening": 2,
     "This Afternoon": 3,
-    "Later Today": 4,
-    "Tomorrow": 5,
-    "This Weekend": 6,
-    "Upcoming": 7,
-    "": 8
+    "Soon": 4,
+    "": 5
   };
   
   const sortedAlertGroups = Object.values(alertsByTimingAndType).sort((a, b) => 
@@ -268,7 +256,7 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
             className="overflow-hidden flex justify-center px-3 sm:px-6"
           >
             <div className="pt-3 pb-2 space-y-2 max-h-[40vh] overflow-y-auto" data-testid="container-alerts-list">
-              {uniqueAlerts.map((alert) => (
+              {visibleAlerts.map((alert) => (
                 <AlertItem key={alert.id} alert={alert} compact />
               ))}
             </div>
