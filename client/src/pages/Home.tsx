@@ -69,9 +69,7 @@ export default function Home() {
           >
             <Train className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </motion.div>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">
-            NYC Subway Tracker
-          </h1>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">Passive Subway Sign</h1>
           <p className="text-sm sm:text-lg text-muted-foreground max-w-lg mx-auto">
             Select one or more stations to view real-time subway arrivals.
           </p>

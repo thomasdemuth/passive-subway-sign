@@ -161,7 +161,10 @@ export async function registerRoutes(
                           'D': direction === 'Uptown' ? "Norwood - 205 St" : "Coney Island",
                           'F': direction === 'Uptown' ? "Jamaica - 179 St" : "Coney Island",
                           'M': direction === 'Uptown' ? "Forest Hills" : "Middle Village",
-                          'S': "Shuttle"
+                          'S': "Shuttle",
+                          'FS': direction === 'Uptown' ? "Franklin Av" : "Prospect Park",
+                          'GS': "Shuttle",
+                          'H': direction === 'Uptown' ? "Broad Channel" : "Rockaway Park"
                         };
                         destination = dests[routeId] || direction;
 
@@ -223,9 +226,9 @@ export async function registerRoutes(
             }
           });
 
-          // Only include subway alerts (single letter/number route IDs)
+          // Only include subway alerts (single letter/number route IDs + shuttles)
           const subwayRoutes = Array.from(affectedRoutes).filter(r => 
-            /^[1-7ABCDEFGJLMNQRSWZ]X?$/.test(r)
+            /^[1-7ABCDEFGJLMNQRSWZ]X?$/.test(r) || /^(FS|GS|H|SI|SIR)$/.test(r)
           );
 
           if (subwayRoutes.length === 0) return;

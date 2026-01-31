@@ -158,9 +158,9 @@ const LINE_MAPPINGS: Record<string, string> = {
   "L29": "L", // Canarsie-Rockaway Pkwy
   
   // BMT Franklin Shuttle
-  "S01": "S", // Franklin Av
-  "S03": "S", // Park Pl
-  "S04": "S", // Botanic Garden
+  "S01": "FS", // Franklin Av (Franklin Shuttle)
+  "S03": "FS", // Park Pl (Franklin Shuttle)
+  "S04": "FS", // Botanic Garden (Franklin Shuttle)
   
   // IND 8th Av Line
   "A02": "A", // Inwood-207 St
