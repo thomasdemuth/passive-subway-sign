@@ -632,11 +632,17 @@ export class MemStorage implements IStorage {
   }
 
   async initStations(): Promise<void> {
+    // Stations to exclude from the list
+    const EXCLUDED_STATIONS = ["N12"]; // N12 = S.B. Coney Island (redundant)
+    
     try {
       const response = await fetch("https://raw.githubusercontent.com/jonthornton/MTAPI/master/data/stations.json");
       if (response.ok) {
         const data = await response.json();
         Object.entries(data).forEach(([id, station]: [string, any]) => {
+          // Skip excluded stations
+          if (EXCLUDED_STATIONS.includes(id)) return;
+          
           let line = LINE_MAPPINGS[id] || "";
           
           // Default fallback based on prefix
