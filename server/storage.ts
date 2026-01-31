@@ -163,6 +163,29 @@ const LINE_MAPPINGS: Record<string, string> = {
   "S03": "FS", // Park Pl (Franklin Shuttle)
   "S04": "FS", // Botanic Garden (Franklin Shuttle)
   
+  // Staten Island Railway
+  "S09": "SIR", // Tottenville
+  "S11": "SIR", // Arthur Kill
+  "S13": "SIR", // Richmond Valley
+  "S14": "SIR", // Pleasant Plains
+  "S15": "SIR", // Prince's Bay
+  "S16": "SIR", // Huguenot
+  "S17": "SIR", // Annadale
+  "S18": "SIR", // Eltingville
+  "S19": "SIR", // Great Kills
+  "S20": "SIR", // Bay Terrace
+  "S21": "SIR", // Oakwood Heights
+  "S22": "SIR", // New Dorp
+  "S23": "SIR", // Grant City
+  "S24": "SIR", // Jefferson Av
+  "S25": "SIR", // Dongan Hills
+  "S26": "SIR", // Old Town
+  "S27": "SIR", // Grasmere
+  "S28": "SIR", // Clifton
+  "S29": "SIR", // Stapleton
+  "S30": "SIR", // Tompkinsville
+  "S31": "SIR", // St George
+  
   // IND 8th Av Line
   "A02": "A", // Inwood-207 St
   "A03": "A", // Dyckman St
