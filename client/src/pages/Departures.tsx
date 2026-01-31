@@ -105,6 +105,9 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     "R01",         // Astoria-Ditmars Blvd (N/W)
     "S31",         // St George (SIR)
     "R45",         // Bay Ridge-95 St (R)
+    "M01",         // Forest Hills-71 Av (M)
+    "M22",         // Middle Village-Metropolitan Av (M)
+    "M18",         // Myrtle-Wyckoff Avs (M/L)
   ];
   const isTerminalStation = TERMINAL_STATIONS.includes(stationId);
   
@@ -119,6 +122,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     "701",         // Flushing-Main St (7)
     "501",         // Eastchester-Dyre Av (5)
   ];
+  // Note: M01/M22 are terminals but departures are "Uptown" direction (not Downtown)
   const isDowntownTerminal = DOWNTOWN_TERMINALS.includes(stationId);
   
   const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? 7 : 3);
