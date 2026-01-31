@@ -26,8 +26,32 @@ function useCurrentTime() {
 
 function StationDepartures({ stationId, stationName, stationLine, walkingTime }: { stationId: string; stationName: string; stationLine: string; walkingTime: number | null }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
-  const availableLines = stationLine.split(" ");
-  const [selectedLines, setSelectedLines] = useState<Set<string>>(new Set(availableLines));
+  
+  // Combine static lines with dynamically detected lines from arrivals
+  const availableLines = useMemo(() => {
+    const staticLines = new Set(stationLine.split(" ").filter(l => l));
+    if (arrivals) {
+      arrivals.forEach(a => {
+        let routeId = a.routeId.replace('X', '');
+        // Normalize route IDs
+        if (routeId === 'SI') routeId = 'SIR';
+        if (routeId === 'GS') routeId = 'S';
+        staticLines.add(routeId);
+      });
+    }
+    return Array.from(staticLines);
+  }, [stationLine, arrivals]);
+  
+  const [selectedLines, setSelectedLines] = useState<Set<string>>(new Set(stationLine.split(" ").filter(l => l)));
+  
+  // Update selected lines when new routes are detected
+  useEffect(() => {
+    setSelectedLines(prev => {
+      const updated = new Set(prev);
+      availableLines.forEach(line => updated.add(line));
+      return updated;
+    });
+  }, [availableLines]);
   
   const toggleLine = (line: string) => {
     setSelectedLines(prev => {
