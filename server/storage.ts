@@ -330,10 +330,10 @@ export const LINE_MAPPINGS: Record<string, string> = {
   "F12": "E F", // 5 Av/53 St
   
   // IND 63rd St Line
-  "B04": "M", // 21 St-Queensbridge
-  "B06": "M", // Roosevelt Island
-  "B08": "M Q", // Lexington Av/63 St
-  "B10": "M", // 57 St
+  "B04": "F M", // 21 St-Queensbridge (F nights/weekends)
+  "B06": "F M", // Roosevelt Island (F nights/weekends)
+  "B08": "F M Q", // Lexington Av/63 St (F nights/weekends)
+  "B10": "F M", // 57 St (F nights/weekends)
   
   // IND Queens-Archer Line
   "G05": "E J Z", // Jamaica Center-Parsons/Archer
