@@ -35,7 +35,8 @@ export default function Home() {
         return (timeA ?? Infinity) - (timeB ?? Infinity);
       });
     } else {
-      stationsCopy.sort((a, b) => a.name.localeCompare(b.name));
+      // Natural sort: numbers first (1, 2, 3...), then alphabetical
+      stationsCopy.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
     }
     return stationsCopy;
   }, [filteredStations, userLocation]);
