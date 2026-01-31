@@ -85,8 +85,11 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     });
   }, [arrivals, selectedLines]);
 
-  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, 3);
-  const downtownArrivals = filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
+  // Terminal stations only show one direction with more departures
+  const isTerminalStation = stationId === "D43" || stationId === "F39"; // Coney Island-Stillwell Av
+  
+  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? 7 : 3);
+  const downtownArrivals = isTerminalStation ? [] : filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
 
   return (
     <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] h-[420px] sm:h-[450px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15 flex flex-col">
@@ -140,13 +143,15 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
       </CardHeader>
       <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 flex-1 overflow-hidden flex flex-col">
         <div className="flex-1 flex flex-col">
-          {/* Uptown Section - fixed position */}
-          <div className="flex-1">
+          {/* Uptown Section */}
+          <div className={isTerminalStation ? "flex-1" : "flex-1"}>
             <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
               <ArrowUpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-              <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Uptown</span>
+              <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">
+                {isTerminalStation ? "Departures" : "Uptown"}
+              </span>
             </div>
-            <div className="h-[100px] mt-1">
+            <div className={cn("mt-1", isTerminalStation ? "h-[230px]" : "h-[100px]")}>
               {isLoading ? (
                 <div className="h-full flex items-center justify-center">
                   <Loader2 className="w-5 h-5 animate-spin text-primary" />
@@ -176,7 +181,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                       >
                         <X className="w-12 h-12 text-red-500/25" strokeWidth={3} />
                       </motion.div>
-                      <span className="text-xs text-muted-foreground/60 mt-1">No uptown trains</span>
+                      <span className="text-xs text-muted-foreground/60 mt-1">No trains</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -184,49 +189,51 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
             </div>
           </div>
 
-          {/* Downtown Section - fixed position */}
-          <div className="flex-1 mt-2">
-            <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
-              <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
-              <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Downtown</span>
-            </div>
-            <div className="h-[100px] mt-1">
-              {isLoading ? (
-                <div className="h-full flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                </div>
-              ) : (
-                <AnimatePresence mode="popLayout">
-                  {downtownArrivals.length > 0 ? (
-                    <div className="space-y-0.5">
-                      {downtownArrivals.map((arrival, i) => (
-                        <ArrivalCard 
-                          key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
-                          arrival={arrival} 
-                          index={i} 
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <motion.div 
-                      className="h-full flex flex-col items-center justify-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      <motion.div
-                        className="flex items-center justify-center"
-                        animate={{ opacity: [0.15, 0.35, 0.15] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          {/* Downtown Section - hidden for terminal stations */}
+          {!isTerminalStation && (
+            <div className="flex-1 mt-2">
+              <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
+                <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
+                <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Downtown</span>
+              </div>
+              <div className="h-[100px] mt-1">
+                {isLoading ? (
+                  <div className="h-full flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-primary" />
+                  </div>
+                ) : (
+                  <AnimatePresence mode="popLayout">
+                    {downtownArrivals.length > 0 ? (
+                      <div className="space-y-0.5">
+                        {downtownArrivals.map((arrival, i) => (
+                          <ArrivalCard 
+                            key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
+                            arrival={arrival} 
+                            index={i} 
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <motion.div 
+                        className="h-full flex flex-col items-center justify-center"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
                       >
-                        <X className="w-12 h-12 text-red-500/25" strokeWidth={3} />
+                        <motion.div
+                          className="flex items-center justify-center"
+                          animate={{ opacity: [0.15, 0.35, 0.15] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <X className="w-12 h-12 text-red-500/25" strokeWidth={3} />
+                        </motion.div>
+                        <span className="text-xs text-muted-foreground/60 mt-1">No downtown trains</span>
                       </motion.div>
-                      <span className="text-xs text-muted-foreground/60 mt-1">No downtown trains</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              )}
+                    )}
+                  </AnimatePresence>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>
