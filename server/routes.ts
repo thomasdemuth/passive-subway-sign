@@ -292,6 +292,12 @@ export async function registerRoutes(
                           }
                         }
                         
+                        // Override M train destinations for weekend service
+                        // M trains run Essex St ↔ Middle Village on weekends/nights
+                        if (routeId === 'M') {
+                          destination = direction === 'Uptown' ? "Essex St" : "Middle Village-Metropolitan Av";
+                        }
+                        
                         // Fallback to direction-based mapping if no GTFS destination found
                         if (destination === direction) {
                           const dests: Record<string, string> = {
@@ -310,7 +316,7 @@ export async function registerRoutes(
                             'B': direction === 'Uptown' ? "Bedford Park Blvd" : "Brighton Beach",
                             'D': direction === 'Uptown' ? "Norwood-205 St" : "Coney Island-Stillwell Av",
                             'F': direction === 'Uptown' ? "Jamaica-179 St" : "Coney Island-Stillwell Av",
-                            'M': direction === 'Uptown' ? "Forest Hills-71 Av" : "Middle Village-Metropolitan Av",
+                            'M': direction === 'Uptown' ? "Essex St" : "Middle Village-Metropolitan Av",
                             'G': direction === 'Uptown' ? "Court Sq" : "Church Av",
                             'J': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "Broad St",
                             'Z': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "Broad St",
