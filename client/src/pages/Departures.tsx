@@ -284,7 +284,7 @@ export default function Departures() {
               variant="outline"
               size="icon"
               onClick={() => navigate("/")}
-              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
               data-testid="button-back"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -293,7 +293,7 @@ export default function Departures() {
               variant="outline"
               size="icon"
               onClick={zoomOut}
-              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
               data-testid="button-zoom-out"
             >
               <ZoomOut className="w-4 h-4" />
@@ -302,7 +302,7 @@ export default function Departures() {
               variant="outline"
               size="icon"
               onClick={zoomIn}
-              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
               data-testid="button-zoom-in"
             >
               <ZoomIn className="w-4 h-4" />
@@ -311,7 +311,7 @@ export default function Departures() {
               variant="outline"
               size="icon"
               onClick={toggleFullscreen}
-              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
               data-testid="button-fullscreen"
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
