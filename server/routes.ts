@@ -140,9 +140,12 @@ export async function registerRoutes(
                         const routeId = entity.tripUpdate?.trip?.routeId || "Unknown";
                         
                         let destination = direction;
-                        // Basic destination mapping
+                        
+                        // Basic destination mapping for all routes
                         const dests: Record<string, any> = {
                           '1': direction === 'Uptown' ? "242 St" : "South Ferry",
+                          '7': direction === 'Uptown' ? "Flushing-Main St" : "34 St-Hudson Yards",
+                          '7X': direction === 'Uptown' ? "Flushing-Main St" : "34 St-Hudson Yards",
                           '2': direction === 'Uptown' ? "Wakefield" : "Flatbush Av",
                           '3': direction === 'Uptown' ? "Harlem 148 St" : "New Lots Av",
                           '4': direction === 'Uptown' ? "Woodlawn" : "Utica Av",
