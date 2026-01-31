@@ -705,6 +705,7 @@ export class MemStorage implements IStorage {
         // Manually add missing R line stations
         const missingRStations: Station[] = [
           { id: "R33", name: "4 Av-9 St", line: "R", lat: 40.670847, lng: -73.988302 },
+          { id: "R27", name: "Whitehall St-South Ferry", line: "R W", lat: 40.703087, lng: -74.012994 },
         ];
         missingRStations.forEach(s => {
           if (!this.stations.has(s.id)) {
