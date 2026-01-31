@@ -704,4 +704,48 @@ export class MemStorage implements IStorage {
   }
 }
 
+// Dynamic route tracking - stores routes detected from GTFS data
+// Map<stationId, Map<routeId, timestamp>>
+const dynamicRoutes = new Map<string, Map<string, number>>();
+const DYNAMIC_ROUTE_TTL = 60 * 60 * 1000; // 1 hour in milliseconds
+
+export function addDynamicRoute(stationId: string, routeId: string): void {
+  if (!dynamicRoutes.has(stationId)) {
+    dynamicRoutes.set(stationId, new Map());
+  }
+  dynamicRoutes.get(stationId)!.set(routeId, Date.now());
+}
+
+export function getDynamicRoutes(stationId: string): string[] {
+  const routes = dynamicRoutes.get(stationId);
+  if (!routes) return [];
+  
+  const now = Date.now();
+  const validRoutes: string[] = [];
+  
+  // Filter out expired routes and collect valid ones
+  routes.forEach((timestamp, routeId) => {
+    if (now - timestamp < DYNAMIC_ROUTE_TTL) {
+      validRoutes.push(routeId);
+    } else {
+      routes.delete(routeId);
+    }
+  });
+  
+  return validRoutes;
+}
+
+export function getStationWithDynamicRoutes(station: Station): Station {
+  const dynamicRoutesList = getDynamicRoutes(station.id);
+  if (dynamicRoutesList.length === 0) return station;
+  
+  const staticRoutes = new Set(station.line.split(" ").filter(r => r));
+  dynamicRoutesList.forEach(r => staticRoutes.add(r));
+  
+  return {
+    ...station,
+    line: Array.from(staticRoutes).join(" ")
+  };
+}
+
 export const storage = new MemStorage();

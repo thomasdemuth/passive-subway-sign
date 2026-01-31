@@ -1,7 +1,7 @@
 
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage, addDynamicRoute, getStationWithDynamicRoutes } from "./storage";
 import { api } from "@shared/routes";
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 import { type Arrival, type ServiceAlert } from "@shared/schema";
@@ -88,7 +88,9 @@ export async function registerRoutes(
 
   app.get(api.stations.list.path, async (req, res) => {
     const stations = await storage.getStations();
-    res.json(stations);
+    // Merge dynamic routes detected from GTFS data
+    const stationsWithDynamic = stations.map(s => getStationWithDynamicRoutes(s));
+    res.json(stationsWithDynamic);
   });
 
   app.get(api.stations.getArrivals.path, async (req, res) => {
@@ -170,6 +172,9 @@ export async function registerRoutes(
                         };
                         destination = dests[routeId] || direction;
 
+                        // Track this route for dynamic line detection
+                        addDynamicRoute(stationId, routeId);
+                        
                         allArrivals.push({
                           routeId,
                           destination,
