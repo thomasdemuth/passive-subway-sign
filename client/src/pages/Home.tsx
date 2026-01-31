@@ -4,11 +4,31 @@ import { useStations } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { RouteIcon } from "@/components/RouteIcon";
 import { Train, Search, Check, ArrowRight, MapPin, Loader2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Tutorial, TutorialButton, useTutorial } from "@/components/Tutorial";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.02,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.3, ease: "easeOut" }
+  }
+};
 
 
 export default function Home() {
@@ -65,19 +85,37 @@ export default function Home() {
         
         <div className="text-center mb-6 sm:mb-12 space-y-2 sm:space-y-4">
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            initial={{ scale: 0.5, opacity: 0, rotate: -10 }}
+            animate={{ scale: 1, opacity: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
             className="inline-flex items-center justify-center p-2 sm:p-3 bg-white/5 rounded-full ring-1 ring-white/10 mb-2 sm:mb-4 shadow-2xl"
           >
             <Train className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </motion.div>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60">Passive Subway Sign</h1>
-          <p className="text-sm sm:text-lg text-muted-foreground max-w-lg mx-auto">
+          <motion.h1 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="text-2xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60"
+          >
+            Passive Subway Sign
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="text-sm sm:text-lg text-muted-foreground max-w-lg mx-auto"
+          >
             Select one or more stations to view real-time subway arrivals.
-          </p>
+          </motion.p>
         </div>
 
-        <div className="mb-4 sm:mb-8 space-y-3 sm:space-y-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="mb-4 sm:mb-8 space-y-3 sm:space-y-4"
+        >
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
@@ -132,19 +170,34 @@ export default function Home() {
               </Button>
             </motion.div>
           )}
-        </div>
+        </motion.div>
 
         <div className="space-y-2">
           {isLoading ? (
-            <div className="text-center py-12 text-muted-foreground">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12 text-muted-foreground"
+            >
+              <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
               Loading stations...
-            </div>
+            </motion.div>
           ) : sortedStations.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12 text-muted-foreground"
+            >
               No stations found matching "{searchQuery}"
-            </div>
+            </motion.div>
           ) : (
-            <div className="grid grid-cols-2 gap-1">
+            <motion.div 
+              className="grid grid-cols-2 gap-1"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              key={searchQuery}
+            >
               {sortedStations.map((station) => {
                 const isSelected = selectedStationIds.has(station.id);
                 const walkingTime = userLocation && station.lat && station.lng
@@ -153,6 +206,7 @@ export default function Home() {
                 return (
                   <motion.button
                     key={station.id}
+                    variants={itemVariants}
                     onClick={() => toggleStation(station.id)}
                     className={cn(
                       "w-full flex items-center justify-between p-2 sm:p-3 rounded-lg border transition-all duration-200 text-left gap-2",
@@ -160,7 +214,7 @@ export default function Home() {
                         ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
                         : "bg-card/30 border-white/5 hover:bg-card/50 hover:border-white/10"
                     )}
-                    whileTap={{ scale: 0.99 }}
+                    whileTap={{ scale: 0.98 }}
                     data-testid={`button-station-${station.id}`}
                   >
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -191,7 +245,7 @@ export default function Home() {
                   </motion.button>
                 );
               })}
-            </div>
+            </motion.div>
           )}
         </div>
 
