@@ -1,5 +1,5 @@
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useParams, useLocation } from "wouter";
 import { useStations, useArrivals } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
@@ -209,13 +209,41 @@ export default function Departures() {
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [autoScale, setAutoScale] = useState(1);
+  
   const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
   const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
   
-  // Dynamic base scale based on station count: 1 station = 1.5, scales down to 0.6 for 5+ stations
-  const stationCount = params.ids?.split(",").length || 1;
-  const baseScale = Math.max(0.6, Math.min(1.5, 1.5 - (stationCount - 1) * 0.225));
-  const effectiveScale = baseScale * zoom;
+  // Calculate auto-scale based on content fitting within container with 30px padding
+  useEffect(() => {
+    const calculateScale = () => {
+      if (!containerRef.current || !contentRef.current) return;
+      
+      const containerHeight = containerRef.current.clientHeight;
+      const availableHeight = containerHeight - 60; // 30px top + 30px bottom
+      
+      // Get the natural height of content at scale 1
+      const contentHeight = contentRef.current.scrollHeight;
+      
+      if (contentHeight > 0 && availableHeight > 0) {
+        const scale = Math.min(1.5, Math.max(0.6, availableHeight / contentHeight));
+        setAutoScale(scale);
+      }
+    };
+    
+    // Delay calculation to ensure content is rendered
+    const timeout = setTimeout(calculateScale, 100);
+    calculateScale();
+    window.addEventListener('resize', calculateScale);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener('resize', calculateScale);
+    };
+  }, [params.ids]);
+  
+  const effectiveScale = autoScale * zoom;
   
   const toggleFullscreen = async () => {
     if (!document.fullscreenElement) {
@@ -337,7 +365,7 @@ export default function Departures() {
         <ServiceAlertBanner routeIds={allRouteIds} />
       )}
       
-      <div className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ transform: `scale(${effectiveScale})`, transformOrigin: 'top center' }}>
+      <div ref={containerRef} className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-[30px]">
         {stationsLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -355,26 +383,32 @@ export default function Departures() {
             </Button>
           </div>
         ) : (
-          <ScrollArea className="h-full w-full">
-            <AnimatePresence>
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex justify-center gap-3 p-3 sm:p-4"
-              >
-                {selectedStations.map((station) => (
-                  <StationDepartures 
-                    key={station.id}
-                    stationId={station.id}
-                    stationName={station.name}
-                    stationLine={station.line}
-                    walkingTime={getWalkingTime(station)}
-                  />
-                ))}
-              </motion.div>
-            </AnimatePresence>
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          <div 
+            ref={contentRef}
+            className="h-full flex justify-center"
+            style={{ transform: `scale(${effectiveScale})`, transformOrigin: 'top center' }}
+          >
+            <ScrollArea className="h-full">
+              <AnimatePresence>
+                <motion.div 
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="flex justify-center gap-3 p-3 sm:p-4"
+                >
+                  {selectedStations.map((station) => (
+                    <StationDepartures 
+                      key={station.id}
+                      stationId={station.id}
+                      stationName={station.name}
+                      stationLine={station.line}
+                      walkingTime={getWalkingTime(station)}
+                    />
+                  ))}
+                </motion.div>
+              </AnimatePresence>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
+          </div>
         )}
       </div>
 
