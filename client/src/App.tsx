@@ -1,5 +1,5 @@
 
-import { Switch, Route, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -12,44 +12,56 @@ import NotFound from "@/pages/not-found";
 const pageVariants = {
   initial: { 
     opacity: 0,
-    scale: 0.98,
   },
   in: { 
     opacity: 1,
-    scale: 1,
   },
   out: { 
     opacity: 0,
-    scale: 1.02,
   }
 };
 
 const pageTransition = {
-  type: "tween",
-  ease: "anticipate",
-  duration: 0.4
+  duration: 0.3
 };
+
+function AnimatedPage({ children }: { children: React.ReactNode }) {
+  return (
+    <motion.div
+      initial="initial"
+      animate="in"
+      exit="out"
+      variants={pageVariants}
+      transition={pageTransition}
+      className="min-h-screen"
+    >
+      {children}
+    </motion.div>
+  );
+}
 
 function Router() {
   const [location] = useLocation();
+  const isHome = location === "/";
+  const isDepartures = location.startsWith("/departures/");
   
   return (
     <AnimatePresence mode="wait">
-      <motion.div
-        key={location}
-        initial="initial"
-        animate="in"
-        exit="out"
-        variants={pageVariants}
-        transition={pageTransition}
-        className="min-h-screen"
-      >
-        <Switch location={location}>
-          <Route path="/" component={Home} />
-          <Route path="/departures/:ids" component={Departures} />
-          <Route component={NotFound} />
-        </Switch>
-      </motion.div>
+      {isHome && (
+        <AnimatedPage key="home">
+          <Home />
+        </AnimatedPage>
+      )}
+      {isDepartures && (
+        <AnimatedPage key="departures">
+          <Departures />
+        </AnimatedPage>
+      )}
+      {!isHome && !isDepartures && (
+        <AnimatedPage key="notfound">
+          <NotFound />
+        </AnimatedPage>
+      )}
     </AnimatePresence>
   );
 }
