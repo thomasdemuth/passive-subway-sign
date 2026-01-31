@@ -8,6 +8,43 @@ import { type Arrival, type ServiceAlert } from "@shared/schema";
 
 const ALERTS_FEED = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fall-alerts";
 
+// Stop ID to station name mapping for dynamic destination detection
+const STOP_NAMES: Record<string, string> = {
+  // IRT terminals (1-7 lines)
+  "101": "Van Cortlandt Park-242 St", "142": "South Ferry",
+  "201": "Wakefield-241 St", "247": "Flatbush Av-Brooklyn College",
+  "301": "Harlem-148 St", "257": "New Lots Av",
+  "401": "Woodlawn", "250": "Crown Hts-Utica Av", "469": "New Lots Av",
+  "501": "Eastchester-Dyre Av", "416": "E 180 St",
+  "601": "Pelham Bay Park", "640": "Brooklyn Bridge-City Hall",
+  "701": "Flushing-Main St", "726": "34 St-Hudson Yards", "702": "Mets-Willets Point",
+  // IND 8th Ave (A/C/E) terminals
+  "A02": "Inwood-207 St", "A09": "168 St", "A55": "Euclid Av",
+  "A65": "Ozone Park-Lefferts Blvd", "E01": "World Trade Center",
+  // IND 6th Ave (B/D/F/M) terminals
+  "D01": "Norwood-205 St", "D03": "Bedford Park Blvd", 
+  "D40": "Brighton Beach", "D43": "Coney Island-Stillwell Av",
+  "F01": "Jamaica-179 St", "F39": "Coney Island-Stillwell Av",
+  "M01": "Forest Hills-71 Av", "M22": "Middle Village-Metropolitan Av",
+  // Crosstown (G) terminals
+  "G22": "Court Sq", "G35": "Church Av", "F27": "Church Av",
+  // BMT Jamaica (J/Z) terminals  
+  "G05": "Jamaica Center-Parsons/Archer", "M23": "Broad St",
+  // BMT Canarsie (L) terminals
+  "L01": "8 Av", "L29": "Canarsie-Rockaway Pkwy",
+  // BMT Broadway (N/Q/R/W) terminals
+  "R01": "Astoria-Ditmars Blvd", "N12": "86 St", "Q05": "96 St",
+  "R45": "Bay Ridge-95 St", "R27": "Whitehall St-South Ferry",
+  // Rockaway (A/H) terminals
+  "H04": "Broad Channel", "H11": "Far Rockaway-Mott Av", "H15": "Rockaway Park-Beach 116 St",
+  // 42 St Shuttle terminals
+  "901": "Grand Central-42 St", "902": "Times Sq-42 St",
+  // Franklin Shuttle terminals
+  "S01": "Franklin Av", "S04": "Prospect Park",
+  // Staten Island Railway terminals
+  "S09": "St George", "S31": "Tottenville"
+};
+
 const FEEDS = [
   "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs",      // 1-6, S
   "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/nyct%2Fgtfs-ace",  // A, C, E
@@ -139,42 +176,54 @@ export async function registerRoutes(
                         const arrivalDate = new Date(timeNum * 1000);
                         const routeId = entity.tripUpdate?.trip?.routeId || "Unknown";
                         
+                        // Get dynamic destination from GTFS - last stop in the trip
                         let destination = direction;
+                        const stopTimeUpdates = entity.tripUpdate?.stopTimeUpdate || [];
+                        if (stopTimeUpdates.length > 0) {
+                          // Get the last stop in this trip
+                          const lastStop = stopTimeUpdates[stopTimeUpdates.length - 1];
+                          const lastStopId = lastStop?.stopId?.replace(/[NS]$/, '') || '';
+                          if (lastStopId && STOP_NAMES[lastStopId]) {
+                            destination = STOP_NAMES[lastStopId];
+                          }
+                        }
                         
-                        // Basic destination mapping for all routes
-                        const dests: Record<string, any> = {
-                          '1': direction === 'Uptown' ? "Van Cortlandt Park-242 St" : "South Ferry",
-                          '2': direction === 'Uptown' ? "Wakefield-241 St" : "Flatbush Av-Brooklyn College",
-                          '3': direction === 'Uptown' ? "Harlem-148 St" : "New Lots Av",
-                          '4': direction === 'Uptown' ? "Woodlawn" : "Crown Hts-Utica Av",
-                          '5': direction === 'Uptown' ? "Eastchester-Dyre Av" : "Flatbush Av-Brooklyn College",
-                          '6': direction === 'Uptown' ? "Pelham Bay Park" : "Brooklyn Bridge-City Hall",
-                          '6X': direction === 'Uptown' ? "Pelham Bay Park" : "Brooklyn Bridge-City Hall",
-                          '7': direction === 'Uptown' ? "Flushing-Main St" : "34 St-Hudson Yards",
-                          '7X': direction === 'Uptown' ? "Flushing-Main St" : "34 St-Hudson Yards",
-                          'A': direction === 'Uptown' ? "Inwood-207 St" : "Far Rockaway-Mott Av",
-                          'C': direction === 'Uptown' ? "168 St" : "Euclid Av",
-                          'E': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "World Trade Center",
-                          'B': direction === 'Uptown' ? "Bedford Park Blvd" : "Brighton Beach",
-                          'D': direction === 'Uptown' ? "Norwood-205 St" : "Coney Island-Stillwell Av",
-                          'F': direction === 'Uptown' ? "Jamaica-179 St" : "Coney Island-Stillwell Av",
-                          'M': direction === 'Uptown' ? "Forest Hills-71 Av" : "Middle Village-Metropolitan Av",
-                          'G': direction === 'Uptown' ? "Court Sq" : "Church Av",
-                          'J': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "Broad St",
-                          'Z': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "Broad St",
-                          'L': direction === 'Uptown' ? "8 Av" : "Canarsie-Rockaway Pkwy",
-                          'N': direction === 'Uptown' ? "Astoria-Ditmars Blvd" : "Coney Island-Stillwell Av",
-                          'Q': direction === 'Uptown' ? "96 St" : "Coney Island-Stillwell Av",
-                          'R': direction === 'Uptown' ? "Forest Hills-71 Av" : "Bay Ridge-95 St",
-                          'W': direction === 'Uptown' ? "Astoria-Ditmars Blvd" : "Whitehall St-South Ferry",
-                          'S': direction === 'Uptown' ? "Times Sq-42 St" : "Grand Central-42 St",
-                          'GS': direction === 'Uptown' ? "Times Sq-42 St" : "Grand Central-42 St",
-                          'FS': direction === 'Uptown' ? "Franklin Av" : "Prospect Park",
-                          'H': direction === 'Uptown' ? "Broad Channel" : "Rockaway Park-Beach 116 St",
-                          'SI': direction === 'Uptown' ? "St George" : "Tottenville",
-                          'SIR': direction === 'Uptown' ? "St George" : "Tottenville"
-                        };
-                        destination = dests[routeId] || direction;
+                        // Fallback to direction-based mapping if no GTFS destination found
+                        if (destination === direction) {
+                          const dests: Record<string, string> = {
+                            '1': direction === 'Uptown' ? "Van Cortlandt Park-242 St" : "South Ferry",
+                            '2': direction === 'Uptown' ? "Wakefield-241 St" : "Flatbush Av-Brooklyn College",
+                            '3': direction === 'Uptown' ? "Harlem-148 St" : "New Lots Av",
+                            '4': direction === 'Uptown' ? "Woodlawn" : "Crown Hts-Utica Av",
+                            '5': direction === 'Uptown' ? "Eastchester-Dyre Av" : "Flatbush Av-Brooklyn College",
+                            '6': direction === 'Uptown' ? "Pelham Bay Park" : "Brooklyn Bridge-City Hall",
+                            '6X': direction === 'Uptown' ? "Pelham Bay Park" : "Brooklyn Bridge-City Hall",
+                            '7': direction === 'Uptown' ? "Flushing-Main St" : "34 St-Hudson Yards",
+                            '7X': direction === 'Uptown' ? "Flushing-Main St" : "34 St-Hudson Yards",
+                            'A': direction === 'Uptown' ? "Inwood-207 St" : "Far Rockaway-Mott Av",
+                            'C': direction === 'Uptown' ? "168 St" : "Euclid Av",
+                            'E': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "World Trade Center",
+                            'B': direction === 'Uptown' ? "Bedford Park Blvd" : "Brighton Beach",
+                            'D': direction === 'Uptown' ? "Norwood-205 St" : "Coney Island-Stillwell Av",
+                            'F': direction === 'Uptown' ? "Jamaica-179 St" : "Coney Island-Stillwell Av",
+                            'M': direction === 'Uptown' ? "Forest Hills-71 Av" : "Middle Village-Metropolitan Av",
+                            'G': direction === 'Uptown' ? "Court Sq" : "Church Av",
+                            'J': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "Broad St",
+                            'Z': direction === 'Uptown' ? "Jamaica Center-Parsons/Archer" : "Broad St",
+                            'L': direction === 'Uptown' ? "8 Av" : "Canarsie-Rockaway Pkwy",
+                            'N': direction === 'Uptown' ? "Astoria-Ditmars Blvd" : "Coney Island-Stillwell Av",
+                            'Q': direction === 'Uptown' ? "96 St" : "Coney Island-Stillwell Av",
+                            'R': direction === 'Uptown' ? "Forest Hills-71 Av" : "Bay Ridge-95 St",
+                            'W': direction === 'Uptown' ? "Astoria-Ditmars Blvd" : "Whitehall St-South Ferry",
+                            'S': direction === 'Uptown' ? "Times Sq-42 St" : "Grand Central-42 St",
+                            'GS': direction === 'Uptown' ? "Times Sq-42 St" : "Grand Central-42 St",
+                            'FS': direction === 'Uptown' ? "Franklin Av" : "Prospect Park",
+                            'H': direction === 'Uptown' ? "Broad Channel" : "Rockaway Park-Beach 116 St",
+                            'SI': direction === 'Uptown' ? "St George" : "Tottenville",
+                            'SIR': direction === 'Uptown' ? "St George" : "Tottenville"
+                          };
+                          destination = dests[routeId] || direction;
+                        }
 
                         // Track this route for dynamic line detection
                         addDynamicRoute(stationId, routeId);
