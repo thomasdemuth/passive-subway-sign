@@ -6,7 +6,7 @@ import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
 import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -89,7 +89,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   const downtownArrivals = filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
 
   return (
-    <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15">
+    <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] h-[340px] sm:h-[380px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15 flex flex-col">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <span className="text-base sm:text-lg font-semibold truncate">{stationName}</span>
@@ -138,7 +138,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
           )}
         </div>
       </CardHeader>
-      <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 space-y-3 sm:space-y-4">
+      <CardContent className="px-3 sm:px-4 pb-3 sm:pb-4 pt-2 space-y-3 sm:space-y-4 flex-1 overflow-hidden">
         {isLoading ? (
           <motion.div 
             className="flex items-center justify-center py-10"
@@ -179,11 +179,18 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                     ))
                   ) : (
                     <motion.div 
-                      className="py-4 text-center text-xs text-muted-foreground/60"
+                      className="h-[90px] flex items-center justify-center relative"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
-                      No uptown trains
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        animate={{ opacity: [0.2, 0.5, 0.2] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <X className="w-16 h-16 text-red-500/40" strokeWidth={3} />
+                      </motion.div>
+                      <span className="text-xs text-muted-foreground/60 relative z-10">No uptown trains</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -207,11 +214,18 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                     ))
                   ) : (
                     <motion.div 
-                      className="py-4 text-center text-xs text-muted-foreground/60"
+                      className="h-[90px] flex items-center justify-center relative"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
-                      No downtown trains
+                      <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        animate={{ opacity: [0.2, 0.5, 0.2] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <X className="w-16 h-16 text-red-500/40" strokeWidth={3} />
+                      </motion.div>
+                      <span className="text-xs text-muted-foreground/60 relative z-10">No downtown trains</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
