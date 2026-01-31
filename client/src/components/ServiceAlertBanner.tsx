@@ -116,8 +116,8 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   
   return (
     <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
-      <div className="px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex items-center justify-between gap-3">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 flex justify-center">
+        <div className="flex items-center justify-between gap-3 w-full max-w-4xl">
           <button 
             className="flex items-center gap-3 flex-1 flex-wrap"
             onClick={() => setExpanded(!expanded)}
@@ -157,24 +157,24 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
           </Button>
         </div>
         
-        <AnimatePresence>
-          {expanded && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden"
-            >
-              <div className="pt-3 space-y-2 max-h-[40vh] overflow-y-auto" data-testid="container-alerts-list">
-                {uniqueAlerts.map((alert) => (
-                  <AlertItem key={alert.id} alert={alert} compact />
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+      <AnimatePresence>
+        {expanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden flex justify-center px-3 sm:px-6"
+          >
+            <div className="pt-3 space-y-2 max-h-[40vh] overflow-y-auto w-full max-w-4xl" data-testid="container-alerts-list">
+              {uniqueAlerts.map((alert) => (
+                <AlertItem key={alert.id} alert={alert} compact />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
