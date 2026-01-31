@@ -17,7 +17,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "R13": "N R W", // 5 Av/59 St
   "R14": "N Q R W", // 57 St-7 Av
   "R15": "N R W", // 49 St
-  "R16": "N Q R W S 7", // Times Sq-42 St
+  "R16": "N Q R W", // Times Sq-42 St
   "R17": "N Q R W", // 34 St-Herald Sq
   "R18": "R W", // 28 St
   "R19": "R W", // 23 St
@@ -543,7 +543,8 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
     { id: "R20", lines: "N Q R W" }
   ],
   "Times Sq-42 St": [
-    { id: "R16", lines: "N Q R W S 7" },
+    { id: "R16", lines: "N Q R W" },
+    { id: "725", lines: "7" },
     { id: "902", lines: "S" }
   ],
   "Grand Central-42 St": [
@@ -687,8 +688,9 @@ export class MemStorage implements IStorage {
       // Fallback list
       const fallback: Station[] = [
         { id: "127", name: "Times Sq - 42 St", line: "1 2 3", lat: 40.755983, lng: -73.986229 },
-        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W S 7", lat: 40.755983, lng: -73.986229 },
+        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W", lat: 40.755983, lng: -73.986229 },
         { id: "725", name: "Times Sq - 42 St", line: "7", lat: 40.755983, lng: -73.986229 },
+        { id: "902", name: "Times Sq - 42 St", line: "S", lat: 40.755983, lng: -73.986229 },
         { id: "602", name: "Grand Central - 42 St", line: "4 5 6", lat: 40.751776, lng: -73.976848 },
         { id: "901", name: "Grand Central - 42 St", line: "S", lat: 40.751776, lng: -73.976848 },
         { id: "128", name: "34 St - Penn Station", line: "1 2 3", lat: 40.750373, lng: -73.991057 },

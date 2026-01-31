@@ -23,7 +23,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: "search",
     title: "Search for Stations",
-    description: "Use the search bar to find stations by name or subway line (like 'A' or 'Times Sq'). Try typing something!",
+    description: "Use the search bar to find stations by name or subway line (like 'Times Sq')",
     icon: <Search className="w-8 h-8" />,
     targetSelector: "[data-testid='input-search']",
     interactive: true,
@@ -31,7 +31,7 @@ const TUTORIAL_STEPS: TutorialStep[] = [
   {
     id: "location",
     title: "Enable Location",
-    description: "Tap the location button to sort stations by walking distance and see estimated walk times.",
+    description: "Tap the location button to sort stations by distance and see estimated walk times.",
     icon: <MapPin className="w-8 h-8" />,
     targetSelector: "[data-testid='button-toggle-location']",
     interactive: true,
