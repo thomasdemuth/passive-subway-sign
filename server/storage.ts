@@ -542,12 +542,11 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
     { id: "L03", lines: "L" },
     { id: "R20", lines: "N Q R W" }
   ],
-  "Times Sq - 42 St": [
-    { id: "R16", lines: "N Q R W S" },
-    { id: "725", lines: "7" },
+  "Times Sq-42 St": [
+    { id: "R16", lines: "N Q R W S 7" },
     { id: "902", lines: "S" }
   ],
-  "Grand Central - 42 St": [
+  "Grand Central-42 St": [
     { id: "723", lines: "7" },
     { id: "901", lines: "S" }
   ],
