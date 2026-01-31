@@ -222,7 +222,7 @@ export default function Departures() {
       if (!containerRef.current || !contentRef.current) return;
       
       const containerHeight = containerRef.current.clientHeight;
-      const availableHeight = containerHeight - 60; // 30px top + 30px bottom
+      const availableHeight = containerHeight - 20; // 10px top + 10px bottom
       
       // Get the natural height of content at scale 1
       const contentHeight = contentRef.current.scrollHeight;
@@ -365,7 +365,7 @@ export default function Departures() {
         <ServiceAlertBanner routeIds={allRouteIds} />
       )}
       
-      <div ref={containerRef} className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-[30px]">
+      <div ref={containerRef} className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-[10px]">
         {stationsLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
