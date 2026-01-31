@@ -209,8 +209,13 @@ export default function Departures() {
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
   
-  const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 2));
+  const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
   const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
+  
+  // Dynamic base scale based on station count: 1 station = 1.5, scales down to 0.6 for 5+ stations
+  const stationCount = params.ids?.split(",").length || 1;
+  const baseScale = Math.max(0.6, Math.min(1.5, 1.5 - (stationCount - 1) * 0.225));
+  const effectiveScale = baseScale * zoom;
   
   const toggleFullscreen = async () => {
     if (!document.fullscreenElement) {
@@ -332,7 +337,7 @@ export default function Departures() {
         <ServiceAlertBanner routeIds={allRouteIds} />
       )}
       
-      <div className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ transform: `scale(${zoom})`, transformOrigin: 'top left' }}>
+      <div className="flex-1 overflow-hidden [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ transform: `scale(${effectiveScale})`, transformOrigin: 'top center' }}>
         {stationsLoading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -355,7 +360,7 @@ export default function Departures() {
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex gap-3 p-3 sm:p-4"
+                className="flex justify-center gap-3 p-3 sm:p-4"
               >
                 {selectedStations.map((station) => (
                   <StationDepartures 
