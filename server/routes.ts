@@ -24,9 +24,8 @@ const FEEDS = [
 const COMBINED_STATIONS: Record<string, string[]> = {
   // South Ferry / Whitehall St
   "140": ["R27"], "R27": ["140"],
-  // Times Sq - 42 St
-  "127": ["725", "R16", "902"], "725": ["127", "R16", "902"], 
-  "R16": ["127", "725", "902"], "902": ["127", "725", "R16"],
+  // Times Sq - 42 St (each station shows only its own lines)
+  // 127 = 1/2/3, R16 = N/Q/R/W, 725 = 7, 902 = S (GS)
   // Grand Central - 42 St
   "631": ["725", "901"], "901": ["631", "725"],
   // 14 St - Union Sq
