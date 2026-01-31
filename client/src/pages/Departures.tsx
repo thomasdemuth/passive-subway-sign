@@ -168,14 +168,20 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
               />
             )
           ))}
-          {availableLines.length > 1 && selectedLines.size < availableLines.length && (
-            <button
-              onClick={selectAllLines}
-              className="text-[9px] sm:text-[10px] text-primary hover:underline ml-1"
-              data-testid="button-show-all"
-            >
-              Show all
-            </button>
+          {availableLines.length > 1 && (
+            <span className="text-[8px] sm:text-[9px] text-white/40 ml-1">
+              {selectedLines.size < availableLines.length ? (
+                <button
+                  onClick={selectAllLines}
+                  className="text-primary hover:underline"
+                  data-testid="button-show-all"
+                >
+                  show all
+                </button>
+              ) : (
+                "click to filter"
+              )}
+            </span>
           )}
         </div>
       </CardHeader>
