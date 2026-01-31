@@ -278,13 +278,53 @@ export default function Departures() {
   return (
     <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
       <div className="bg-background/80 backdrop-blur-md border-b border-white/10">
-        <div className="px-3 sm:px-6 py-2 sm:py-3 flex flex-col items-center justify-center">
-          <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
-            {timeString}
-          </span>
-          <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
-            {dateString}
-          </span>
+        <div className="px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-center relative">
+          <div className={cn("absolute left-3 sm:left-6 flex items-center gap-1 sm:gap-2 transition-opacity duration-300", showControls ? "opacity-100" : "opacity-0 pointer-events-none")}>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => navigate("/")}
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              data-testid="button-back"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={zoomOut}
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              data-testid="button-zoom-out"
+            >
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={zoomIn}
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              data-testid="button-zoom-in"
+            >
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={toggleFullscreen}
+              className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9"
+              data-testid="button-fullscreen"
+            >
+              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            </Button>
+          </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
+              {timeString}
+            </span>
+            <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
+              {dateString}
+            </span>
+          </div>
         </div>
       </div>
       
@@ -337,44 +377,6 @@ export default function Departures() {
         MTA GTFS-Realtime • Updates every 30s
       </div>
       
-      <div className={cn("fixed bottom-4 left-4 flex items-center gap-2 z-50 transition-opacity duration-300", showControls ? "opacity-100" : "opacity-0 pointer-events-none")}>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigate("/")}
-          className="bg-background/80 backdrop-blur-md"
-          data-testid="button-back"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={zoomOut}
-          className="bg-background/80 backdrop-blur-md"
-          data-testid="button-zoom-out"
-        >
-          <ZoomOut className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={zoomIn}
-          className="bg-background/80 backdrop-blur-md"
-          data-testid="button-zoom-in"
-        >
-          <ZoomIn className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleFullscreen}
-          className="bg-background/80 backdrop-blur-md"
-          data-testid="button-fullscreen"
-        >
-          {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-        </Button>
-      </div>
     </div>
   );
 }
