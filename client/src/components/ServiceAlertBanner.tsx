@@ -116,44 +116,44 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   
   return (
     <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
-      <div className="px-3 sm:px-6 py-2">
-        <div className="flex items-center justify-between gap-2">
+      <div className="px-3 sm:px-6 py-3 sm:py-4">
+        <div className="flex items-center justify-between gap-3">
           <button 
-            className="flex items-center gap-2 flex-1 flex-wrap"
+            className="flex items-center gap-3 flex-1 flex-wrap"
             onClick={() => setExpanded(!expanded)}
             data-testid="button-toggle-alerts"
           >
             <AlertTriangle className={cn(
-              "w-4 h-4 flex-shrink-0",
+              "w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0",
               highSeverityCount > 0 ? "text-red-500" : mediumSeverityCount > 0 ? "text-orange-500" : "text-yellow-500"
             )} />
-            <div className="flex items-center gap-3 flex-wrap" data-testid="text-alert-summary">
+            <div className="flex items-center gap-3 sm:gap-4 flex-wrap" data-testid="text-alert-summary">
               {Object.entries(alertsByType).map(([type, routes]) => (
-                <div key={type} className="flex items-center gap-1">
-                  <span className="text-xs sm:text-sm font-medium">{type}:</span>
-                  <div className="flex items-center gap-0.5">
+                <div key={type} className="flex items-center gap-1.5">
+                  <span className="text-sm sm:text-base font-medium">{type}:</span>
+                  <div className="flex items-center gap-1">
                     {routes.map((routeId) => (
                       <RouteIcon 
                         key={routeId}
                         routeId={routeId} 
                         size="sm" 
-                        className="w-4 h-4 text-[8px]" 
+                        className="w-5 h-5 sm:w-6 sm:h-6 text-[9px] sm:text-[11px]" 
                       />
                     ))}
                   </div>
                 </div>
               ))}
             </div>
-            {expanded ? <ChevronUp className="w-3 h-3 ml-auto flex-shrink-0" /> : <ChevronDown className="w-3 h-3 ml-auto flex-shrink-0" />}
+            {expanded ? <ChevronUp className="w-4 h-4 ml-auto flex-shrink-0" /> : <ChevronDown className="w-4 h-4 ml-auto flex-shrink-0" />}
           </button>
           <Button
             variant="ghost"
             size="sm"
-            className="flex-shrink-0 p-1"
+            className="flex-shrink-0 p-1.5"
             onClick={() => setDismissed(true)}
             data-testid="button-dismiss-alerts"
           >
-            <X className="w-3 h-3" />
+            <X className="w-4 h-4" />
           </Button>
         </div>
         
