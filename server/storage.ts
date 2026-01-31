@@ -430,6 +430,8 @@ const LINE_MAPPINGS: Record<string, string> = {
   "225": "2 3", // 145 St
   "226": "2 3", // 135 St
   "227": "2 3", // 125 St (Lenox)
+  "301": "3", // 148 St-Lenox Terminal
+  "302": "3", // 145 St (3 train only)
   
   // IRT Lexington Av Line (4, 5, 6)
   "401": "4", // Woodlawn
