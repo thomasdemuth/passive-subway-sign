@@ -198,9 +198,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           className="text-center text-[10px] sm:text-sm text-muted-foreground/50 mt-8 sm:mt-16 pb-4"
-        >
-          Data provided by MTA GTFS-Realtime Feed
-        </motion.div>
+        >Data provided by MTA GTFS-Realtime Feed - Made by Thomas Demuth</motion.div>
       </div>
     </div>
   );
