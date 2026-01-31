@@ -618,10 +618,138 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   ],
 };
 
+// Common alternative spellings and tags for stations
+// Maps station name (lowercase) to array of searchable tags
+const STATION_TAGS: Record<string, string[]> = {
+  // Abbreviations
+  "times sq-42 st": ["times square", "42nd street", "42 street", "42nd", "tsq"],
+  "grand central-42 st": ["grand central", "42nd street", "42 street", "gct", "42nd"],
+  "penn station": ["34th street", "34 street", "msg", "madison square garden"],
+  "34 st-penn station": ["penn station", "34th street", "34 street", "msg", "madison square garden"],
+  "14 st-union sq": ["union square", "14th street", "14 street", "union sq"],
+  "world trade center": ["wtc", "oculus", "freedom tower", "1 wtc"],
+  "wtc cortlandt": ["world trade center", "wtc", "cortlandt", "oculus"],
+  "fulton st": ["fulton street", "fulton center"],
+  "atlantic av-barclays ctr": ["barclays center", "barclays", "atlantic avenue", "atlantic terminal"],
+  "jay st-metrotech": ["metrotech", "jay street", "downtown brooklyn"],
+  "borough hall": ["court st", "court street"],
+  "court st / borough hall": ["borough hall", "court street"],
+  "w 4 st-wash sq": ["west 4th", "west 4", "washington square", "west 4th street"],
+  "herald sq": ["macy's", "macys", "herald square"],
+  "34 st-herald sq": ["macy's", "macys", "herald square", "34th street"],
+  "rockefeller ctr": ["rockefeller center", "rock center", "30 rock", "top of the rock"],
+  "47-50 sts-rockefeller ctr": ["rockefeller center", "rock center", "30 rock", "radio city"],
+  "lexington av/59 st": ["bloomingdales", "bloomingdale's", "lex", "59th street"],
+  "59 st-columbus circle": ["columbus circle", "time warner center", "59th street"],
+  "42 st-port authority bus terminal": ["port authority", "pabt", "bus terminal", "42nd street"],
+  "canal st": ["chinatown", "canal street"],
+  "coney island-stillwell av": ["coney island", "stillwell", "stillwell avenue"],
+  "brighton beach": ["brighton", "little odessa"],
+  "flushing-main st": ["flushing", "main street", "downtown flushing"],
+  "jamaica center-parsons/archer": ["jamaica", "archer avenue", "parsons"],
+  "howard beach-jfk airport": ["jfk", "airtrain", "howard beach"],
+  "sutphin blvd-archer av-jfk airport": ["jfk", "airtrain", "jamaica", "sutphin"],
+  "mets-willets point": ["citi field", "mets", "usta", "us open", "willets point"],
+  "yankee stadium": ["yankees", "yankee", "161 st"],
+  "161 st-yankee stadium": ["yankees", "yankee", "161st street"],
+  "125 st": ["harlem", "125th street"],
+  "cathedral pkwy (110 st)": ["cathedral parkway", "110th street", "110 street"],
+  "86 st": ["86th street", "yorkville", "upper east side", "upper west side"],
+  "72 st": ["72nd street", "upper west side"],
+  "bedford av": ["bedford avenue", "williamsburg", "bedford"],
+  "lorimer st": ["lorimer street", "williamsburg"],
+  "metropolitan av": ["metropolitan avenue", "lorimer"],
+  "dekalb av": ["dekalb avenue", "downtown brooklyn"],
+  "nevins st": ["nevins street", "downtown brooklyn"],
+  "hoyt-schermerhorn sts": ["hoyt schermerhorn", "hoyt", "schermerhorn"],
+  "broadway junction": ["east new york", "broadway jct"],
+  "eastern pkwy-brooklyn museum": ["brooklyn museum", "eastern parkway"],
+  "prospect park": ["prospect park", "grand army plaza"],
+  "high st": ["high street", "dumbo", "brooklyn bridge park"],
+  "york st": ["york street", "dumbo", "brooklyn bridge park"],
+  "south ferry": ["whitehall", "staten island ferry", "battery park"],
+  "whitehall st-south ferry": ["south ferry", "staten island ferry", "battery park", "whitehall"],
+  "bowling green": ["battery park", "charging bull", "wall street"],
+  "wall st": ["wall street", "financial district", "fidi"],
+  "chambers st": ["city hall", "chambers street"],
+  "city hall": ["chambers", "city hall park"],
+  "bleecker st / broadway-lafayette st": ["broadway lafayette", "noho", "nolita", "bleecker"],
+  "astor pl": ["astor place", "cooper union", "east village"],
+  "8 st-nyu": ["nyu", "new york university", "astor place"],
+  "14 st": ["14th street", "14 street"],
+  "23 st": ["23rd street", "23 street", "chelsea", "flatiron"],
+  "28 st": ["28th street", "28 street", "nomad"],
+  "33 st": ["33rd street", "33 street"],
+  "42 st-bryant pk": ["bryant park", "42nd street", "new york public library", "nypl"],
+  "51 st": ["51st street", "51 street"],
+  "68 st-hunter college": ["hunter college", "68th street", "ues"],
+  "77 st": ["77th street", "upper east side"],
+  "96 st": ["96th street", "96 street"],
+  "103 st": ["103rd street", "103 street"],
+  "110 st": ["110th street", "110 street", "cathedral parkway"],
+  "116 st": ["116th street", "116 street"],
+  "116 st-columbia university": ["columbia", "columbia university", "morningside heights"],
+  "137 st-city college": ["city college", "ccny", "137th street"],
+  "145 st": ["145th street", "145 street"],
+  "168 st": ["168th street", "168 street", "columbia presbyterian"],
+  "175 st": ["175th street", "175 street", "george washington bridge"],
+  "181 st": ["181st street", "181 street", "washington heights"],
+  "190 st": ["fort tryon", "the cloisters", "190th street"],
+  "207 st": ["207th street", "inwood"],
+  "inwood-207 st": ["inwood", "207th street", "207 street"],
+  "dyckman st": ["dyckman street", "inwood"],
+  "van cortlandt park-242 st": ["van cortlandt", "242nd street", "woodlawn"],
+  "pelham bay park": ["pelham bay", "orchard beach"],
+  "parkchester": ["parkchester"],
+  "hunts point av": ["hunts point", "hunts point avenue"],
+  "fordham rd": ["fordham", "fordham road", "fordham university"],
+  "bedford park blvd": ["bedford park", "lehman college"],
+  "kingsbridge rd": ["kingsbridge", "kingsbridge road"],
+  "norwood-205 st": ["norwood", "205th street"],
+  "woodlawn": ["woodlawn cemetery", "jerome avenue"],
+  "wakefield-241 st": ["wakefield", "241st street"],
+  "eastchester-dyre av": ["dyre avenue", "eastchester"],
+  "bay ridge-95 st": ["bay ridge", "95th street"],
+  "forest hills-71 av": ["forest hills", "71st avenue", "austin street"],
+  "jamaica-179 st": ["jamaica", "179th street", "hillside"],
+  "far rockaway-mott av": ["far rockaway", "mott avenue"],
+  "rockaway park-beach 116 st": ["rockaway park", "beach 116", "rockaway beach"],
+  "broad channel": ["broad channel", "jamaica bay"],
+  "euclid av": ["euclid avenue", "east new york"],
+  "ozone park-lefferts blvd": ["ozone park", "lefferts boulevard"],
+  "middle village-metropolitan av": ["middle village", "metropolitan avenue"],
+  "astoria-ditmars blvd": ["astoria", "ditmars", "ditmars boulevard"],
+  "queensboro plaza": ["queensboro", "long island city", "lic"],
+  "court sq": ["court square", "long island city", "lic"],
+  "court sq-23 st": ["court square", "long island city", "lic", "23rd street"],
+  "hunters point av": ["hunters point", "long island city", "lic"],
+  "vernon blvd-jackson av": ["vernon boulevard", "jackson avenue", "lic"],
+  "greenpoint av": ["greenpoint avenue", "greenpoint"],
+  "nassau av": ["nassau avenue", "greenpoint"],
+  "roosevelt island": ["roosevelt island", "tram"],
+  "lexington av/63 st": ["63rd street", "upper east side"],
+  "57 st": ["57th street", "midtown"],
+  "57 st-7 av": ["57th street", "carnegie hall", "7th avenue"],
+  "49 st": ["49th street", "rockefeller center"],
+  "5 av": ["5th avenue", "fifth avenue"],
+  "5 av/53 st": ["5th avenue", "53rd street", "moma"],
+  "7 av": ["7th avenue", "seventh avenue", "park slope"],
+  "church av": ["church avenue", "flatbush"],
+  "newkirk av": ["newkirk avenue", "flatbush"],
+  "flatbush av-brooklyn college": ["brooklyn college", "flatbush", "flatbush avenue"],
+  "sheepshead bay": ["sheepshead bay"],
+  "kings hwy": ["kings highway"],
+  "bay pkwy": ["bay parkway"],
+  "st george": ["st. george", "saint george", "staten island ferry"],
+  "tottenville": ["tottenville", "conference house"],
+};
+
 export interface IStorage {
   getStations(): Promise<Station[]>;
   getStation(id: string): Promise<Station | undefined>;
   initStations(): Promise<void>;
+  addStationTags(stationId: string, tags: string[]): Promise<boolean>;
+  getStationTags(stationId: string): Promise<string[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -676,12 +804,16 @@ export class MemStorage implements IStorage {
           // Use name override if available
           const displayName = STATION_NAME_OVERRIDES[id] || station.name;
           
+          // Get tags for this station
+          const stationTags = STATION_TAGS[displayName.toLowerCase()] || [];
+          
           this.stations.set(id, {
             id,
             name: displayName,
             line: line.trim(),
             lat: station.location?.[0] || null,
             lng: station.location?.[1] || null,
+            tags: stationTags,
           });
           
           // Add split stations for this location
@@ -690,12 +822,15 @@ export class MemStorage implements IStorage {
             splitEntries.forEach(({ id: splitId, lines, name: splitName }) => {
               // Only add if not already in the map
               if (!this.stations.has(splitId)) {
+                const splitDisplayName = splitName || station.name;
+                const splitTags = STATION_TAGS[splitDisplayName.toLowerCase()] || [];
                 this.stations.set(splitId, {
                   id: splitId,
-                  name: splitName || station.name,
+                  name: splitDisplayName,
                   line: lines,
                   lat: station.location?.[0] || null,
                   lng: station.location?.[1] || null,
+                  tags: splitTags,
                 });
               }
             });
@@ -704,9 +839,9 @@ export class MemStorage implements IStorage {
         
         // Manually add Franklin Avenue Shuttle stations (not in external data)
         const franklinShuttleStations: Station[] = [
-          { id: "S01", name: "Franklin Av-Fulton St", line: "FS", lat: 40.680596, lng: -73.955827 },
-          { id: "S03", name: "Park Pl", line: "FS", lat: 40.674772, lng: -73.957624 },
-          { id: "S04", name: "Botanic Garden", line: "FS", lat: 40.670343, lng: -73.959245 },
+          { id: "S01", name: "Franklin Av-Fulton St", line: "FS", lat: 40.680596, lng: -73.955827, tags: ["franklin avenue", "fulton street", "franklin shuttle"] },
+          { id: "S03", name: "Park Pl", line: "FS", lat: 40.674772, lng: -73.957624, tags: ["park place", "franklin shuttle"] },
+          { id: "S04", name: "Botanic Garden", line: "FS", lat: 40.670343, lng: -73.959245, tags: ["brooklyn botanic garden", "franklin shuttle", "prospect park"] },
         ];
         franklinShuttleStations.forEach(s => {
           if (!this.stations.has(s.id)) {
@@ -716,8 +851,8 @@ export class MemStorage implements IStorage {
         
         // Manually add missing R line stations
         const missingRStations: Station[] = [
-          { id: "R33", name: "4 Av-9 St", line: "R", lat: 40.670847, lng: -73.988302 },
-          { id: "R27", name: "Whitehall St-South Ferry", line: "R W", lat: 40.703087, lng: -74.012994 },
+          { id: "R33", name: "4 Av-9 St", line: "R", lat: 40.670847, lng: -73.988302, tags: ["4th avenue", "9th street", "park slope"] },
+          { id: "R27", name: "Whitehall St-South Ferry", line: "R W", lat: 40.703087, lng: -74.012994, tags: STATION_TAGS["whitehall st-south ferry"] || [] },
         ];
         missingRStations.forEach(s => {
           if (!this.stations.has(s.id)) {
@@ -727,7 +862,7 @@ export class MemStorage implements IStorage {
         
         // Manually add M line terminal station
         const mLineStations: Station[] = [
-          { id: "M18", name: "Myrtle-Wyckoff Avs", line: "M", lat: 40.699814, lng: -73.912701 },
+          { id: "M18", name: "Myrtle-Wyckoff Avs", line: "M", lat: 40.699814, lng: -73.912701, tags: ["myrtle avenue", "wyckoff avenue", "bushwick"] },
         ];
         mLineStations.forEach(s => {
           if (!this.stations.has(s.id)) {
@@ -743,14 +878,14 @@ export class MemStorage implements IStorage {
       console.error("Failed to fetch stations, using fallback:", e);
       // Fallback list
       const fallback: Station[] = [
-        { id: "127", name: "Times Sq - 42 St", line: "1 2 3", lat: 40.755983, lng: -73.986229 },
-        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W", lat: 40.755983, lng: -73.986229 },
-        { id: "725", name: "Times Sq - 42 St", line: "7", lat: 40.755983, lng: -73.986229 },
-        { id: "902", name: "Times Sq - 42 St", line: "S", lat: 40.755983, lng: -73.986229 },
-        { id: "602", name: "Grand Central - 42 St", line: "4 5 6", lat: 40.751776, lng: -73.976848 },
-        { id: "901", name: "Grand Central - 42 St", line: "S", lat: 40.751776, lng: -73.976848 },
-        { id: "128", name: "34 St - Penn Station", line: "1 2 3", lat: 40.750373, lng: -73.991057 },
-        { id: "A28", name: "34 St - Penn Station", line: "A C E", lat: 40.750373, lng: -73.991057 },
+        { id: "127", name: "Times Sq - 42 St", line: "1 2 3", lat: 40.755983, lng: -73.986229, tags: STATION_TAGS["times sq-42 st"] || [] },
+        { id: "R16", name: "Times Sq - 42 St", line: "N Q R W", lat: 40.755983, lng: -73.986229, tags: STATION_TAGS["times sq-42 st"] || [] },
+        { id: "725", name: "Times Sq - 42 St", line: "7", lat: 40.755983, lng: -73.986229, tags: STATION_TAGS["times sq-42 st"] || [] },
+        { id: "902", name: "Times Sq - 42 St", line: "S", lat: 40.755983, lng: -73.986229, tags: STATION_TAGS["times sq-42 st"] || [] },
+        { id: "602", name: "Grand Central - 42 St", line: "4 5 6", lat: 40.751776, lng: -73.976848, tags: STATION_TAGS["grand central-42 st"] || [] },
+        { id: "901", name: "Grand Central - 42 St", line: "S", lat: 40.751776, lng: -73.976848, tags: STATION_TAGS["grand central-42 st"] || [] },
+        { id: "128", name: "34 St - Penn Station", line: "1 2 3", lat: 40.750373, lng: -73.991057, tags: STATION_TAGS["34 st-penn station"] || [] },
+        { id: "A28", name: "34 St - Penn Station", line: "A C E", lat: 40.750373, lng: -73.991057, tags: STATION_TAGS["34 st-penn station"] || [] },
       ];
       fallback.forEach(s => this.stations.set(s.id, s));
     }
@@ -762,6 +897,25 @@ export class MemStorage implements IStorage {
 
   async getStation(id: string): Promise<Station | undefined> {
     return this.stations.get(id);
+  }
+
+  async addStationTags(stationId: string, tags: string[]): Promise<boolean> {
+    const station = this.stations.get(stationId);
+    if (!station) return false;
+    
+    const existingTags = new Set(station.tags || []);
+    tags.forEach(tag => existingTags.add(tag.toLowerCase()));
+    
+    this.stations.set(stationId, {
+      ...station,
+      tags: Array.from(existingTags),
+    });
+    return true;
+  }
+
+  async getStationTags(stationId: string): Promise<string[]> {
+    const station = this.stations.get(stationId);
+    return station?.tags || [];
   }
 }
 

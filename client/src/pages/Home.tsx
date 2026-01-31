@@ -20,10 +20,12 @@ export default function Home() {
   const { location: userLocation, loading: locationLoading, error: locationError, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
   const { showTutorial, completeTutorial, dismissTutorial, startTutorial } = useTutorial();
 
-  const filteredStations = stations?.filter(s => 
-    s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    s.line.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredStations = stations?.filter(s => {
+    const query = searchQuery.toLowerCase();
+    return s.name.toLowerCase().includes(query) ||
+      s.line.toLowerCase().includes(query) ||
+      (s.tags && s.tags.some(tag => tag.toLowerCase().includes(query)));
+  }) || [];
 
   const sortedStations = useMemo(() => {
     const stationsCopy = [...filteredStations];

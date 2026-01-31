@@ -13,6 +13,7 @@ export const stations = pgTable("stations", {
   line: text("line").notNull(), // e.g., "1 2 3"
   lat: doublePrecision("lat"),
   lng: doublePrecision("lng"),
+  tags: text("tags").array(), // Searchable alternative names/spellings
 });
 
 // === SCHEMAS ===

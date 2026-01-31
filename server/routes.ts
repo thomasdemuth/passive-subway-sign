@@ -231,6 +231,31 @@ export async function registerRoutes(
     res.json(stationsWithDynamic);
   });
 
+  // Add tags to a station
+  app.post("/api/stations/:id/tags", async (req, res) => {
+    const stationId = req.params.id as string;
+    const { tags } = req.body as { tags: string[] };
+    
+    if (!tags || !Array.isArray(tags)) {
+      return res.status(400).json({ message: "Tags must be an array of strings" });
+    }
+    
+    const success = await storage.addStationTags(stationId, tags);
+    if (!success) {
+      return res.status(404).json({ message: "Station not found" });
+    }
+    
+    const updatedTags = await storage.getStationTags(stationId);
+    res.json({ stationId, tags: updatedTags });
+  });
+
+  // Get tags for a station
+  app.get("/api/stations/:id/tags", async (req, res) => {
+    const stationId = req.params.id as string;
+    const tags = await storage.getStationTags(stationId);
+    res.json({ stationId, tags });
+  });
+
   app.get(api.stations.getArrivals.path, async (req, res) => {
     const stationId = req.params.id as string;
     const station = await storage.getStation(stationId);
