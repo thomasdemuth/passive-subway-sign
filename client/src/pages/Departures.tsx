@@ -1,6 +1,6 @@
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { useParams, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { useStations, useArrivals } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
@@ -225,8 +225,9 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
 }
 
 export default function Departures() {
-  const params = useParams<{ ids: string }>();
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
+  // Extract station IDs from URL path /departures/:ids
+  const ids = location.startsWith("/departures/") ? location.replace("/departures/", "") : "";
   const { data: stations, isLoading: stationsLoading } = useStations();
   const { location: userLocation } = useUserLocation();
   const currentTime = useCurrentTime();
@@ -266,7 +267,7 @@ export default function Departures() {
       clearTimeout(timeout);
       window.removeEventListener('resize', calculateScale);
     };
-  }, [params.ids]);
+  }, [ids]);
   
   const effectiveScale = autoScale * zoom;
   
@@ -315,7 +316,7 @@ export default function Departures() {
   const timeString = currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
-  const stationIds = params.ids?.split(",") || [];
+  const stationIds = ids?.split(",").filter(Boolean) || [];
   const selectedStations = stations?.filter(s => stationIds.includes(s.id)) || [];
   
   const allRouteIds = useMemo(() => {
