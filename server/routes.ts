@@ -415,7 +415,8 @@ export async function registerRoutes(
           // Determine alert type from header text
           let alertType = "Service Alert";
           const headerLower = headerText.toLowerCase();
-          if (headerLower.includes("delay")) alertType = "Delays";
+          if (headerLower.includes("severe delay")) alertType = "Severe Delays";
+          else if (headerLower.includes("delay")) alertType = "Delays";
           else if (headerLower.includes("suspend")) alertType = "Suspended";
           else if (headerLower.includes("planned work")) alertType = "Planned Work";
           else if (headerLower.includes("service change")) alertType = "Service Change";
@@ -423,7 +424,8 @@ export async function registerRoutes(
 
           // Estimate severity based on alert type
           let severity = 10;
-          if (alertType === "Delays") severity = 22;
+          if (alertType === "Severe Delays") severity = 35;
+          else if (alertType === "Delays") severity = 22;
           else if (alertType === "Suspended") severity = 39;
           else if (alertType === "Slow Speeds") severity = 16;
           else if (alertType === "Service Change") severity = 20;
@@ -502,14 +504,16 @@ export async function registerRoutes(
 
           let alertType = "Service Alert";
           const headerLower = headerText.toLowerCase();
-          if (headerLower.includes("delay")) alertType = "Delays";
+          if (headerLower.includes("severe delay")) alertType = "Severe Delays";
+          else if (headerLower.includes("delay")) alertType = "Delays";
           else if (headerLower.includes("suspend")) alertType = "Suspended";
           else if (headerLower.includes("planned work")) alertType = "Planned Work";
           else if (headerLower.includes("service change")) alertType = "Service Change";
           else if (headerLower.includes("slow")) alertType = "Slow Speeds";
 
           let severity = 10;
-          if (alertType === "Delays") severity = 22;
+          if (alertType === "Severe Delays") severity = 35;
+          else if (alertType === "Delays") severity = 22;
           else if (alertType === "Suspended") severity = 39;
           else if (alertType === "Slow Speeds") severity = 16;
           else if (alertType === "Service Change") severity = 20;
