@@ -415,7 +415,12 @@ export async function registerRoutes(
           // Determine alert type from header text
           let alertType = "Service Alert";
           const headerLower = headerText.toLowerCase();
-          if (headerLower.includes("severe delay")) alertType = "Severe Delays";
+          // Check for severe delays - MTA uses "severe delay", "severely delayed", or "delays...severely"
+          const hasSevereDelay = headerLower.includes("severe delay") || 
+            headerLower.includes("severely delayed") ||
+            (headerLower.includes("delay") && headerLower.includes("severely"));
+          
+          if (hasSevereDelay) alertType = "Severe Delays";
           else if (headerLower.includes("delay")) alertType = "Delays";
           else if (headerLower.includes("suspend")) alertType = "Suspended";
           else if (headerLower.includes("planned work")) alertType = "Planned Work";
@@ -504,7 +509,12 @@ export async function registerRoutes(
 
           let alertType = "Service Alert";
           const headerLower = headerText.toLowerCase();
-          if (headerLower.includes("severe delay")) alertType = "Severe Delays";
+          // Check for severe delays - MTA uses "severe delay", "severely delayed", or "delays...severely"
+          const hasSevereDelay = headerLower.includes("severe delay") || 
+            headerLower.includes("severely delayed") ||
+            (headerLower.includes("delay") && headerLower.includes("severely"));
+          
+          if (hasSevereDelay) alertType = "Severe Delays";
           else if (headerLower.includes("delay")) alertType = "Delays";
           else if (headerLower.includes("suspend")) alertType = "Suspended";
           else if (headerLower.includes("planned work")) alertType = "Planned Work";
