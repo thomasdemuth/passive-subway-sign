@@ -105,9 +105,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     "R01",         // Astoria-Ditmars Blvd (N/W)
     "S31",         // St George (SIR)
     "R45",         // Bay Ridge-95 St (R)
-    "M01",         // Forest Hills-71 Av (M)
-    "M22",         // Middle Village-Metropolitan Av (M)
-    "M18",         // Myrtle-Wyckoff Avs (M/L)
+    "M01",         // Middle Village-Metropolitan Av (M)
   ];
   const isTerminalStation = TERMINAL_STATIONS.includes(stationId);
   
