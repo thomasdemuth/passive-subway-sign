@@ -168,7 +168,9 @@ export async function registerRoutes(
                           'S': "Shuttle",
                           'FS': direction === 'Uptown' ? "Franklin Av" : "Prospect Park",
                           'GS': "Shuttle",
-                          'H': direction === 'Uptown' ? "Broad Channel" : "Rockaway Park"
+                          'H': direction === 'Uptown' ? "Broad Channel" : "Rockaway Park",
+                          'SI': direction === 'Uptown' ? "St George" : "Tottenville",
+                          'SIR': direction === 'Uptown' ? "St George" : "Tottenville"
                         };
                         destination = dests[routeId] || direction;
 
