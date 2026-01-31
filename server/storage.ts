@@ -31,7 +31,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "224": "2 5", // President St
   "225": "2 3", // Sterling St
   "226": "2 3", // Winthrop St
-  "227": "2 5", // Church Av (2/5)
+  "227": "2 3", // 110 St - Central Park North (Malcom X Plaza)
   "228": "3", // Nostrand Av
   "229": "3", // Kingston Av
   "230": "3 4", // Utica Av
@@ -194,7 +194,7 @@ const STATION_NAME_OVERRIDES: Record<string, string> = {
   "218": "Franklin Av", // Was "Franklin Av / Botanic Garden"
   "235": "Franklin Av", // On 2/3
   "236": "Franklin Av", // Franklin Av, not Botanic Garden
-  "224": "110 St-Malcom X Plaza", // Was "Central Park North 110 St"
+  "227": "110 St-Malcom X Plaza", // Was "Central Park North (110 St)"
 };
 
 // Stations that share the same physical location but have different platform IDs
