@@ -129,7 +129,7 @@ const STOP_NAMES: Record<string, string> = {
   "R18": "28 St", "R19": "23 St", "R20": "14 St-Union Sq", "R21": "8 St-NYU", "R22": "Prince St",
   "R23": "Canal St", "R24": "City Hall", "R25": "Cortlandt St", "R26": "Rector St",
   "R27": "Whitehall St-South Ferry", "R28": "Court St", "R29": "Jay St-MetroTech",
-  "R30": "DeKalb Av", "R31": "Atlantic Av-Barclays Ctr", "R32": "Union St", "R33": "9 St",
+  "R30": "DeKalb Av", "R31": "Atlantic Av-Barclays Ctr", "R32": "Union St", "R33": "4 Av-9 St",
   "R34": "Prospect Av", "R35": "25 St", "R36": "36 St", "R39": "45 St", "R40": "53 St",
   "R41": "59 St", "R42": "Bay Ridge Av", "R43": "77 St", "R44": "86 St", "R45": "Bay Ridge-95 St",
   "N02": "Astoria-Ditmars Blvd", "N03": "Astoria Blvd", "N04": "30 Av", "N06": "Broadway",
