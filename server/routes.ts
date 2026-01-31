@@ -213,8 +213,9 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   "G21": ["F12", "721"], "F12": ["G21", "721"], "721": ["G21", "F12"],
   // Forest Hills - 71 Av
   "G20": ["F11"], "F11": ["G20"],
-  // Queens Plaza
-  "G08": ["E01", "R09"], "E01": ["G08", "R09"], "R09": ["G08", "E01"],
+  // Queens Plaza (E/M/R at Queensboro Plaza area)
+  "G08": ["R09"], "R09": ["G08"],
+  // World Trade Center - E line terminal only (no combined stations)
 };
 
 export async function registerRoutes(
