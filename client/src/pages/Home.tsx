@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Tutorial, TutorialButton, useTutorial } from "@/components/Tutorial";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 
 
@@ -109,46 +108,27 @@ export default function Home() {
                 data-testid="input-search"
               />
             </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant={locationEnabled ? "default" : "outline"}
-                  size="icon"
-                  className={cn(
-                    "h-11 sm:h-14 w-11 sm:w-14 shrink-0",
-                    !locationEnabled && !locationLoading && "animate-pulse"
-                  )}
-                  onClick={locationEnabled ? disableLocation : requestLocation}
-                  disabled={locationLoading}
-                  data-testid="button-toggle-location"
-                >
-                  {locationLoading ? (
-                    <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
-                  ) : (
-                    <MapPin className={cn("w-4 h-4 sm:w-5 sm:h-5", locationEnabled && "fill-current")} />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="bottom" className="max-w-[200px] text-center">
-                {locationEnabled ? "Disable location sorting" : "Enable location to sort by distance"}
-              </TooltipContent>
-            </Tooltip>
+            <Button
+              variant={locationEnabled ? "default" : "outline"}
+              size="icon"
+              className="h-11 sm:h-14 w-11 sm:w-14 shrink-0"
+              onClick={locationEnabled ? disableLocation : requestLocation}
+              disabled={locationLoading}
+              data-testid="button-toggle-location"
+            >
+              {locationLoading ? (
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
+              ) : (
+                <MapPin className={cn("w-4 h-4 sm:w-5 sm:h-5", locationEnabled && "fill-current")} />
+              )}
+            </Button>
           </div>
           
-          {locationEnabled && userLocation ? (
+          {locationEnabled && userLocation && (
             <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground">
               <MapPin className="w-3 h-3" />
               <span>Showing walking times from your location</span>
             </div>
-          ) : !locationLoading && (
-            <button 
-              onClick={requestLocation}
-              className="flex items-center gap-2 text-[10px] sm:text-xs text-primary hover:underline"
-              data-testid="button-enable-location-hint"
-            >
-              <MapPin className="w-3 h-3" />
-              <span>Tap to enable location and sort by distance</span>
-            </button>
           )}
 
           {selectedStationIds.size > 0 && (
