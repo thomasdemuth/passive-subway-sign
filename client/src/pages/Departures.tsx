@@ -51,8 +51,12 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     if (!arrivals) return [];
     return arrivals.filter(a => {
       const baseRoute = a.routeId.replace('X', '');
-      // Handle SIR/SI mismatch - MTA feed uses "SI" but we display as "SIR"
-      const normalizedRoute = baseRoute === 'SI' ? 'SIR' : baseRoute;
+      // Handle route ID mismatches between MTA feed and display
+      // SIR/SI: MTA feed uses "SI" but we display as "SIR"
+      // GS/S: MTA feed uses "GS" for 42nd St Shuttle but we display as "S"
+      let normalizedRoute = baseRoute;
+      if (baseRoute === 'SI') normalizedRoute = 'SIR';
+      if (baseRoute === 'GS') normalizedRoute = 'S';
       return selectedLines.has(a.routeId) || selectedLines.has(baseRoute) || selectedLines.has(normalizedRoute);
     });
   }, [arrivals, selectedLines]);

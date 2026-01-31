@@ -37,7 +37,10 @@ const ROUTE_COLORS: Record<string, string> = {
 };
 
 export function RouteIcon({ routeId, className, size = "md" }: RouteIconProps) {
-  const normalizedRoute = routeId.toUpperCase();
+  let normalizedRoute = routeId.toUpperCase();
+  // Normalize MTA internal route IDs to display names
+  if (normalizedRoute === "GS") normalizedRoute = "S"; // 42nd St Shuttle
+  if (normalizedRoute === "SI") normalizedRoute = "SIR"; // Staten Island Railway
   const isExpress = normalizedRoute.endsWith("X");
   const baseRoute = isExpress ? normalizedRoute.slice(0, -1) : normalizedRoute;
   
