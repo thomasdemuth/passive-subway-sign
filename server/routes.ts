@@ -110,7 +110,7 @@ const STOP_NAMES: Record<string, string> = {
   "J27": "Cleveland St", "J28": "Van Siclen Av", "J29": "Alabama Av", "J30": "Broadway Junction",
   "J31": "Chauncey St", "J32": "Halsey St", "J33": "Gates Av", "J34": "Kosciuszko St",
   "J35": "Myrtle Av-Broadway", "J36": "Flushing Av", "J37": "Lorimer St", "J38": "Hewes St",
-  "J39": "Marcy Av", "M01": "Forest Hills-71 Av", "M04": "Metropolitan Av-Lorimer St",
+  "J39": "Marcy Av", "M01": "Essex St", "M04": "Metropolitan Av-Lorimer St",
   "M05": "Grand St", "M06": "Graham Av", "M08": "Montrose Av", "M09": "Morgan Av", "M10": "Jefferson St",
   "M11": "DeKalb Av", "M12": "Myrtle Av-Broadway", "M13": "Central Av", "M14": "Knickerbocker Av",
   "M16": "Seneca Av", "M18": "Myrtle-Wyckoff Avs", "M19": "Fresh Pond Rd", "M20": "Forest Av",
