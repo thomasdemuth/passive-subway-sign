@@ -49,7 +49,12 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
 
   const filteredArrivals = useMemo(() => {
     if (!arrivals) return [];
-    return arrivals.filter(a => selectedLines.has(a.routeId) || selectedLines.has(a.routeId.replace('X', '')));
+    return arrivals.filter(a => {
+      const baseRoute = a.routeId.replace('X', '');
+      // Handle SIR/SI mismatch - MTA feed uses "SI" but we display as "SIR"
+      const normalizedRoute = baseRoute === 'SI' ? 'SIR' : baseRoute;
+      return selectedLines.has(a.routeId) || selectedLines.has(baseRoute) || selectedLines.has(normalizedRoute);
+    });
   }, [arrivals, selectedLines]);
 
   const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, 3);
