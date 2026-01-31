@@ -577,6 +577,10 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
     { id: "D24", lines: "B Q" },
     { id: "R31", lines: "D N R" }
   ],
+  "Broadway Junction": [
+    { id: "J27", lines: "J Z" },
+    { id: "L22", lines: "L" }
+  ],
 };
 
 export interface IStorage {
