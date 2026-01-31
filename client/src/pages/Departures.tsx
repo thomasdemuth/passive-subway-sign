@@ -96,6 +96,15 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
     "701",         // Flushing-Main St (7)
     "601",         // Pelham Bay Park (6)
     "E01",         // World Trade Center (E)
+    "101",         // Van Cortlandt Park-242 St (1)
+    "401",         // Woodlawn (4)
+    "D01",         // Norwood-205 St (D)
+    "501",         // Eastchester-Dyre Av (5)
+    "201",         // Wakefield-241 St (2)
+    "G05",         // Jamaica Center-Parsons/Archer (E/J/Z)
+    "R01",         // Astoria-Ditmars Blvd (N/W)
+    "S31",         // St George (SIR)
+    "R45",         // Bay Ridge-95 St (R)
   ];
   const isTerminalStation = TERMINAL_STATIONS.includes(stationId);
   
