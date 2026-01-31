@@ -11,14 +11,79 @@ interface ServiceAlertBannerProps {
   routeIds: string[];
 }
 
+// Detect when an alert affects service based on active period
+function getAlertTiming(alert: ServiceAlert): string {
+  const now = new Date();
+  const startTime = alert.activePeriodStart ? new Date(alert.activePeriodStart) : null;
+  const endTime = alert.activePeriodEnd ? new Date(alert.activePeriodEnd) : null;
+  
+  // If no start time, assume it's currently active
+  if (!startTime) {
+    return "Now";
+  }
+  
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+  const startOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const endOfTomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 23, 59, 59);
+  
+  // Currently active (started and not ended yet)
+  if (startTime <= now && (!endTime || endTime > now)) {
+    return "Now";
+  }
+  
+  // Starts later today
+  if (startTime > now && startTime <= endOfToday) {
+    const hour = startTime.getHours();
+    if (hour >= 20) {
+      return "Tonight";
+    } else if (hour >= 17) {
+      return "This Evening";
+    } else if (hour >= 12) {
+      return "This Afternoon";
+    } else {
+      return "Later Today";
+    }
+  }
+  
+  // Starts tomorrow
+  if (startTime >= startOfTomorrow && startTime <= endOfTomorrow) {
+    return "Tomorrow";
+  }
+  
+  // Starts this weekend
+  const dayOfWeek = now.getDay();
+  const daysUntilWeekend = dayOfWeek === 0 ? 6 : (dayOfWeek === 6 ? 0 : 6 - dayOfWeek);
+  const weekendStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilWeekend);
+  const weekendEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilWeekend + 1, 23, 59, 59);
+  
+  if (startTime >= weekendStart && startTime <= weekendEnd && startTime > endOfTomorrow) {
+    return "This Weekend";
+  }
+  
+  // Starts in the future
+  if (startTime > now) {
+    return "Upcoming";
+  }
+  
+  return "";
+}
+
 function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: boolean }) {
   const [expanded, setExpanded] = useState(false);
+  const timing = getAlertTiming(alert);
   
   const severityColor = alert.severity >= 30 
     ? "bg-red-500/20 border-red-500/50" 
     : alert.severity >= 20 
       ? "bg-orange-500/20 border-orange-500/50" 
       : "bg-yellow-500/20 border-yellow-500/50";
+  
+  const timingColor = timing === "Now" 
+    ? "text-red-400" 
+    : timing === "Tonight" || timing === "This Evening" 
+      ? "text-orange-400" 
+      : "text-yellow-400";
   
   return (
     <div 
@@ -36,7 +101,15 @@ function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: 
           className="w-5 h-5 text-[10px] flex-shrink-0" 
         />
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {timing && (
+              <span 
+                className={cn("font-bold uppercase text-[10px]", timingColor)}
+                data-testid={`text-alert-timing-${alert.id}`}
+              >
+                {timing}
+              </span>
+            )}
             <span 
               className="font-semibold text-foreground"
               data-testid={`text-alert-type-${alert.id}`}
@@ -104,15 +177,34 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   const highSeverityCount = uniqueAlerts.filter(a => a.severity >= 30).length;
   const mediumSeverityCount = uniqueAlerts.filter(a => a.severity >= 20 && a.severity < 30).length;
   
-  // Group alerts by type and collect affected routes
-  const alertsByType = uniqueAlerts.reduce<Record<string, string[]>>((acc, alert) => {
+  // Group alerts by timing + type and collect affected routes
+  const alertsByTimingAndType = uniqueAlerts.reduce<Record<string, { timing: string; type: string; routes: string[] }>>((acc, alert) => {
+    const timing = getAlertTiming(alert);
     const type = alert.alertType;
-    if (!acc[type]) acc[type] = [];
-    if (!acc[type].includes(alert.routeId)) {
-      acc[type].push(alert.routeId);
+    const key = `${timing}-${type}`;
+    if (!acc[key]) acc[key] = { timing, type, routes: [] };
+    if (!acc[key].routes.includes(alert.routeId)) {
+      acc[key].routes.push(alert.routeId);
     }
     return acc;
   }, {});
+  
+  // Sort by timing priority (Now first, then Tonight, etc.)
+  const timingPriority: Record<string, number> = {
+    "Now": 0,
+    "Tonight": 1,
+    "This Evening": 2,
+    "This Afternoon": 3,
+    "Later Today": 4,
+    "Tomorrow": 5,
+    "This Weekend": 6,
+    "Upcoming": 7,
+    "": 8
+  };
+  
+  const sortedAlertGroups = Object.values(alertsByTimingAndType).sort((a, b) => 
+    (timingPriority[a.timing] ?? 8) - (timingPriority[b.timing] ?? 8)
+  );
   
   return (
     <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
@@ -128,8 +220,16 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
               highSeverityCount > 0 ? "text-red-500" : mediumSeverityCount > 0 ? "text-orange-500" : "text-yellow-500"
             )} />
             <div className="flex items-center gap-3 sm:gap-4 flex-wrap" data-testid="text-alert-summary">
-              {Object.entries(alertsByType).map(([type, routes]) => (
-                <div key={type} className="flex items-center gap-1.5">
+              {sortedAlertGroups.map(({ timing, type, routes }) => (
+                <div key={`${timing}-${type}`} className="flex items-center gap-1.5">
+                  {timing && (
+                    <span className={cn(
+                      "text-[10px] sm:text-xs font-bold uppercase",
+                      timing === "Now" ? "text-red-400" : timing === "Tonight" || timing === "This Evening" ? "text-orange-400" : "text-yellow-400"
+                    )}>
+                      {timing}
+                    </span>
+                  )}
                   <span className="text-sm sm:text-base font-medium">{type}:</span>
                   <div className="flex items-center gap-1">
                     {routes.map((routeId) => (
