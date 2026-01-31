@@ -108,8 +108,12 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   ];
   const isTerminalStation = TERMINAL_STATIONS.includes(stationId);
   
-  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? 7 : 3);
-  const downtownArrivals = isTerminalStation ? [] : filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
+  // Terminals where trains depart Downtown (uptown end of line)
+  const DOWNTOWN_TERMINALS = ["G05", "F01"]; // Jamaica Center, Jamaica-179 St
+  const isDowntownTerminal = DOWNTOWN_TERMINALS.includes(stationId);
+  
+  const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? (isDowntownTerminal ? 0 : 7) : 3);
+  const downtownArrivals = isTerminalStation ? (isDowntownTerminal ? filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 7) : []) : filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
 
   return (
     <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] h-[420px] sm:h-[450px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15 flex flex-col">
