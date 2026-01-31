@@ -86,7 +86,18 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   }, [arrivals, selectedLines]);
 
   // Terminal stations only show one direction with more departures
-  const isTerminalStation = stationId === "D43" || stationId === "F39"; // Coney Island-Stillwell Av
+  const TERMINAL_STATIONS = [
+    "D43", "F39",  // Coney Island-Stillwell Av
+    "247",         // Flatbush Av-Brooklyn College (2/5)
+    "L29",         // Canarsie-Rockaway Pkwy (L)
+    "257",         // New Lots Av (3)
+    "A54", "A65",  // Ozone Park-Lefferts Blvd (A)
+    "F01",         // Jamaica-179 St (F)
+    "701",         // Flushing-Main St (7)
+    "601",         // Pelham Bay Park (6)
+    "E01",         // World Trade Center (E)
+  ];
+  const isTerminalStation = TERMINAL_STATIONS.includes(stationId);
   
   const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? 7 : 3);
   const downtownArrivals = isTerminalStation ? [] : filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
