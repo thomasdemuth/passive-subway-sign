@@ -38,14 +38,12 @@ const LINE_MAPPINGS: Record<string, string> = {
   "231": "2 3", // Clark St
   "232": "2 3", // Court St / Borough Hall
   "233": "2 3", // Hoyt St
-  "234": "2 3", // Park Place
-  "235": "2 3", // Franklin Av
-  "236": "S", // Botanic Garden
-  "237": "2 3", // Clark St
-  "238": "2 3", // Borough Hall / Court St - just 2/3
-  "239": "2 3", // Wall St
-  "240": "2 3", // Fulton St
-  "241": "2 3", // Park Place
+  "234": "2 3 4 5", // Nevins St
+  "235": "2 3 4 5", // Atlantic Av-Barclays Ctr
+  "236": "2 3", // Bergen St
+  "237": "2 3", // Grand Army Plaza
+  "238": "2 3", // Eastern Pkwy-Brooklyn Museum
+  "239": "2 3 4 5", // Franklin Av-Medgar Evers College
   // 3 train Harlem
   "247": "3", // 145 St
   "248": "3", // Harlem - 148 St
@@ -74,17 +72,21 @@ const LINE_MAPPINGS: Record<string, string> = {
   "724": "7", "725": "7", "726": "7",
   // Shuttle
   "901": "S", "902": "S",
-  // Rockaway Shuttle and A train at Broad Channel
-  "H01": "A S", // Broad Channel
-  "H02": "S", // Beach 90 St
-  "H03": "S", // Beach 98 St
-  "H04": "S", // Rockaway Park - Beach 116 St
+  // Rockaway branch - A train and Rockaway Park Shuttle
+  "H01": "A", // Aqueduct Racetrack
+  "H02": "A", // Aqueduct-N Conduit Av
+  "H03": "A", // Howard Beach - JFK Airport
+  "H04": "A S", // Broad Channel
+  "H06": "A", // Beach 67 St
+  "H07": "A", // Beach 60 St
+  "H08": "A", // Beach 44 St
+  "H09": "A", // Beach 36 St
+  "H10": "A", // Beach 25 St
   "H11": "A", // Far Rockaway - Mott Av
-  "H12": "A", // Beach 25 St
-  "H13": "A", // Beach 36 St
-  "H14": "A", // Beach 44 St
-  "H15": "A", // Beach 60 St
-  "H19": "A", // Howard Beach - JFK Airport
+  "H12": "A S", // Beach 90 St
+  "H13": "A S", // Beach 98 St
+  "H14": "A S", // Beach 105 St
+  "H15": "A S", // Rockaway Park - Beach 116 St
   // A C E lines
   "A02": "A", // Inwood - 207 St
   "A03": "A", // Dyckman St
@@ -95,7 +97,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "A10": "A C", // 163 St - Amsterdam Av
   "A11": "A C", // 155 St
   "A12": "A C", // 145 St
-  "A14": "A B C D", // 125 St
+  "A14": "B C", // 135 St
   "A15": "A B C D", // 125 St
   "A16": "B C", // 116 St
   "A17": "B C", // 110 St - Cathedral Pkwy
@@ -116,12 +118,12 @@ const LINE_MAPPINGS: Record<string, string> = {
   "A36": "E", // World Trade Center
   "E01": "E", // World Trade Center
   "A38": "A C", // Chambers St
-  "A40": "A C", // Fulton St
-  "A41": "A C", // High St
-  "A42": "A C F", // Jay St - MetroTech
-  "A43": "A C", // Hoyt - Schermerhorn Sts
-  "A44": "C", // Lafayette Av
-  "A45": "C", // Clinton - Washington Avs
+  "A40": "A C", // High St
+  "A41": "A C F", // Jay St - MetroTech
+  "A42": "A C G", // Hoyt - Schermerhorn Sts
+  "A43": "C", // Lafayette Av
+  "A44": "C", // Clinton - Washington Avs
+  "A45": "C", // Franklin Av
   "A46": "C", // Franklin Av
   "A47": "A C", // Nostrand Av
   "A48": "C", // Kingston - Throop Avs
