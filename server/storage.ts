@@ -561,9 +561,10 @@ const STATION_NAME_OVERRIDES: Record<string, string> = {
 // Stations that share the same physical location but have different platform IDs
 // Maps display name to the additional platform IDs that should be added as separate stations
 const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string }[]> = {
-  "14 St - Union Sq": [
-    { id: "L03", lines: "L" },
-    { id: "R20", lines: "N Q R W" }
+  "14 St-Union Sq": [
+    { id: "635", lines: "4 5 6", name: "14 St-Union Sq (4 5 6)" },
+    { id: "L03", lines: "L", name: "14 St-Union Sq (L)" },
+    { id: "R20", lines: "N Q R W", name: "14 St-Union Sq (N Q R W)" }
   ],
   "Times Sq-42 St": [
     { id: "R16", lines: "N Q R W" },
@@ -917,25 +918,33 @@ export class MemStorage implements IStorage {
             else if (numId >= 900 && numId < 1000) line = "S";
           }
 
-          // Use name override if available
-          const displayName = STATION_NAME_OVERRIDES[id] || station.name;
+          // Check if this station should be split into multiple stations
+          const splitEntries = SPLIT_STATIONS[station.name];
           
-          // Get manual tags for this station and combine with auto-generated tags
-          const manualTags = STATION_TAGS[displayName.toLowerCase()] || [];
-          const autoTags = generateAutoTags(displayName);
-          const allTags = Array.from(new Set([...manualTags, ...autoTags]));
+          // If split entries exist and include an entry for this station's ID with a custom name,
+          // skip adding the base station - we'll add all split entries instead
+          const shouldSkipBaseStation = splitEntries?.some(entry => entry.id === id && entry.name);
           
-          this.stations.set(id, {
-            id,
-            name: displayName,
-            line: line.trim(),
-            lat: station.location?.[0] || null,
-            lng: station.location?.[1] || null,
-            tags: allTags,
-          });
+          if (!shouldSkipBaseStation) {
+            // Use name override if available
+            const displayName = STATION_NAME_OVERRIDES[id] || station.name;
+            
+            // Get manual tags for this station and combine with auto-generated tags
+            const manualTags = STATION_TAGS[displayName.toLowerCase()] || [];
+            const autoTags = generateAutoTags(displayName);
+            const allTags = Array.from(new Set([...manualTags, ...autoTags]));
+            
+            this.stations.set(id, {
+              id,
+              name: displayName,
+              line: line.trim(),
+              lat: station.location?.[0] || null,
+              lng: station.location?.[1] || null,
+              tags: allTags,
+            });
+          }
           
           // Add split stations for this location
-          const splitEntries = SPLIT_STATIONS[station.name];
           if (splitEntries) {
             splitEntries.forEach(({ id: splitId, lines, name: splitName }) => {
               // Only add if not already in the map
