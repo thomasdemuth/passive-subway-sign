@@ -62,7 +62,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // Broadway Junction
   "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
   // Nevins St
-  "215": [],
+  "215": ["418N"], "418N": ["215"],
   // Franklin Av
   "218": ["S04"], "S04": ["218"],
   // Hoyt-Schermerhorn

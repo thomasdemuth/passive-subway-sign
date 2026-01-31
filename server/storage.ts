@@ -20,7 +20,8 @@ const LINE_MAPPINGS: Record<string, string> = {
   "212": "2 5", // Church Av
   "213": "2 5", // Beverly Rd
   "214": "2 5", // Newkirk Av
-  "215": "2 3 4 5", // Nevins St
+  "215": "2 3", // Nevins St (2/3 platform)
+  "418N": "4 5", // Nevins St (4/5 platform)
   "216": "2 3", // Hoyt St
   "217": "2 3 4 5", // Atlantic Av - Barclays Ctr
   "218": "2 3 4 5", // Franklin Av
@@ -103,7 +104,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "A20": "B C", // 86 St
   "A21": "B C", // 81 St - Museum of Natural History
   "A22": "B C", // 72 St
-  "A24": "A C E", // 50 St
+  "A24": "C E", // 50 St
   "A25": "C E", // 50 St - correct: only C and E stop here
   "A27": "A C E", // 42 St - Port Authority
   "A28": "A C E", // 34 St - Penn Station
@@ -117,21 +118,21 @@ const LINE_MAPPINGS: Record<string, string> = {
   "A38": "A C", // Chambers St
   "A40": "A C", // Fulton St
   "A41": "A C", // High St
-  "A42": "A C", // Jay St - MetroTech
+  "A42": "A C F", // Jay St - MetroTech
   "A43": "A C", // Hoyt - Schermerhorn Sts
-  "A44": "A C", // Lafayette Av
-  "A45": "A C", // Clinton - Washington Avs
-  "A46": "A C", // Franklin Av
+  "A44": "C", // Lafayette Av
+  "A45": "C", // Clinton - Washington Avs
+  "A46": "C", // Franklin Av
   "A47": "A C", // Nostrand Av
-  "A48": "A C", // Kingston - Throop Avs
+  "A48": "C", // Kingston - Throop Avs
   "A49": "A C", // Utica Av
-  "A50": "A C", // Ralph Av
-  "A51": "A C", // Rockaway Av
+  "A50": "C", // Ralph Av
+  "A51": "C", // Rockaway Av
   "A52": "A C", // Broadway Junction
-  "A53": "A C", // Liberty Av
-  "A54": "A C", // Van Siclen Av
-  "A55": "A C", // Shepherd Av
-  "A57": "A", // Euclid Av
+  "A53": "C", // Liberty Av
+  "A54": "C", // Van Siclen Av
+  "A55": "C", // Shepherd Av
+  "A57": "A C", // Euclid Av
   "A59": "A", // Grant Av
   "A60": "A", // 80 St
   "A61": "A", // 88 St
@@ -142,18 +143,18 @@ const LINE_MAPPINGS: Record<string, string> = {
   // N Q R W lines
   "R14": "N Q R W", "R15": "N Q R W", "R16": "N Q R W S", "R17": "N Q R W",
   "R18": "N Q R W", "R19": "N Q R W", "R20": "N Q R W", "R21": "N R W",
-  "R22": "N R", // 28 St
-  "R23": "N R", // 23 St  
-  "R24": "N R", // 8 St-NYU
-  "R25": "N R", // Prince St
+  "R22": "R W", // 28 St
+  "R23": "R W", // 23 St  
+  "R24": "R W", // 8 St-NYU
+  "R25": "R W", // Prince St
   "R26": "R W", "R27": "R W",
   "R28": "N R", // Canal St
-  "R29": "N R W", // City Hall
-  "R30": "N R W", // Cortlandt St
-  "R31": "N R W", // Rector St
+  "R29": "R W", // City Hall
+  "R30": "R W", // Cortlandt St
+  "R31": "R W", // Rector St
   "R13": "N R W", // 49 St
   // Brooklyn N/Q/R lines
-  "R24B": "N R", // 8 St-NYU
+  "R24B": "W R", // 8 St-NYU
   "R30B": "B Q R", // DeKalb Av
   // Queens Blvd M R lines
   "G08": "E F R", // Queens Plaza
@@ -172,11 +173,11 @@ const LINE_MAPPINGS: Record<string, string> = {
   // E F lines
   "F01": "F", // Jamaica - 179 St
   "F02": "F", // 169 St
-  "F03": "E F", // Parsons Blvd
-  "F04": "E F", // Sutphin Blvd
-  "F05": "E F", // Briarwood
+  "F03": "F", // Parsons Blvd
+  "F04": "F", // Sutphin Blvd
+  "F05": "F", // Briarwood
   "F06": "E F", // Kew Gardens - Union Tpke
-  "F07": "E F", // 75 Av
+  "F07": "F", // 75 Av
   "F09": "M R", // 63 Dr - Rego Park (F)
   "F11": "E F M R", // Forest Hills - 71 Av
   "F12": "E F M R", // Jackson Hts - Roosevelt Av
@@ -265,6 +266,9 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   ],
   "DeKalb Av": [
     { id: "R30B", lines: "B Q R" }
+  ],
+  "Nevins St": [
+    { id: "418N", lines: "4 5" }
   ],
 };
 
