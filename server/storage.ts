@@ -610,6 +610,12 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
     { id: "J27", lines: "J Z" },
     { id: "L22", lines: "L" }
   ],
+  "Canal St": [
+    { id: "R23", lines: "R W", name: "Canal St (R/W)" },
+    { id: "Q01", lines: "N Q", name: "Canal St (N/Q)" },
+    { id: "A34", lines: "A C E", name: "Canal St (A/C/E)" },
+    { id: "M20", lines: "J Z", name: "Canal St (J/Z)" }
+  ],
 };
 
 export interface IStorage {
