@@ -12,29 +12,63 @@ export function useUserLocation() {
   const [enabled, setEnabled] = useState(false);
 
   const requestLocation = useCallback(() => {
+    // Check if we're in a secure context (HTTPS or localhost)
+    if (!window.isSecureContext) {
+      setError("Location requires a secure connection (HTTPS)");
+      return;
+    }
+    
     if (!navigator.geolocation) {
-      setError("Geolocation not supported");
+      setError("Geolocation not supported by your browser");
       return;
     }
 
-    setLoading(true);
-    setError(null);
-    setEnabled(true);
+    // Check permissions API if available
+    if (navigator.permissions) {
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'denied') {
+          setError("Location access was denied. Please enable it in your browser settings.");
+          return;
+        }
+        // Proceed with location request
+        doLocationRequest();
+      }).catch(() => {
+        // Permissions API not fully supported, proceed anyway
+        doLocationRequest();
+      });
+    } else {
+      doLocationRequest();
+    }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
-        setLoading(false);
-      },
-      (err) => {
-        setError(err.message);
-        setLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
-    );
+    function doLocationRequest() {
+      setLoading(true);
+      setError(null);
+      setEnabled(true);
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setLoading(false);
+        },
+        (err) => {
+          let errorMessage = "Unable to get your location";
+          if (err.code === 1) {
+            errorMessage = "Location access denied. Please allow location access in your browser.";
+          } else if (err.code === 2) {
+            errorMessage = "Location unavailable. Please try again.";
+          } else if (err.code === 3) {
+            errorMessage = "Location request timed out. Please try again.";
+          }
+          setError(errorMessage);
+          setLoading(false);
+          setEnabled(false);
+        },
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
+      );
+    }
   }, []);
 
   const disableLocation = useCallback(() => {

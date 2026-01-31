@@ -17,7 +17,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const { data: stations, isLoading } = useStations();
   const [, navigate] = useLocation();
-  const { location: userLocation, loading: locationLoading, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
+  const { location: userLocation, loading: locationLoading, error: locationError, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
   const { showTutorial, completeTutorial, dismissTutorial, startTutorial } = useTutorial();
 
   const filteredStations = stations?.filter(s => 
@@ -128,6 +128,13 @@ export default function Home() {
             <div className="flex items-center gap-2 text-[10px] sm:text-xs text-muted-foreground">
               <MapPin className="w-3 h-3" />
               <span>Showing walking times from your location</span>
+            </div>
+          )}
+          
+          {locationError && (
+            <div className="flex items-center gap-2 text-[10px] sm:text-xs text-red-400">
+              <MapPin className="w-3 h-3" />
+              <span>{locationError}</span>
             </div>
           )}
 
