@@ -191,12 +191,12 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
 
           {/* Downtown Section - hidden for terminal stations */}
           {!isTerminalStation && (
-            <div className="flex-1 mt-2">
+            <div className="mt-2">
               <div className="flex items-center gap-2 pb-1.5 border-b border-white/10">
                 <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Downtown</span>
               </div>
-              <div className="h-[100px] mt-1">
+              <div className="h-[122px] mt-1">
                 {isLoading ? (
                   <div className="h-full flex items-center justify-center">
                     <Loader2 className="w-5 h-5 animate-spin text-primary" />
