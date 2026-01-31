@@ -108,8 +108,17 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   ];
   const isTerminalStation = TERMINAL_STATIONS.includes(stationId);
   
-  // Terminals where trains depart Downtown (uptown end of line)
-  const DOWNTOWN_TERMINALS = ["G05", "F01"]; // Jamaica Center, Jamaica-179 St
+  // Terminals where trains depart Downtown (uptown/northern end of line)
+  const DOWNTOWN_TERMINALS = [
+    "G05", "F01",  // Jamaica Center, Jamaica-179 St
+    "101",         // Van Cortlandt Park-242 St (1)
+    "201",         // Wakefield-241 St (2)
+    "401",         // Woodlawn (4)
+    "D01",         // Norwood-205 St (D)
+    "601",         // Pelham Bay Park (6)
+    "701",         // Flushing-Main St (7)
+    "501",         // Eastchester-Dyre Av (5)
+  ];
   const isDowntownTerminal = DOWNTOWN_TERMINALS.includes(stationId);
   
   const uptownArrivals = filteredArrivals.filter(a => a.direction === "Uptown").slice(0, isTerminalStation ? 7 : 3);
