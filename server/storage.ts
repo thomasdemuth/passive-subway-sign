@@ -660,6 +660,19 @@ export class MemStorage implements IStorage {
             });
           }
         });
+        
+        // Manually add Franklin Avenue Shuttle stations (not in external data)
+        const franklinShuttleStations: Station[] = [
+          { id: "S01", name: "Franklin Av-Fulton St", line: "FS", lat: 40.680596, lng: -73.955827 },
+          { id: "S03", name: "Park Pl", line: "FS", lat: 40.674772, lng: -73.957624 },
+          { id: "S04", name: "Botanic Garden", line: "FS", lat: 40.670343, lng: -73.959245 },
+        ];
+        franklinShuttleStations.forEach(s => {
+          if (!this.stations.has(s.id)) {
+            this.stations.set(s.id, s);
+          }
+        });
+        
         console.log(`Initialized ${this.stations.size} stations from MTA data.`);
       } else {
         throw new Error("Failed to fetch stations");
