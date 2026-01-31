@@ -1079,7 +1079,18 @@ export function getDynamicRoutes(stationId: string): string[] {
   return validRoutes;
 }
 
+// Station IDs that are explicitly split and should not have dynamic routes added
+// These stations show only their designated lines in the route icons
+const EXPLICIT_SPLIT_STATION_IDS = new Set([
+  "635",  // 14 St-Union Sq (4 5 6)
+  "L03",  // 14 St-Union Sq (L)
+  "R20",  // 14 St-Union Sq (N Q R W)
+]);
+
 export function getStationWithDynamicRoutes(station: Station): Station {
+  // Skip dynamic route enhancement for explicitly split stations
+  if (EXPLICIT_SPLIT_STATION_IDS.has(station.id)) return station;
+  
   const dynamicRoutesList = getDynamicRoutes(station.id);
   if (dynamicRoutesList.length === 0) return station;
   
