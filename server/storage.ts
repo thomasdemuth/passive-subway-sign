@@ -499,30 +499,30 @@ const LINE_MAPPINGS: Record<string, string> = {
   "617": "6", // Cypress Av
   "618": "6", // Brook Av
   "619": "6", // 3 Av-138 St
-  "621": "4 5 6", // 138 St-Grand Concourse
-  "622": "4 5 6", // 149 St-Grand Concourse
-  "623": "4 5 6", // 161 St-Yankee Stadium
-  "624": "4 5 6", // 167 St
-  "625": "4 5 6", // 170 St
-  "626": "4 5 6", // Mt Eden Av
-  "627": "4 5 6", // 176 St
-  "628": "4 5 6", // Burnside Av
-  "629": "4 5 6", // 183 St
-  "630": "4 5 6", // Fordham Rd
-  "631": "4 5 6", // Kingsbridge Rd
-  "632": "4 5 6", // Bedford Park Blvd
-  "633": "4 5 6", // Mosholu Pkwy
-  "634": "4 5 6", // Woodlawn
-  "635": "4 5 6", // 59 St
-  "636": "4 5 6", // 68 St-Hunter College
-  "637": "4 5 6", // 77 St
-  "638": "4 5 6", // 86 St
-  "639": "4 5 6", // 96 St
-  "640": "4 5 6", // 103 St
-  "641": "4 5 6", // 110 St
-  "642": "4 5 6", // 116 St
-  "643": "4 5 6", // 125 St
-  "644": "4 5 6", // Grand Central-42 St
+  
+  // IRT Lexington Av Line - Upper East Side (6 local stops)
+  "621": "4 5 6", // 125 St (express stop)
+  "622": "6", // 116 St (local only)
+  "623": "6", // 110 St (local only)
+  "624": "6", // 103 St (local only)
+  "625": "6", // 96 St (local only)
+  "626": "4 5 6", // 86 St (express stop)
+  "627": "6", // 77 St (local only)
+  "628": "6", // 68 St-Hunter College (local only)
+  "629": "4 5 6", // 59 St (express stop)
+  
+  // IRT Lexington Av Line - Manhattan (6 local stops)
+  "630": "6", // 51 St (local only)
+  "631": "4 5 6", // Grand Central-42 St (express stop)
+  "632": "6", // 33 St (local only)
+  "633": "6", // 28 St (local only)
+  "634": "6", // 23 St (local only)
+  "635": "4 5 6", // 14 St-Union Sq (express stop)
+  "636": "6", // Astor Pl (local only)
+  "637": "6", // Bleecker St (local only)
+  "638": "6", // Spring St (local only)
+  "639": "6", // Canal St (local only)
+  "640": "4 5 6", // Brooklyn Bridge-City Hall (express stop)
   
   // IRT Flushing Line (7)
   "701": "7", // Flushing-Main St
