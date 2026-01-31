@@ -117,7 +117,7 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   return (
     <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
       <div className="px-3 sm:px-6 py-3 sm:py-4 flex justify-center">
-        <div className="flex items-center justify-between gap-3 w-full max-w-4xl">
+        <div className="flex items-center gap-3">
           <button 
             className="flex items-center gap-3 flex-1 flex-wrap"
             onClick={() => setExpanded(!expanded)}
@@ -167,7 +167,7 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden flex justify-center px-3 sm:px-6"
           >
-            <div className="pt-3 space-y-2 max-h-[40vh] overflow-y-auto w-full max-w-4xl" data-testid="container-alerts-list">
+            <div className="pt-3 pb-2 space-y-2 max-h-[40vh] overflow-y-auto" data-testid="container-alerts-list">
               {uniqueAlerts.map((alert) => (
                 <AlertItem key={alert.id} alert={alert} compact />
               ))}
