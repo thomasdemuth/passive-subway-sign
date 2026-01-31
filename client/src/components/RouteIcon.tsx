@@ -41,7 +41,9 @@ export function RouteIcon({ routeId, className, size = "md" }: RouteIconProps) {
   const isExpress = normalizedRoute.endsWith("X");
   const baseRoute = isExpress ? normalizedRoute.slice(0, -1) : normalizedRoute;
   
-  const bg = ROUTE_COLORS[baseRoute] || ROUTE_COLORS[normalizedRoute] || "#808183";
+  // Use red for express Staten Island Railway trains
+  const isSIExpress = isExpress && (baseRoute === "SI" || baseRoute === "SIR");
+  const bg = isSIExpress ? "#EE352E" : (ROUTE_COLORS[baseRoute] || ROUTE_COLORS[normalizedRoute] || "#808183");
   const isYellow = ["N", "Q", "R", "W"].includes(baseRoute);
   
   const sizeClasses = {
