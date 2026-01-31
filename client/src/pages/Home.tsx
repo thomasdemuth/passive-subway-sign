@@ -4,31 +4,12 @@ import { useStations } from "@/hooks/use-stations";
 import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { RouteIcon } from "@/components/RouteIcon";
 import { Train, Search, Check, ArrowRight, MapPin, Loader2 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Tutorial, TutorialButton, useTutorial } from "@/components/Tutorial";
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.02,
-      delayChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 10 },
-  visible: { 
-    opacity: 1, 
-    y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
-};
 
 
 export default function Home() {
@@ -191,22 +172,15 @@ export default function Home() {
               No stations found matching "{searchQuery}"
             </motion.div>
           ) : (
-            <motion.div 
-              className="grid grid-cols-2 gap-1"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              key={searchQuery}
-            >
+            <div className="grid grid-cols-2 gap-1">
               {sortedStations.map((station) => {
                 const isSelected = selectedStationIds.has(station.id);
                 const walkingTime = userLocation && station.lat && station.lng
                   ? calculateWalkingTime(userLocation.lat, userLocation.lng, station.lat, station.lng)
                   : null;
                 return (
-                  <motion.button
+                  <button
                     key={station.id}
-                    variants={itemVariants}
                     onClick={() => toggleStation(station.id)}
                     className={cn(
                       "w-full flex items-center justify-between p-2 sm:p-3 rounded-lg border transition-all duration-200 text-left gap-2",
@@ -214,7 +188,6 @@ export default function Home() {
                         ? "bg-primary/10 border-primary/30 ring-1 ring-primary/20" 
                         : "bg-card/30 border-white/5 hover:bg-card/50 hover:border-white/10"
                     )}
-                    whileTap={{ scale: 0.98 }}
                     data-testid={`button-station-${station.id}`}
                   >
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0">
@@ -242,10 +215,10 @@ export default function Home() {
                         />
                       ))}
                     </div>
-                  </motion.button>
+                  </button>
                 );
               })}
-            </motion.div>
+            </div>
           )}
         </div>
 
