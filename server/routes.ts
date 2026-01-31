@@ -98,7 +98,7 @@ const STOP_NAMES: Record<string, string> = {
   "F39": "Coney Island-Stillwell Av",
   // G line
   "G05": "Jamaica Center-Parsons/Archer", "G06": "Sutphin Blvd-Archer Av-JFK", "G07": "Jamaica-Van Wyck",
-  "G08": "Kew Gardens-Union Tpke", "G09": "Briarwood", "G10": "Sutphin Blvd", "G11": "Parsons Blvd",
+  "G08": "Forest Hills-71 Av", "G09": "Briarwood", "G10": "Sutphin Blvd", "G11": "Parsons Blvd",
   "G12": "169 St", "G13": "Jamaica-179 St", "G14": "Court Sq-23 St", "G22": "Court Sq",
   "G24": "21 St", "G26": "Greenpoint Av", "G28": "Nassau Av", "G29": "Metropolitan Av",
   "G30": "Broadway", "G31": "Flushing Av", "G32": "Myrtle-Willoughby Avs", "G33": "Bedford-Nostrand Avs",
