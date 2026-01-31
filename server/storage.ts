@@ -702,6 +702,16 @@ export class MemStorage implements IStorage {
           }
         });
         
+        // Manually add missing R line stations
+        const missingRStations: Station[] = [
+          { id: "R33", name: "4 Av-9 St", line: "R", lat: 40.670847, lng: -73.988302 },
+        ];
+        missingRStations.forEach(s => {
+          if (!this.stations.has(s.id)) {
+            this.stations.set(s.id, s);
+          }
+        });
+        
         console.log(`Initialized ${this.stations.size} stations from MTA data.`);
       } else {
         throw new Error("Failed to fetch stations");
