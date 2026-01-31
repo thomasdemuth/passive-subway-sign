@@ -238,11 +238,13 @@ export default function Departures() {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [autoScale, setAutoScale] = useState(1);
+  const initialScaleCalculated = useRef(false);
   
   const zoomIn = () => setZoom(prev => Math.min(prev + 0.1, 1.5));
   const zoomOut = () => setZoom(prev => Math.max(prev - 0.1, 0.5));
   
-  // Calculate auto-scale based on content fitting within container with 30px padding
+  // Calculate auto-scale only once on initial load and on window resize
+  // Don't recalculate when data refreshes to prevent box size jumping
   useEffect(() => {
     const calculateScale = () => {
       if (!containerRef.current || !contentRef.current) return;
@@ -256,17 +258,30 @@ export default function Departures() {
       if (contentHeight > 0 && availableHeight > 0) {
         const scale = Math.min(1.5, Math.max(0.6, availableHeight / contentHeight));
         setAutoScale(scale);
+        initialScaleCalculated.current = true;
       }
     };
     
-    // Delay calculation to ensure content is rendered
-    const timeout = setTimeout(calculateScale, 100);
-    calculateScale();
-    window.addEventListener('resize', calculateScale);
-    return () => {
-      clearTimeout(timeout);
-      window.removeEventListener('resize', calculateScale);
+    const handleResize = () => {
+      // Always recalculate on resize
+      calculateScale();
     };
+    
+    // Only calculate initial scale once after content renders
+    if (!initialScaleCalculated.current) {
+      const timeout = setTimeout(calculateScale, 100);
+      return () => clearTimeout(timeout);
+    }
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [ids]);
+  
+  // Reset scale calculation flag when stations change
+  useEffect(() => {
+    initialScaleCalculated.current = false;
   }, [ids]);
   
   const effectiveScale = autoScale * zoom;
