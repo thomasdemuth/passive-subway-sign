@@ -227,7 +227,7 @@ export default function Departures() {
     <div className="h-screen flex flex-col bg-background text-foreground bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-background to-background">
       <div className="bg-background/80 backdrop-blur-md border-b border-white/10">
         <div className="px-3 sm:px-6 py-2 sm:py-3 flex items-center justify-between">
-          <span className="text-lg sm:text-2xl text-muted-foreground" data-testid="text-date">
+          <span className="text-4xl sm:text-6xl text-muted-foreground" data-testid="text-date">
             {dateString}
           </span>
           <span className="text-4xl sm:text-6xl font-bold tabular-nums text-white" data-testid="text-time">
