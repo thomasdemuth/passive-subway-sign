@@ -146,15 +146,13 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
               <ArrowUpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
               <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Uptown</span>
             </div>
-            <div className="h-[100px] mt-1">
+            <div className="h-[100px] mt-1 flex items-center justify-center">
               {isLoading ? (
-                <div className="h-full flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                </div>
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
               ) : (
                 <AnimatePresence mode="popLayout">
                   {uptownArrivals.length > 0 ? (
-                    <div className="space-y-0.5">
+                    <div className="space-y-0.5 w-full">
                       {uptownArrivals.map((arrival, i) => (
                         <ArrivalCard 
                           key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
@@ -165,7 +163,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                     </div>
                   ) : (
                     <motion.div 
-                      className="h-full flex flex-col items-center justify-center"
+                      className="flex flex-col items-center justify-center"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
@@ -190,15 +188,13 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
               <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
               <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Downtown</span>
             </div>
-            <div className="h-[100px] mt-1">
+            <div className="h-[100px] mt-1 flex items-center justify-center">
               {isLoading ? (
-                <div className="h-full flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-primary" />
-                </div>
+                <Loader2 className="w-5 h-5 animate-spin text-primary" />
               ) : (
                 <AnimatePresence mode="popLayout">
                   {downtownArrivals.length > 0 ? (
-                    <div className="space-y-0.5">
+                    <div className="space-y-0.5 w-full">
                       {downtownArrivals.map((arrival, i) => (
                         <ArrivalCard 
                           key={`${arrival.routeId}-${arrival.arrivalTime}-${i}`} 
@@ -209,7 +205,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                     </div>
                   ) : (
                     <motion.div 
-                      className="h-full flex flex-col items-center justify-center"
+                      className="flex flex-col items-center justify-center"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
