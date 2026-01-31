@@ -181,6 +181,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "F09": "M R", // 63 Dr - Rego Park (F)
   "F11": "E F M R", // Forest Hills - 71 Av
   "F12": "E F M R", // Jackson Hts - Roosevelt Av
+  "F25": "F G", // 15 St - Prospect Park
   // L line
   "L01": "L", "L02": "L", "L03": "L", "L05": "L", "L06": "L", "L08": "L",
   "L10": "L", "L11": "L", "L12": "L", "L13": "L", "L14": "L", "L15": "L",
