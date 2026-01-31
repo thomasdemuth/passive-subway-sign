@@ -222,17 +222,17 @@ const LINE_MAPPINGS: Record<string, string> = {
   "H01": "A", // Aqueduct Racetrack
   "H02": "A", // Aqueduct-N Conduit Av
   "H03": "A", // Howard Beach-JFK Airport
-  "H04": "A S H", // Broad Channel (Rockaway Shuttle terminal)
+  "H04": "A H", // Broad Channel (Rockaway Shuttle terminal)
   "H06": "A", // Beach 67 St
   "H07": "A", // Beach 60 St
   "H08": "A", // Beach 44 St
   "H09": "A", // Beach 36 St
   "H10": "A", // Beach 25 St
   "H11": "A", // Far Rockaway-Mott Av
-  "H12": "A S H", // Beach 90 St (Rockaway Shuttle)
-  "H13": "A S H", // Beach 98 St (Rockaway Shuttle)
-  "H14": "A S H", // Beach 105 St (Rockaway Shuttle)
-  "H15": "A S H", // Rockaway Park-Beach 116 St (Rockaway Shuttle terminal)
+  "H12": "A H", // Beach 90 St (Rockaway Shuttle)
+  "H13": "A H", // Beach 98 St (Rockaway Shuttle)
+  "H14": "A H", // Beach 105 St (Rockaway Shuttle)
+  "H15": "A H", // Rockaway Park-Beach 116 St (Rockaway Shuttle terminal)
   
   // IND Concourse Line
   "D01": "D", // Norwood-205 St
