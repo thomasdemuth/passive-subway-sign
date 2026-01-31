@@ -2,7 +2,7 @@
 import { type Station } from "@shared/schema";
 
 // Line mappings based on official MTA GTFS data - station ID to daytime routes
-const LINE_MAPPINGS: Record<string, string> = {
+export const LINE_MAPPINGS: Record<string, string> = {
   // BMT Astoria Line
   "R01": "N W", // Astoria-Ditmars Blvd
   "R03": "N W", // Astoria Blvd
