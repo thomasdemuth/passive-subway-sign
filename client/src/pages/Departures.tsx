@@ -89,7 +89,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
   const downtownArrivals = filteredArrivals.filter(a => a.direction === "Downtown").slice(0, 3);
 
   return (
-    <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] h-[340px] sm:h-[380px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15 flex flex-col">
+    <Card className="bg-card/60 backdrop-blur-sm border-white/10 w-[calc(100vw-24px)] sm:w-[320px] md:w-[360px] h-[420px] sm:h-[450px] flex-shrink-0 shadow-xl shadow-black/20 transition-all duration-300 hover:bg-card/70 hover:border-white/15 flex flex-col">
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <span className="text-base sm:text-lg font-semibold truncate">{stationName}</span>
