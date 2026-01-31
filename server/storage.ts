@@ -448,7 +448,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "416": "4", // 138 St-Grand Concourse
   "418": "4 5", // 125 St
   "419": "4 5 6", // 116 St
-  "420": "4 5 6", // 110 St
+  "420": "4 5", // Bowling Green
   "423": "4 5 6", // 103 St
   "501": "5", // Eastchester-Dyre Av
   "502": "5", // Baychester Av
