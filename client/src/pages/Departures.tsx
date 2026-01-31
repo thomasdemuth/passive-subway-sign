@@ -419,7 +419,7 @@ export default function Departures() {
                 <motion.div 
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex justify-center gap-4 p-4 sm:p-6"
+                  className="flex flex-wrap justify-center items-start gap-4 p-4 sm:p-6 portrait:flex-col portrait:items-center landscape:flex-row"
                 >
                   {selectedStations.map((station, index) => (
                     <motion.div
@@ -442,7 +442,8 @@ export default function Departures() {
                   ))}
                 </motion.div>
               </AnimatePresence>
-              <ScrollBar orientation="horizontal" />
+              <ScrollBar orientation="horizontal" className="landscape:block portrait:hidden" />
+              <ScrollBar orientation="vertical" className="portrait:block landscape:hidden" />
             </ScrollArea>
           </div>
         )}
