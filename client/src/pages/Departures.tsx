@@ -151,7 +151,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                 {isTerminalStation ? "Departures" : "Uptown"}
               </span>
             </div>
-            <div className={cn("mt-1", isTerminalStation ? "h-[230px]" : "h-[100px]")}>
+            <div className={cn("mt-1", isTerminalStation ? "h-[230px]" : "h-[99px]")}>
               {isLoading ? (
                 <div className="h-full flex items-center justify-center">
                   <Loader2 className="w-5 h-5 animate-spin text-primary" />
