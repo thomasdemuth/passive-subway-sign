@@ -744,6 +744,122 @@ const STATION_TAGS: Record<string, string[]> = {
   "tottenville": ["tottenville", "conference house"],
 };
 
+// Generate automatic tags for common spelling variations
+function generateAutoTags(stationName: string): string[] {
+  const tags: Set<string> = new Set();
+  const name = stationName.toLowerCase();
+  
+  // Add the full name as a tag
+  tags.add(name);
+  
+  // Generate ordinal variations: "3 Av" <-> "3rd Av", "14 St" <-> "14th St"
+  // Pattern: number followed by space and Av/St/Pl etc
+  const ordinalPattern = /(\d+)(st|nd|rd|th)?\s*(av|st|pl|blvd|pkwy|rd|hwy)/gi;
+  let match;
+  while ((match = ordinalPattern.exec(stationName)) !== null) {
+    const num = match[1];
+    const suffix = match[2] || '';
+    const streetType = match[3];
+    
+    // Add version with ordinal suffix
+    const ordinalSuffix = getOrdinalSuffix(parseInt(num));
+    tags.add(`${num}${ordinalSuffix} ${streetType}`.toLowerCase());
+    
+    // Add version without ordinal suffix
+    tags.add(`${num} ${streetType}`.toLowerCase());
+  }
+  
+  // Abbreviation expansions
+  const expansions: [RegExp, string][] = [
+    [/\bav\b/gi, "avenue"],
+    [/\bst\b/gi, "street"],
+    [/\bpl\b/gi, "place"],
+    [/\bblvd\b/gi, "boulevard"],
+    [/\bpkwy\b/gi, "parkway"],
+    [/\brd\b/gi, "road"],
+    [/\bhwy\b/gi, "highway"],
+    [/\bsq\b/gi, "square"],
+    [/\bctr\b/gi, "center"],
+    [/\bpk\b/gi, "park"],
+    [/\bjct\b/gi, "junction"],
+    [/\bw\s/gi, "west "],
+    [/\be\s/gi, "east "],
+    [/\bn\s/gi, "north "],
+    [/\bs\s/gi, "south "],
+  ];
+  
+  // Add expanded versions
+  let expanded = name;
+  for (const [pattern, replacement] of expansions) {
+    expanded = expanded.replace(pattern, replacement);
+  }
+  if (expanded !== name) {
+    tags.add(expanded);
+  }
+  
+  // Add abbreviated versions (reverse)
+  const abbreviations: [RegExp, string][] = [
+    [/\bavenue\b/gi, "av"],
+    [/\bstreet\b/gi, "st"],
+    [/\bplace\b/gi, "pl"],
+    [/\bboulevard\b/gi, "blvd"],
+    [/\bparkway\b/gi, "pkwy"],
+    [/\broad\b/gi, "rd"],
+    [/\bhighway\b/gi, "hwy"],
+    [/\bsquare\b/gi, "sq"],
+    [/\bcenter\b/gi, "ctr"],
+    [/\bpark\b/gi, "pk"],
+    [/\bjunction\b/gi, "jct"],
+    [/\bwest\s/gi, "w "],
+    [/\beast\s/gi, "e "],
+    [/\bnorth\s/gi, "n "],
+    [/\bsouth\s/gi, "s "],
+  ];
+  
+  let abbreviated = name;
+  for (const [pattern, replacement] of abbreviations) {
+    abbreviated = abbreviated.replace(pattern, replacement);
+  }
+  if (abbreviated !== name) {
+    tags.add(abbreviated);
+  }
+  
+  // Handle "W 4 St" -> "West Fourth Street", "West 4th Street", "West 4 Street"
+  const numberWords: Record<number, string> = {
+    1: "first", 2: "second", 3: "third", 4: "fourth", 5: "fifth",
+    6: "sixth", 7: "seventh", 8: "eighth", 9: "ninth", 10: "tenth",
+    11: "eleventh", 12: "twelfth", 13: "thirteenth", 14: "fourteenth", 15: "fifteenth",
+    16: "sixteenth", 17: "seventeenth", 18: "eighteenth", 19: "nineteenth", 20: "twentieth",
+  };
+  
+  // Replace numbers with words
+  const numPattern = /\b(\d+)\b/g;
+  let withWords = name;
+  let matchNum;
+  while ((matchNum = numPattern.exec(name)) !== null) {
+    const num = parseInt(matchNum[1]);
+    if (numberWords[num]) {
+      withWords = withWords.replace(new RegExp(`\\b${num}\\b`), numberWords[num]);
+    }
+  }
+  if (withWords !== name) {
+    tags.add(withWords);
+  }
+  
+  // Remove hyphens version
+  if (name.includes("-")) {
+    tags.add(name.replace(/-/g, " "));
+  }
+  
+  return Array.from(tags).filter(t => t !== name); // Don't include the original name
+}
+
+function getOrdinalSuffix(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+}
+
 export interface IStorage {
   getStations(): Promise<Station[]>;
   getStation(id: string): Promise<Station | undefined>;
@@ -804,8 +920,10 @@ export class MemStorage implements IStorage {
           // Use name override if available
           const displayName = STATION_NAME_OVERRIDES[id] || station.name;
           
-          // Get tags for this station
-          const stationTags = STATION_TAGS[displayName.toLowerCase()] || [];
+          // Get manual tags for this station and combine with auto-generated tags
+          const manualTags = STATION_TAGS[displayName.toLowerCase()] || [];
+          const autoTags = generateAutoTags(displayName);
+          const allTags = Array.from(new Set([...manualTags, ...autoTags]));
           
           this.stations.set(id, {
             id,
@@ -813,7 +931,7 @@ export class MemStorage implements IStorage {
             line: line.trim(),
             lat: station.location?.[0] || null,
             lng: station.location?.[1] || null,
-            tags: stationTags,
+            tags: allTags,
           });
           
           // Add split stations for this location
@@ -823,14 +941,16 @@ export class MemStorage implements IStorage {
               // Only add if not already in the map
               if (!this.stations.has(splitId)) {
                 const splitDisplayName = splitName || station.name;
-                const splitTags = STATION_TAGS[splitDisplayName.toLowerCase()] || [];
+                const splitManualTags = STATION_TAGS[splitDisplayName.toLowerCase()] || [];
+                const splitAutoTags = generateAutoTags(splitDisplayName);
+                const splitAllTags = Array.from(new Set([...splitManualTags, ...splitAutoTags]));
                 this.stations.set(splitId, {
                   id: splitId,
                   name: splitDisplayName,
                   line: lines,
                   lat: station.location?.[0] || null,
                   lng: station.location?.[1] || null,
-                  tags: splitTags,
+                  tags: splitAllTags,
                 });
               }
             });
