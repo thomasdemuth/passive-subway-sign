@@ -10,6 +10,7 @@ const LINE_MAPPINGS: Record<string, string> = {
   "R05": "N W", // Broadway
   "R06": "N W", // 36 Av
   "R08": "N W", // 39 Av-Dutch Kills
+  "R09": "N W", // Queensboro Plaza
   
   // BMT Broadway Line
   "R11": "N R W", // Lexington Av/59 St
@@ -574,6 +575,9 @@ const SPLIT_STATIONS: Record<string, { id: string; lines: string; name?: string 
   ],
   "DeKalb Av": [
     { id: "R30", lines: "B Q R" }
+  ],
+  "Queensboro Plaza": [
+    { id: "R09", lines: "N W" }
   ],
   "Atlantic Av-Barclays Ctr": [
     { id: "D24", lines: "B Q" },
