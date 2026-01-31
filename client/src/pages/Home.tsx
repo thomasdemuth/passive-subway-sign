@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { Tutorial, TutorialButton, useTutorial } from "@/components/Tutorial";
 
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
   const { data: stations, isLoading } = useStations();
   const [, navigate] = useLocation();
   const { location: userLocation, loading: locationLoading, enabled: locationEnabled, requestLocation, disableLocation } = useUserLocation();
+  const { showTutorial, completeTutorial, dismissTutorial, startTutorial } = useTutorial();
 
   const filteredStations = stations?.filter(s => 
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -197,9 +199,16 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-[10px] sm:text-sm text-muted-foreground/50 mt-8 sm:mt-16 pb-4"
-        >Data provided by MTA GTFS-Realtime Feed - Made by Thomas Demuth</motion.div>
+          className="text-center text-[10px] sm:text-sm text-muted-foreground/50 mt-8 sm:mt-16 pb-4 space-y-2"
+        >
+          <div>Data provided by MTA GTFS-Realtime Feed - Made by Thomas Demuth</div>
+          <TutorialButton onClick={startTutorial} />
+        </motion.div>
       </div>
+
+      {showTutorial && (
+        <Tutorial onComplete={completeTutorial} onDismiss={dismissTutorial} />
+      )}
     </div>
   );
 }
