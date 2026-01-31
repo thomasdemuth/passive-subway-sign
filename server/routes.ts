@@ -1,7 +1,7 @@
 
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage, addDynamicRoute, getStationWithDynamicRoutes, LINE_MAPPINGS } from "./storage";
+import { storage, addDynamicRoute, getStationWithDynamicRoutes } from "./storage";
 import { api } from "@shared/routes";
 import GtfsRealtimeBindings from "gtfs-realtime-bindings";
 import { type Arrival, type ServiceAlert } from "@shared/schema";
@@ -359,13 +359,8 @@ export async function registerRoutes(
                           destination = dests[routeId] || direction;
                         }
 
-                        // Filter arrivals to only include routes that serve this station
-                        const expectedRoutes = LINE_MAPPINGS[stationId]?.split(' ') || [];
-                        if (expectedRoutes.length > 0 && !expectedRoutes.includes(routeId)) {
-                          return; // Skip routes that don't serve this station
-                        }
-
                         // Track this route for dynamic line detection
+                        // This allows the UI to show any train that GTFS reports
                         addDynamicRoute(stationId, routeId);
                         
                         allArrivals.push({
