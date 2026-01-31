@@ -179,18 +179,18 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                     ))
                   ) : (
                     <motion.div 
-                      className="h-[90px] flex items-center justify-center relative"
+                      className="h-[90px] flex flex-col items-center justify-start pt-2 relative"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
+                      <span className="text-xs text-muted-foreground/60 relative z-10 mb-1">No uptown trains</span>
                       <motion.div
-                        className="absolute inset-0 flex items-center justify-center"
-                        animate={{ opacity: [0.2, 0.5, 0.2] }}
+                        className="flex items-center justify-center"
+                        animate={{ opacity: [0.15, 0.35, 0.15] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <X className="w-16 h-16 text-red-500/40" strokeWidth={3} />
+                        <X className="w-14 h-14 text-red-500/25" strokeWidth={3} />
                       </motion.div>
-                      <span className="text-xs text-muted-foreground/60 relative z-10">No uptown trains</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -214,18 +214,18 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                     ))
                   ) : (
                     <motion.div 
-                      className="h-[90px] flex items-center justify-center relative"
+                      className="h-[90px] flex flex-col items-center justify-start pt-2 relative"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                     >
+                      <span className="text-xs text-muted-foreground/60 relative z-10 mb-1">No downtown trains</span>
                       <motion.div
-                        className="absolute inset-0 flex items-center justify-center"
-                        animate={{ opacity: [0.2, 0.5, 0.2] }}
+                        className="flex items-center justify-center"
+                        animate={{ opacity: [0.15, 0.35, 0.15] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <X className="w-16 h-16 text-red-500/40" strokeWidth={3} />
+                        <X className="w-14 h-14 text-red-500/25" strokeWidth={3} />
                       </motion.div>
-                      <span className="text-xs text-muted-foreground/60 relative z-10">No downtown trains</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
