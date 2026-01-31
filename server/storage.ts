@@ -450,53 +450,53 @@ const LINE_MAPPINGS: Record<string, string> = {
   "419": "4 5 6", // 116 St
   "420": "4 5 6", // 110 St
   "423": "4 5 6", // 103 St
-  "501": "4 5 6", // 96 St
-  "502": "4 5 6", // 86 St
-  "503": "4 5 6", // 77 St
-  "504": "4 5 6", // 68 St-Hunter College
-  "505": "4 5 6", // 59 St
-  "601": "4 5 6", // 51 St
-  "602": "4 5 6", // Grand Central-42 St
-  "603": "4 5 6", // 33 St
-  "604": "4 5 6", // 28 St
-  "606": "4 5 6", // 23 St
-  "607": "6", // Astor Pl
-  "608": "6", // Bleecker St
-  "609": "6", // Spring St
-  "610": "6", // Canal St
-  "611": "4 5 6", // Brooklyn Bridge-City Hall
-  "612": "4 5", // Fulton St
-  "613": "4 5", // Wall St
-  "614": "4 5", // Bowling Green
-  "615": "4 5", // Borough Hall
-  "616": "4 5", // Atlantic Av-Barclays Ctr
-  "617": "4 5", // Franklin Av
-  "618": "4 5", // President St
-  "619": "4 5", // Sterling St
-  "621": "4 5", // Winthrop St
-  "622": "4 5", // Church Av
-  "623": "4 5", // Beverly Rd
-  "624": "4 5", // Newkirk Av
-  "625": "4 5", // Flatbush Av-Brooklyn College
-  "626": "4 5", // Utica Av
-  "627": "6", // Pelham Bay Park
-  "628": "6", // Buhre Av
-  "629": "6", // Middletown Rd
-  "630": "6", // Westchester Sq-E Tremont Av
-  "631": "6", // Zerega Av
-  "632": "6", // Castle Hill Av
-  "633": "6", // Parkchester
-  "634": "6", // St Lawrence Av
-  "635": "6", // Morrison Av-Soundview
-  "636": "6", // Elder Av
-  "637": "6", // Whitlock Av
-  "638": "6", // Hunts Point Av
-  "639": "6", // Longwood Av
-  "640": "6", // E 149 St
-  "641": "6", // E 143 St-St Mary's St
-  "642": "6", // Cypress Av
-  "643": "6", // Brook Av
-  "644": "6", // 3 Av-138 St
+  "501": "5", // Eastchester-Dyre Av
+  "502": "5", // Baychester Av
+  "503": "5", // Gun Hill Rd (5)
+  "504": "5", // Pelham Pkwy (5)
+  "505": "5", // Morris Park
+  "601": "6", // Pelham Bay Park
+  "602": "6", // Buhre Av
+  "603": "6", // Middletown Rd
+  "604": "6", // Westchester Sq-E Tremont Av
+  "606": "6", // Zerega Av
+  "607": "6", // Castle Hill Av
+  "608": "6", // Parkchester
+  "609": "6", // St Lawrence Av
+  "610": "6", // Morrison Av-Soundview
+  "611": "6", // Elder Av
+  "612": "6", // Whitlock Av
+  "613": "6", // Hunts Point Av
+  "614": "6", // Longwood Av
+  "615": "6", // E 149 St
+  "616": "6", // E 143 St-St Mary's St
+  "617": "6", // Cypress Av
+  "618": "6", // Brook Av
+  "619": "6", // 3 Av-138 St
+  "621": "4 5 6", // 138 St-Grand Concourse
+  "622": "4 5 6", // 149 St-Grand Concourse
+  "623": "4 5 6", // 161 St-Yankee Stadium
+  "624": "4 5 6", // 167 St
+  "625": "4 5 6", // 170 St
+  "626": "4 5 6", // Mt Eden Av
+  "627": "4 5 6", // 176 St
+  "628": "4 5 6", // Burnside Av
+  "629": "4 5 6", // 183 St
+  "630": "4 5 6", // Fordham Rd
+  "631": "4 5 6", // Kingsbridge Rd
+  "632": "4 5 6", // Bedford Park Blvd
+  "633": "4 5 6", // Mosholu Pkwy
+  "634": "4 5 6", // Woodlawn
+  "635": "4 5 6", // 59 St
+  "636": "4 5 6", // 68 St-Hunter College
+  "637": "4 5 6", // 77 St
+  "638": "4 5 6", // 86 St
+  "639": "4 5 6", // 96 St
+  "640": "4 5 6", // 103 St
+  "641": "4 5 6", // 110 St
+  "642": "4 5 6", // 116 St
+  "643": "4 5 6", // 125 St
+  "644": "4 5 6", // Grand Central-42 St
   
   // IRT Flushing Line (7)
   "701": "7", // Flushing-Main St
