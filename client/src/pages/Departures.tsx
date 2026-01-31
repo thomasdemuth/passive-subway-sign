@@ -188,7 +188,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                         animate={{ opacity: [0.15, 0.35, 0.15] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <X className="w-14 h-14 text-red-500/25" strokeWidth={3} />
+                        <X className="w-20 h-20 text-red-500/25" strokeWidth={3} />
                       </motion.div>
                       <span className="text-xs text-muted-foreground/60 relative z-10">No uptown trains</span>
                     </motion.div>
@@ -223,7 +223,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                         animate={{ opacity: [0.15, 0.35, 0.15] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <X className="w-14 h-14 text-red-500/25" strokeWidth={3} />
+                        <X className="w-20 h-20 text-red-500/25" strokeWidth={3} />
                       </motion.div>
                       <span className="text-xs text-muted-foreground/60 relative z-10">No downtown trains</span>
                     </motion.div>
