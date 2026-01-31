@@ -167,7 +167,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                 <ArrowUpCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Uptown</span>
               </div>
-              <div className="space-y-0.5">
+              <div className="space-y-0.5 min-h-[90px]">
                 <AnimatePresence mode="popLayout">
                   {uptownArrivals.length > 0 ? (
                     uptownArrivals.map((arrival, i) => (
@@ -195,7 +195,7 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
                 <ArrowDownCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
                 <span className="text-[10px] sm:text-xs font-semibold text-white/90 uppercase tracking-wide">Downtown</span>
               </div>
-              <div className="space-y-0.5">
+              <div className="space-y-0.5 min-h-[90px]">
                 <AnimatePresence mode="popLayout">
                   {downtownArrivals.length > 0 ? (
                     downtownArrivals.map((arrival, i) => (
