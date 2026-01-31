@@ -32,7 +32,7 @@ const ROUTE_COLORS: Record<string, string> = {
   "S": "#808183",
   "FS": "#808183",
   "H": "#808183",
-  "SI": "#0039A6",
+  "SI": "#006BB6",
 };
 
 export function RouteIcon({ routeId, className, size = "md" }: RouteIconProps) {
