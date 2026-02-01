@@ -173,8 +173,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // 18 St (1) and 86 St (B C) are separate stations - removed incorrect combination
   // 96 St (1 2 3) and 72 St (B C) are separate stations - removed incorrect combination
   // 34 St Penn Station - 1/2/3 and A/C/E platforms kept separate per user preference
-  // Lexington Av / 59 St
-  "629": ["R17"], "R17": ["629"],
+  // Lexington Av / 59 St: 629 (4/5/6) and R11 (N/R/W) kept separate per user request
   // Borough Hall / Court St (2 3 + 4 5)
   "238": ["418"], "418": ["238"],
   // Atlantic Av - Barclays Ctr: 235 (2/3/4/5), D24 (B/Q), R31 (D/N/R) kept separate per user request
