@@ -177,8 +177,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // Borough Hall / Court St (2 3 + 4 5)
   "238": ["418"], "418": ["238"],
   // Atlantic Av - Barclays Ctr: 235 (2/3/4/5), D24 (B/Q), R31 (D/N/R) kept separate per user request
-  // Jay St - MetroTech
-  "A42": ["R28"], "R28": ["A42"],
+  // Jay St - MetroTech (R28) and Hoyt-Schermerhorn (A42) kept separate per user request
   // High St (A40), Canal St (639), Court St (232) are separate stations - removed incorrect combination
   // DeKalb Av
   "D22": ["R30"], "R30": ["D22"],
