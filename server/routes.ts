@@ -183,23 +183,20 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   "B37": ["217", "D24", "R36"], "R36": ["217", "D24", "B37"],
   // Jay St - MetroTech
   "A42": ["R28"], "R28": ["A42"],
-  // Fulton St
-  "A40": ["639", "232"], "639": ["A40", "232"], "232": ["A40", "639"],
+  // High St (A40), Canal St (639), Court St (232) are separate stations - removed incorrect combination
   // DeKalb Av
   "D22": ["R30"], "R30": ["D22"],
   // W 4 St - Wash Sq
   "A32": ["D21"], "D21": ["A32"],
   // Broadway Junction
   "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
-  // Nevins St
-  "215": ["418N"], "418N": ["215"],
+  // 174 St (215) and 125 St (418) are separate stations - removed incorrect combination
   // Franklin Av area - S01 (shuttle at Fulton St) is separate from 239 (2/3/4/5 at Botanic Garden)
   // Botanic Garden / Prospect Park area - S04 connects to both 239 (2/3/4/5) and D26 (B/Q)
   "S04": ["239", "D26"], "239": ["S04"], "D26": ["S04"],
   // Hoyt-Schermerhorn
   "A43": ["G36"], "G36": ["A43"],
-  // 125 St (various lines)
-  "A14": ["224"], "224": ["A14"],
+  // 135 St (2/3 at 224) and 135 St (B/C at A14) are separate stations - removed incorrect combination
   // Queens Plaza (E/F/R) and 5 Av/53 St (E/F) are separate stations - removed incorrect combination
   // Jackson Hts - Roosevelt Av (E/F/M/R/7) - separate station IDs for each platform
   // Forest Hills - 71 Av
