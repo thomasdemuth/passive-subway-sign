@@ -170,8 +170,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   "631": ["725", "901"], "901": ["631", "725"],
   // 14 St - Union Sq
   "635": ["L03", "R20"], "L03": ["635", "R20"], "R20": ["635", "L03"],
-  // 96 St (1 2 3 + B C)
-  "132": ["A19"], "A19": ["132"],
+  // 14 St (1 2 3) and 96 St (B C) are separate stations - removed incorrect combination
   // 86 St (1 + B C)
   "131": ["A20"], "A20": ["131"],
   // 81 St
