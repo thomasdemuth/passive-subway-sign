@@ -6,7 +6,7 @@ import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
 import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX, Bug } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX } from "lucide-react";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -310,16 +310,10 @@ export default function Departures() {
   const [zoom, setZoom] = useState(1);
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [debugMode, setDebugMode] = useState(false);
   const [hiddenStationIds, setHiddenStationIds] = useState<Set<string>>(new Set());
   
-  const toggleDebugMode = () => {
-    setDebugMode(prev => !prev);
-    if (debugMode) {
-      // When turning off debug mode, restore hidden stations
-      setHiddenStationIds(new Set());
-    }
-  };
+  // Read debug mode from localStorage (set on Home page)
+  const debugMode = typeof window !== 'undefined' && localStorage.getItem("debugMode") === "true";
   
   const hideStation = (stationId: string) => {
     setHiddenStationIds(prev => {
@@ -510,18 +504,6 @@ export default function Departures() {
               data-testid="button-mute"
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => { playSound("click"); toggleDebugMode(); }}
-              className={cn(
-                "bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9",
-                debugMode ? "border-yellow-500 text-yellow-500" : "border-zinc-600 text-zinc-400"
-              )}
-              data-testid="button-debug-toggle"
-            >
-              <Bug className="w-4 h-4" />
             </Button>
           </div>
           <div className="flex flex-col items-center">

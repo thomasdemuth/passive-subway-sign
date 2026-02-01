@@ -63,6 +63,15 @@ export default function Home() {
     playSound("click");
     setShowDebugMenu(true);
     setSearchQuery("");
+    // Store debug mode state for Departures page
+    localStorage.setItem("debugMode", "true");
+  };
+  
+  // Clear debug mode when closing the debug menu
+  const closeDebugMenu = () => {
+    playSound("click");
+    setShowDebugMenu(false);
+    localStorage.removeItem("debugMode");
   };
 
   const filteredStations = stations?.filter(s => {
@@ -237,7 +246,7 @@ export default function Home() {
                     <span className="text-sm font-semibold text-yellow-200">Debug Menu</span>
                   </div>
                   <Button 
-                    onClick={() => { playSound("click"); setShowDebugMenu(false); }}
+                    onClick={closeDebugMenu}
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-muted-foreground hover:text-white"
