@@ -656,7 +656,7 @@ export default function Departures() {
             <p className="text-lg">No stations selected</p>
             <Button 
               variant="outline" 
-              onClick={() => { playSound("click"); navigate("/"); }} 
+              onClick={() => { playSound("whoosh"); navigate("/"); }} 
               className="mt-4"
               data-testid="button-select-stations"
             >
