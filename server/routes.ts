@@ -171,16 +171,9 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // 14 St - Union Sq - each platform shows only its own lines
   // 635 = 4/5/6, L03 = L, R20 = N/Q/R/W (kept separate per user preference)
   // 14 St (1 2 3) and 96 St (B C) are separate stations - removed incorrect combination
-  // 86 St (1 + B C)
-  "131": ["A20"], "A20": ["131"],
-  // 81 St
-  "A21": [],
-  // 72 St (1 2 3 + B C)
-  "120": ["A22"], "A22": ["120"],
-  // 34 St - Penn Station
-  "128": ["A28"], "A28": ["128"],
-  // 14 St - 8 Av
-  "A31": [],
+  // 18 St (1) and 86 St (B C) are separate stations - removed incorrect combination
+  // 96 St (1 2 3) and 72 St (B C) are separate stations - removed incorrect combination
+  // 34 St Penn Station - 1/2/3 and A/C/E platforms kept separate per user preference
   // Lexington Av / 59 St
   "629": ["R17"], "R17": ["629"],
   // Borough Hall / Court St (2 3 + 4 5)
