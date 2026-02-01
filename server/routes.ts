@@ -166,8 +166,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   "140": ["R27"], "R27": ["140"],
   // Times Sq - 42 St (each station shows only its own lines)
   // 127 = 1/2/3, R16 = N/Q/R/W, 725 = 7, 902 = S (GS)
-  // Grand Central - 42 St
-  "631": ["725", "901"], "901": ["631", "725"],
+  // Grand Central - 42 St: 631 (4/5/6/7/GS), 901 (S/GS) kept separate per user request
   // 14 St - Union Sq - each platform shows only its own lines
   // 635 = 4/5/6, L03 = L, R20 = N/Q/R/W (kept separate per user preference)
   // 14 St (1 2 3) and 96 St (B C) are separate stations - removed incorrect combination
@@ -189,9 +188,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // Broadway Junction
   "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
   // 174 St (215) and 125 St (418) are separate stations - removed incorrect combination
-  // Franklin Av area - S01 (shuttle at Fulton St) is separate from 239 (2/3/4/5 at Botanic Garden)
-  // Botanic Garden / Prospect Park area - S04 connects to both 239 (2/3/4/5) and D26 (B/Q)
-  "S04": ["239", "D26"], "239": ["S04"], "D26": ["S04"],
+  // Franklin Av / Botanic Garden (239) and Prospect Park (S04, D26) kept separate per user request
   // Hoyt-Schermerhorn
   "A43": ["G36"], "G36": ["A43"],
   // 135 St (2/3 at 224) and 135 St (B/C at A14) are separate stations - removed incorrect combination
