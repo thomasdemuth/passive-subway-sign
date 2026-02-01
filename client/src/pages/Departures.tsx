@@ -13,8 +13,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, horizontalListSortingStrategy, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent, DragStartEvent, DragOverlay } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
 function useCurrentTime() {
@@ -319,24 +319,32 @@ function SortableStation({ id, station, walkingTime, debugMode, onClose }: Sorta
     transform,
     transition,
     isDragging,
+    isOver,
   } = useSortable({ id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-    zIndex: isDragging ? 1000 : 1,
+    transform: CSS.Translate.toString(transform),
+    transition: transition || 'transform 200ms cubic-bezier(0.25, 1, 0.5, 1)',
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative group">
+    <div 
+      ref={setNodeRef} 
+      style={style} 
+      className={cn(
+        "relative group",
+        isDragging && "opacity-30",
+        isOver && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-xl"
+      )}
+    >
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 left-2 z-10 cursor-grab active:cursor-grabbing p-1.5 rounded-md bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity touch-none"
+        className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 cursor-grab active:cursor-grabbing px-3 py-1 rounded-full bg-zinc-800/90 backdrop-blur-sm border border-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity touch-none flex items-center gap-1"
         data-testid={`drag-handle-${station.id}`}
       >
-        <GripVertical className="w-4 h-4 text-white/70" />
+        <GripVertical className="w-3 h-3 text-white/70" />
+        <span className="text-[10px] text-white/50">drag</span>
       </div>
       <StationDepartures
         stationId={station.id}
@@ -523,8 +531,21 @@ export default function Departures() {
     })
   );
   
+  // Track the currently dragged station for DragOverlay
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeStation = useMemo(() => {
+    if (!activeId || !stations) return null;
+    return stations.find(s => s.id === activeId) || null;
+  }, [activeId, stations]);
+  
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+    playSound("click");
+  };
+  
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    setActiveId(null);
     
     if (over && active.id !== over.id) {
       playSound("toggle");
@@ -641,6 +662,7 @@ export default function Departures() {
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
             <div 
@@ -686,6 +708,23 @@ export default function Departures() {
                 <ScrollBar orientation="vertical" className="portrait:block landscape:hidden" />
               </ScrollArea>
             </div>
+            <DragOverlay dropAnimation={{
+              duration: 200,
+              easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
+            }}>
+              {activeStation ? (
+                <div className="opacity-95 shadow-2xl shadow-black/50 ring-2 ring-primary rounded-xl">
+                  <StationDepartures
+                    stationId={activeStation.id}
+                    stationName={activeStation.name}
+                    stationLine={activeStation.line}
+                    walkingTime={getWalkingTime(activeStation)}
+                    debugMode={debugMode}
+                    onClose={() => {}}
+                  />
+                </div>
+              ) : null}
+            </DragOverlay>
           </DndContext>
         )}
       </div>
