@@ -182,8 +182,7 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // High St (A40), Canal St (639), Court St (232) are separate stations - removed incorrect combination
   // DeKalb Av
   "D22": ["R30"], "R30": ["D22"],
-  // W 4 St - Wash Sq
-  "A32": ["D21"], "D21": ["A32"],
+  // W 4 St - Wash Sq: A32 (A/C/E) and D20 (B/D/F/M) kept separate per user request
   // Broadway Junction
   "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
   // 174 St (215) and 125 St (418) are separate stations - removed incorrect combination
