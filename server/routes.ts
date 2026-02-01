@@ -208,9 +208,8 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   "A43": ["G36"], "G36": ["A43"],
   // 125 St (various lines)
   "A14": ["224"], "224": ["A14"],
-  // Jackson Hts - Roosevelt Av (E/F/M/R)
-  "G21": ["F12"], "F12": ["G21"],
-  // 7 train stations are separate - 721 is Vernon Blvd-Jackson Av, not combined with Queens Plaza
+  // Queens Plaza (E/F/R) and 5 Av/53 St (E/F) are separate stations - removed incorrect combination
+  // Jackson Hts - Roosevelt Av (E/F/M/R/7) - separate station IDs for each platform
   // Forest Hills - 71 Av
   "G20": ["F11"], "F11": ["G20"],
   // Queensboro Plaza (N/W/R) and 7 are at same complex but separate platforms - keep separate
