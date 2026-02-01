@@ -309,9 +309,10 @@ interface SortableStationProps {
   walkingTime: number | null;
   debugMode: boolean;
   onClose: () => void;
+  isFullscreen: boolean;
 }
 
-function SortableStation({ id, station, walkingTime, debugMode, onClose }: SortableStationProps) {
+function SortableStation({ id, station, walkingTime, debugMode, onClose, isFullscreen }: SortableStationProps) {
   const {
     attributes,
     listeners,
@@ -320,7 +321,7 @@ function SortableStation({ id, station, walkingTime, debugMode, onClose }: Sorta
     transition,
     isDragging,
     isOver,
-  } = useSortable({ id });
+  } = useSortable({ id, disabled: isFullscreen });
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -334,25 +335,27 @@ function SortableStation({ id, station, walkingTime, debugMode, onClose }: Sorta
       className={cn(
         "relative group",
         isDragging && "opacity-30",
-        isOver && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-xl"
+        isOver && !isFullscreen && "ring-2 ring-primary ring-offset-2 ring-offset-background rounded-xl"
       )}
     >
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 cursor-grab active:cursor-grabbing px-3 py-1 rounded-full bg-zinc-800/90 backdrop-blur-sm border border-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity touch-none flex items-center gap-1"
-        data-testid={`drag-handle-${station.id}`}
-      >
-        <GripVertical className="w-3 h-3 text-white/70" />
-        <span className="text-[10px] text-white/50">drag</span>
-      </div>
+      {!isFullscreen && (
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 cursor-grab active:cursor-grabbing px-3 py-1 rounded-full bg-zinc-800/90 backdrop-blur-sm border border-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity touch-none flex items-center gap-1"
+          data-testid={`drag-handle-${station.id}`}
+        >
+          <GripVertical className="w-3 h-3 text-white/70" />
+          <span className="text-[10px] text-white/50">drag</span>
+        </div>
+      )}
       <StationDepartures
         stationId={station.id}
         stationName={station.name}
         stationLine={station.line}
         walkingTime={walkingTime}
         debugMode={debugMode}
-        onClose={onClose}
+        onClose={isFullscreen ? undefined : onClose}
       />
     </div>
   );
@@ -698,6 +701,7 @@ export default function Departures() {
                             walkingTime={getWalkingTime(station)}
                             debugMode={debugMode}
                             onClose={() => hideStation(station.id)}
+                            isFullscreen={isFullscreen}
                           />
                         </motion.div>
                       ))}
