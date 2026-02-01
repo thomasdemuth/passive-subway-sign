@@ -6,7 +6,7 @@ import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
 import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX, Bug } from "lucide-react";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -25,7 +25,7 @@ function useCurrentTime() {
   return now;
 }
 
-function StationDepartures({ stationId, stationName, stationLine, walkingTime }: { stationId: string; stationName: string; stationLine: string; walkingTime: number | null }) {
+function StationDepartures({ stationId, stationName, stationLine, walkingTime, debugMode, onClose }: { stationId: string; stationName: string; stationLine: string; walkingTime: number | null; debugMode?: boolean; onClose?: () => void }) {
   const { data: arrivals, isLoading, dataUpdatedAt } = useArrivals(stationId);
   const { playSound } = useSoundEffects();
   
@@ -137,12 +137,25 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime }:
       <CardHeader className="pb-2 px-3 sm:px-4 pt-3 sm:pt-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <span className="text-base sm:text-lg font-semibold truncate">{stationName}</span>
-          {walkingTime !== null && (
-            <div className="flex items-center gap-1 text-xs text-muted-foreground flex-shrink-0">
-              <PersonStanding className="w-3.5 h-3.5" />
-              <span>{walkingTime} min</span>
-            </div>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {walkingTime !== null && (
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <PersonStanding className="w-3.5 h-3.5" />
+                <span>{walkingTime} min</span>
+              </div>
+            )}
+            {debugMode && onClose && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => { playSound("click"); onClose(); }}
+                className="h-6 w-6 text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                data-testid={`button-close-station-${stationId}`}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-1 flex-wrap">
           {availableLines.map((line, i) => (
@@ -297,6 +310,24 @@ export default function Departures() {
   const [zoom, setZoom] = useState(1);
   const [showControls, setShowControls] = useState(true);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [debugMode, setDebugMode] = useState(false);
+  const [hiddenStationIds, setHiddenStationIds] = useState<Set<string>>(new Set());
+  
+  const toggleDebugMode = () => {
+    setDebugMode(prev => !prev);
+    if (debugMode) {
+      // When turning off debug mode, restore hidden stations
+      setHiddenStationIds(new Set());
+    }
+  };
+  
+  const hideStation = (stationId: string) => {
+    setHiddenStationIds(prev => {
+      const next = new Set(prev);
+      next.add(stationId);
+      return next;
+    });
+  };
   
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -413,7 +444,7 @@ export default function Departures() {
   const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
   const stationIds = ids?.split(",").filter(Boolean) || [];
-  const selectedStations = stations?.filter(s => stationIds.includes(s.id)) || [];
+  const selectedStations = stations?.filter(s => stationIds.includes(s.id) && !hiddenStationIds.has(s.id)) || [];
   
   const allRouteIds = useMemo(() => {
     const routes = new Set<string>();
@@ -480,6 +511,18 @@ export default function Departures() {
             >
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => { playSound("click"); toggleDebugMode(); }}
+              className={cn(
+                "bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9",
+                debugMode ? "border-yellow-500 text-yellow-500" : "border-zinc-600 text-zinc-400"
+              )}
+              data-testid="button-debug-toggle"
+            >
+              <Bug className="w-4 h-4" />
+            </Button>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
@@ -542,6 +585,8 @@ export default function Departures() {
                         stationName={station.name}
                         stationLine={station.line}
                         walkingTime={getWalkingTime(station)}
+                        debugMode={debugMode}
+                        onClose={() => hideStation(station.id)}
                       />
                     </motion.div>
                   ))}
