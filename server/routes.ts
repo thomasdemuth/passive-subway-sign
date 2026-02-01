@@ -161,41 +161,8 @@ const FEEDS = [
 
 // Combined stations - maps a station ID to additional GTFS stop IDs to query
 // This allows showing all trains at a physical location regardless of which platform entry is selected
-const COMBINED_STATIONS: Record<string, string[]> = {
-  // South Ferry / Whitehall St
-  "140": ["R27"], "R27": ["140"],
-  // Times Sq - 42 St (each station shows only its own lines)
-  // 127 = 1/2/3, R16 = N/Q/R/W, 725 = 7, 902 = S (GS)
-  // Grand Central - 42 St: 631 (4/5/6/7/GS), 901 (S/GS) kept separate per user request
-  // 14 St - Union Sq - each platform shows only its own lines
-  // 635 = 4/5/6, L03 = L, R20 = N/Q/R/W (kept separate per user preference)
-  // 14 St (1 2 3) and 96 St (B C) are separate stations - removed incorrect combination
-  // 18 St (1) and 86 St (B C) are separate stations - removed incorrect combination
-  // 96 St (1 2 3) and 72 St (B C) are separate stations - removed incorrect combination
-  // 34 St Penn Station - 1/2/3 and A/C/E platforms kept separate per user preference
-  // Lexington Av / 59 St: 629 (4/5/6) and R11 (N/R/W) kept separate per user request
-  // Borough Hall / Court St (2 3 + 4 5)
-  "238": ["418"], "418": ["238"],
-  // Atlantic Av - Barclays Ctr: 235 (2/3/4/5), D24 (B/Q), R31 (D/N/R) kept separate per user request
-  // Jay St - MetroTech (R28) and Hoyt-Schermerhorn (A42) kept separate per user request
-  // High St (A40), Canal St (639), Court St (232) are separate stations - removed incorrect combination
-  // DeKalb Av
-  "D22": ["R30"], "R30": ["D22"],
-  // W 4 St - Wash Sq: A32 (A/C/E) and D20 (B/D/F/M) kept separate per user request
-  // Broadway Junction
-  "A52": ["J27", "L22"], "J27": ["A52", "L22"], "L22": ["A52", "J27"],
-  // 174 St (215) and 125 St (418) are separate stations - removed incorrect combination
-  // Franklin Av / Botanic Garden (239) and Prospect Park (S04, D26) kept separate per user request
-  // Hoyt-Schermerhorn
-  "A43": ["G36"], "G36": ["A43"],
-  // 135 St (2/3 at 224) and 135 St (B/C at A14) are separate stations - removed incorrect combination
-  // Queens Plaza (E/F/R) and 5 Av/53 St (E/F) are separate stations - removed incorrect combination
-  // Jackson Hts - Roosevelt Av (E/F/M/R/7) - separate station IDs for each platform
-  // Forest Hills - 71 Av
-  "G20": ["F11"], "F11": ["G20"],
-  // Queensboro Plaza (N/W/R) and 7 are at same complex but separate platforms - keep separate
-  // World Trade Center - E line terminal only (no combined stations)
-};
+// All combinations removed per user request - each station shows only its own lines
+const COMBINED_STATIONS: Record<string, string[]> = {};
 
 export async function registerRoutes(
   httpServer: Server,
