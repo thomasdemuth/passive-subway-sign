@@ -556,6 +556,7 @@ export const LINE_MAPPINGS: Record<string, string> = {
 // Station name overrides for correct display names
 const STATION_NAME_OVERRIDES: Record<string, string> = {
   "227": "110 St-Malcom X Plaza", // Was "Central Park North (110 St)" on 2/3
+  "239": "Franklin Av-Medgar Evers College", // Was "Franklin Av / Botanic Garden"
 };
 
 // Stations that share the same physical location but have different platform IDs
