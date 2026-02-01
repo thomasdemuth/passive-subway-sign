@@ -168,8 +168,8 @@ const COMBINED_STATIONS: Record<string, string[]> = {
   // 127 = 1/2/3, R16 = N/Q/R/W, 725 = 7, 902 = S (GS)
   // Grand Central - 42 St
   "631": ["725", "901"], "901": ["631", "725"],
-  // 14 St - Union Sq
-  "635": ["L03", "R20"], "L03": ["635", "R20"], "R20": ["635", "L03"],
+  // 14 St - Union Sq - each platform shows only its own lines
+  // 635 = 4/5/6, L03 = L, R20 = N/Q/R/W (kept separate per user preference)
   // 14 St (1 2 3) and 96 St (B C) are separate stations - removed incorrect combination
   // 86 St (1 + B C)
   "131": ["A20"], "A20": ["131"],
