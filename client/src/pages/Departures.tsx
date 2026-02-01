@@ -6,13 +6,16 @@ import { useUserLocation, calculateWalkingTime } from "@/hooks/use-location";
 import { ArrivalCard } from "@/components/ArrivalCard";
 import { RouteIcon } from "@/components/RouteIcon";
 import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
-import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX, GripVertical } from "lucide-react";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, horizontalListSortingStrategy, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 function useCurrentTime() {
   const [now, setNow] = useState(new Date());
@@ -300,6 +303,53 @@ function StationDepartures({ stationId, stationName, stationLine, walkingTime, d
   );
 }
 
+interface SortableStationProps {
+  id: string;
+  station: { id: string; name: string; line: string; lat?: number | null; lng?: number | null };
+  walkingTime: number | null;
+  debugMode: boolean;
+  onClose: () => void;
+}
+
+function SortableStation({ id, station, walkingTime, debugMode, onClose }: SortableStationProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 1000 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} className="relative group">
+      <div
+        {...attributes}
+        {...listeners}
+        className="absolute top-2 left-2 z-10 cursor-grab active:cursor-grabbing p-1.5 rounded-md bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity touch-none"
+        data-testid={`drag-handle-${station.id}`}
+      >
+        <GripVertical className="w-4 h-4 text-white/70" />
+      </div>
+      <StationDepartures
+        stationId={station.id}
+        stationName={station.name}
+        stationLine={station.line}
+        walkingTime={walkingTime}
+        debugMode={debugMode}
+        onClose={onClose}
+      />
+    </div>
+  );
+}
+
 export default function Departures() {
   const [location, navigate] = useLocation();
   // Extract station IDs from URL path /departures/:ids
@@ -438,7 +488,56 @@ export default function Departures() {
   const dateString = currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
 
   const stationIds = ids?.split(",").filter(Boolean) || [];
-  const selectedStations = stations?.filter(s => stationIds.includes(s.id) && !hiddenStationIds.has(s.id)) || [];
+  
+  // State to track ordered station IDs (for drag and drop reordering)
+  const [orderedIds, setOrderedIds] = useState<string[]>(stationIds);
+  
+  // Sync orderedIds when URL changes (new stations added/removed)
+  useEffect(() => {
+    setOrderedIds(prev => {
+      // Keep existing order, add new IDs at the end, remove IDs no longer present
+      const existingOrder = prev.filter(id => stationIds.includes(id));
+      const newIds = stationIds.filter(id => !prev.includes(id));
+      return [...existingOrder, ...newIds];
+    });
+  }, [ids]);
+  
+  // Get stations in their ordered sequence
+  const selectedStations = useMemo(() => {
+    if (!stations) return [];
+    const stationMap = new Map(stations.map(s => [s.id, s]));
+    return orderedIds
+      .filter(id => stationMap.has(id) && !hiddenStationIds.has(id))
+      .map(id => stationMap.get(id)!);
+  }, [stations, orderedIds, hiddenStationIds]);
+  
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      playSound("toggle");
+      setOrderedIds((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+        // Update URL with new order
+        navigate(`/departures/${newOrder.join(",")}`, { replace: true });
+        return newOrder;
+      });
+    }
+  };
   
   const allRouteIds = useMemo(() => {
     const routes = new Set<string>();
@@ -539,45 +638,55 @@ export default function Departures() {
             </Button>
           </div>
         ) : (
-          <div 
-            ref={contentRef}
-            className="h-full flex justify-center"
-            style={{ transform: `scale(${effectiveScale})`, transformOrigin: 'top center' }}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
           >
-            <ScrollArea className="h-full">
-              <AnimatePresence mode="wait">
-                <motion.div 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex flex-wrap justify-center items-start gap-4 p-4 sm:p-6 portrait:flex-col portrait:items-center landscape:flex-row"
+            <div 
+              ref={contentRef}
+              className="h-full flex justify-center"
+              style={{ transform: `scale(${effectiveScale})`, transformOrigin: 'top center' }}
+            >
+              <ScrollArea className="h-full">
+                <SortableContext
+                  items={selectedStations.map(s => s.id)}
+                  strategy={verticalListSortingStrategy}
                 >
-                  {selectedStations.map((station, index) => (
-                    <motion.div
-                      key={station.id}
-                      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ 
-                        delay: index * 0.1, 
-                        duration: 0.4, 
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                      }}
+                  <AnimatePresence mode="wait">
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="flex flex-wrap justify-center items-start gap-4 p-4 sm:p-6 portrait:flex-col portrait:items-center landscape:flex-row"
                     >
-                      <StationDepartures 
-                        stationId={station.id}
-                        stationName={station.name}
-                        stationLine={station.line}
-                        walkingTime={getWalkingTime(station)}
-                        debugMode={debugMode}
-                        onClose={() => hideStation(station.id)}
-                      />
+                      {selectedStations.map((station, index) => (
+                        <motion.div
+                          key={station.id}
+                          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            delay: index * 0.1, 
+                            duration: 0.4, 
+                            ease: [0.25, 0.46, 0.45, 0.94]
+                          }}
+                        >
+                          <SortableStation
+                            id={station.id}
+                            station={station}
+                            walkingTime={getWalkingTime(station)}
+                            debugMode={debugMode}
+                            onClose={() => hideStation(station.id)}
+                          />
+                        </motion.div>
+                      ))}
                     </motion.div>
-                  ))}
-                </motion.div>
-              </AnimatePresence>
-              <ScrollBar orientation="horizontal" className="landscape:block portrait:hidden" />
-              <ScrollBar orientation="vertical" className="portrait:block landscape:hidden" />
-            </ScrollArea>
-          </div>
+                  </AnimatePresence>
+                </SortableContext>
+                <ScrollBar orientation="horizontal" className="landscape:block portrait:hidden" />
+                <ScrollBar orientation="vertical" className="portrait:block landscape:hidden" />
+              </ScrollArea>
+            </div>
+          </DndContext>
         )}
       </div>
 
