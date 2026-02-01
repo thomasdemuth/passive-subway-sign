@@ -543,7 +543,7 @@ export default function Departures() {
   
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
-    playSound("click");
+    playSound("drag");
   };
   
   const handleDragEnd = (event: DragEndEvent) => {
@@ -551,7 +551,7 @@ export default function Departures() {
     setActiveId(null);
     
     if (over && active.id !== over.id) {
-      playSound("toggle");
+      playSound("drop");
       setOrderedIds((items) => {
         const oldIndex = items.indexOf(active.id as string);
         const newIndex = items.indexOf(over.id as string);
@@ -560,6 +560,8 @@ export default function Departures() {
         navigate(`/departures/${newOrder.join(",")}`, { replace: true });
         return newOrder;
       });
+    } else {
+      playSound("click");
     }
   };
   
@@ -586,7 +588,7 @@ export default function Departures() {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => { playSound("click"); navigate("/"); }}
+              onClick={() => { playSound("whoosh"); navigate("/"); }}
               className="bg-background/80 backdrop-blur-md h-8 w-8 sm:h-9 sm:w-9 border-zinc-600 text-zinc-400"
               data-testid="button-back"
             >

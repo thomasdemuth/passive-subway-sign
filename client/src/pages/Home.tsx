@@ -98,13 +98,14 @@ export default function Home() {
   }, [filteredStations, userLocation]);
 
   const toggleStation = (id: string) => {
-    playSound("toggle");
     setSelectedStationIds(prev => {
       const next = new Set(prev);
       if (next.has(id)) {
         next.delete(id);
+        playSound("deselect");
       } else {
         next.add(id);
+        playSound("select");
       }
       return next;
     });
@@ -112,17 +113,18 @@ export default function Home() {
 
   const handleViewDepartures = () => {
     if (selectedStationIds.size > 0) {
-      playSound("click");
+      playSound("whoosh");
       const ids = Array.from(selectedStationIds).join(",");
       navigate(`/departures/${ids}`);
     }
   };
   
   const handleLocationToggle = () => {
-    playSound("click");
     if (locationEnabled) {
+      playSound("deselect");
       disableLocation();
     } else {
+      playSound("select");
       requestLocation();
     }
   };

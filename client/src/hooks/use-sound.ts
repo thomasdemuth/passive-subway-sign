@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 
 const STORAGE_KEY = "subway-tracker-muted";
 
-type SoundType = "click" | "arrival" | "alert" | "zoom" | "toggle";
+type SoundType = "click" | "arrival" | "alert" | "zoom" | "toggle" | "drag" | "drop" | "select" | "deselect" | "refresh" | "error" | "success" | "whoosh";
 
 const SOUND_FREQUENCIES: Record<SoundType, number[]> = {
   click: [800],
@@ -10,6 +10,14 @@ const SOUND_FREQUENCIES: Record<SoundType, number[]> = {
   alert: [440, 330],
   zoom: [600, 700],
   toggle: [500, 600],
+  drag: [300, 400],
+  drop: [600, 800, 1000],
+  select: [440, 550, 660],
+  deselect: [660, 550, 440],
+  refresh: [800, 900, 1000, 1100],
+  error: [200, 150],
+  success: [523, 659, 784, 1047],
+  whoosh: [200, 400, 600, 300],
 };
 
 const SOUND_DURATIONS: Record<SoundType, number> = {
@@ -18,6 +26,20 @@ const SOUND_DURATIONS: Record<SoundType, number> = {
   alert: 200,
   zoom: 80,
   toggle: 60,
+  drag: 100,
+  drop: 120,
+  select: 100,
+  deselect: 80,
+  refresh: 60,
+  error: 150,
+  success: 100,
+  whoosh: 50,
+};
+
+const SOUND_WAVE_TYPES: Partial<Record<SoundType, OscillatorType>> = {
+  alert: "square",
+  error: "sawtooth",
+  whoosh: "triangle",
 };
 
 export function useSoundEffects() {
@@ -57,7 +79,7 @@ export function useSoundEffects() {
         gainNode.connect(ctx.destination);
 
         oscillator.frequency.value = freq;
-        oscillator.type = type === "alert" ? "square" : "sine";
+        oscillator.type = SOUND_WAVE_TYPES[type] || "sine";
 
         const startTime = ctx.currentTime + (index * duration * 0.8);
         const endTime = startTime + duration;
