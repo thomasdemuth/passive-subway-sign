@@ -38,9 +38,9 @@ const STOP_NAMES: Record<string, string> = {
   "410": "170 St", "411": "167 St", "412": "161 St-Yankee Stadium", "413": "149 St-Grand Concourse",
   "414": "138 St-Grand Concourse", "415": "125 St", "416": "E 180 St", "417": "Morris Park",
   "418": "Pelham Pkwy", "419": "Gun Hill Rd", "420": "Baychester Av", "501": "Eastchester-Dyre Av",
-  // 6 line
+  // 6 line (note: 6X trains terminate at Parkchester during rush hours)
   "601": "Pelham Bay Park", "602": "Buhre Av", "603": "Middletown Rd", "604": "Westchester Sq-E Tremont Av",
-  "605": "Zerega Av", "606": "Castle Hill Av", "607": "Parkchester", "608": "St Lawrence Av",
+  "605": "Zerega Av", "606": "Castle Hill Av", "607": "Parkchester", "6X7": "Parkchester", "608": "St Lawrence Av",
   "609": "Morrison Av-Soundview", "610": "Elder Av", "611": "Whitlock Av", "612": "Hunts Point Av",
   "613": "Longwood Av", "614": "E 149 St", "615": "E 143 St-St Mary's St", "616": "Cypress Av",
   "617": "Brook Av", "618": "3 Av-138 St", "619": "125 St", "621": "96 St", "622": "86 St",
@@ -255,11 +255,15 @@ export async function registerRoutes(
                         let destination = direction;
                         const stopTimeUpdates = entity.tripUpdate?.stopTimeUpdate || [];
                         if (stopTimeUpdates.length > 0) {
-                          // Sort stops by sequence number to get the actual final destination
+                          // Sort stops by sequence number, falling back to arrival time if sequence not available
                           const sortedStops = [...stopTimeUpdates].sort((a, b) => {
                             const seqA = a.stopSequence || 0;
                             const seqB = b.stopSequence || 0;
-                            return seqA - seqB;
+                            if (seqA !== seqB) return seqA - seqB;
+                            // Fallback to arrival time if sequence numbers are equal
+                            const timeA = Number(a.arrival?.time || a.departure?.time || 0);
+                            const timeB = Number(b.arrival?.time || b.departure?.time || 0);
+                            return timeA - timeB;
                           });
                           // Get the last stop in the sorted sequence
                           const lastStop = sortedStops[sortedStops.length - 1];
@@ -267,6 +271,12 @@ export async function registerRoutes(
                           if (lastStopId && STOP_NAMES[lastStopId]) {
                             destination = STOP_NAMES[lastStopId];
                           }
+                        }
+                        
+                        // Correct known terminal station errors
+                        // 6 trains showing St Lawrence Av should be Parkchester (6X express terminal)
+                        if ((routeId === '6' || routeId === '6X') && destination === 'St Lawrence Av') {
+                          destination = 'Parkchester';
                         }
                         
                         // Override M train destinations for weekend service
