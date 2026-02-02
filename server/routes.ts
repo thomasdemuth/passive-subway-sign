@@ -255,8 +255,14 @@ export async function registerRoutes(
                         let destination = direction;
                         const stopTimeUpdates = entity.tripUpdate?.stopTimeUpdate || [];
                         if (stopTimeUpdates.length > 0) {
-                          // Get the last stop in this trip
-                          const lastStop = stopTimeUpdates[stopTimeUpdates.length - 1];
+                          // Sort stops by sequence number to get the actual final destination
+                          const sortedStops = [...stopTimeUpdates].sort((a, b) => {
+                            const seqA = a.stopSequence || 0;
+                            const seqB = b.stopSequence || 0;
+                            return seqA - seqB;
+                          });
+                          // Get the last stop in the sorted sequence
+                          const lastStop = sortedStops[sortedStops.length - 1];
                           const lastStopId = lastStop?.stopId?.replace(/[NS]$/, '') || '';
                           if (lastStopId && STOP_NAMES[lastStopId]) {
                             destination = STOP_NAMES[lastStopId];
