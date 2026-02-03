@@ -278,6 +278,10 @@ export async function registerRoutes(
                         if ((routeId === '6' || routeId === '6X') && destination === 'St Lawrence Av') {
                           destination = 'Parkchester';
                         }
+                        // B trains showing Woodhaven Blvd during reroutes should be 2 Av (F line)
+                        if (routeId === 'B' && destination === 'Woodhaven Blvd') {
+                          destination = '2 Av';
+                        }
                         
                         // Override M train destinations for weekend service
                         // M trains run Essex St ↔ Middle Village on weekends/nights
