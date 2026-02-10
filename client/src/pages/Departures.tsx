@@ -642,12 +642,12 @@ export default function Departures() {
             </span>
           </div>
           {weather && (
-            <div className={cn("absolute right-3 sm:right-6 flex items-center gap-1.5 transition-opacity duration-300", showControls ? "opacity-100" : "opacity-0 pointer-events-none")} data-testid="weather-display">
-              <span className="text-lg sm:text-xl">{weather.icon}</span>
+            <div className="absolute right-3 sm:right-6 flex items-center gap-1.5" data-testid="weather-display">
               <div className="flex flex-col items-end">
                 <span className="text-sm sm:text-base font-semibold text-white tabular-nums" data-testid="text-temperature">{weather.temperature}°F</span>
                 <span className="text-[10px] sm:text-xs text-zinc-400 leading-tight" data-testid="text-conditions">{weather.description}</span>
               </div>
+              <span className="text-lg sm:text-xl">{weather.icon}</span>
             </div>
           )}
         </div>
