@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence, motion } from "framer-motion";
 import Home from "@/pages/Home";
+import DisplaySettings from "@/pages/DisplaySettings";
 import Departures from "@/pages/Departures";
 import NotFound from "@/pages/not-found";
 
@@ -43,6 +44,7 @@ function AnimatedPage({ children }: { children: React.ReactNode }) {
 function Router() {
   const [location] = useLocation();
   const isHome = location === "/";
+  const isSettings = location.startsWith("/settings/");
   const isDepartures = location.startsWith("/departures/");
   
   return (
@@ -52,12 +54,17 @@ function Router() {
           <Home />
         </AnimatedPage>
       )}
+      {isSettings && (
+        <AnimatedPage key="settings">
+          <DisplaySettings />
+        </AnimatedPage>
+      )}
       {isDepartures && (
         <AnimatedPage key="departures">
           <Departures />
         </AnimatedPage>
       )}
-      {!isHome && !isDepartures && (
+      {!isHome && !isSettings && !isDepartures && (
         <AnimatedPage key="notfound">
           <NotFound />
         </AnimatedPage>

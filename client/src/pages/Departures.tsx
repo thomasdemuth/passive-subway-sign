@@ -9,6 +9,7 @@ import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
 import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX, GripVertical } from "lucide-react";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { useWeather } from "@/hooks/use-weather";
+import { loadDisplaySettings } from "@/pages/DisplaySettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -391,6 +392,7 @@ export default function Departures() {
   const initialScaleCalculated = useRef(false);
   const { isMuted, toggleMute, playSound } = useSoundEffects();
   const { weather } = useWeather();
+  const [displaySettings] = useState(loadDisplaySettings);
   
   const zoomIn = () => {
     playSound("zoom");
@@ -633,27 +635,41 @@ export default function Departures() {
               {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
             </Button>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
-              {timeString}
-            </span>
-            <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
-              {dateString}
-            </span>
-          </div>
-          {weather && (
+          {displaySettings.showTimeAndDate && (
+            <div className="flex flex-col items-center">
+              {displaySettings.showTime && (
+                <span className="text-3xl sm:text-5xl font-bold tabular-nums text-white" data-testid="text-time">
+                  {timeString}
+                </span>
+              )}
+              {displaySettings.showDate && (
+                <span className="text-xs sm:text-sm text-muted-foreground" data-testid="text-date">
+                  {dateString}
+                </span>
+              )}
+            </div>
+          )}
+          {displaySettings.showWeather && weather && (
             <div className="absolute right-3 sm:right-6 flex items-center gap-2" data-testid="weather-display">
-              <div className="flex flex-col items-end">
-                <span className="text-3xl sm:text-5xl font-bold text-white tabular-nums" data-testid="text-temperature">{weather.temperature}°F</span>
-                <span className="text-xs sm:text-sm text-muted-foreground leading-tight" data-testid="text-conditions">{weather.description}</span>
-              </div>
-              <span className="flex items-center justify-center self-stretch text-4xl sm:text-6xl">{weather.icon}</span>
+              {(displaySettings.showTemperature || displaySettings.showConditions) && (
+                <div className="flex flex-col items-end">
+                  {displaySettings.showTemperature && (
+                    <span className="text-3xl sm:text-5xl font-bold text-white tabular-nums" data-testid="text-temperature">{weather.temperature}°F</span>
+                  )}
+                  {displaySettings.showConditions && (
+                    <span className="text-xs sm:text-sm text-muted-foreground leading-tight" data-testid="text-conditions">{weather.description}</span>
+                  )}
+                </div>
+              )}
+              {displaySettings.showWeatherIcon && (
+                <span className="flex items-center justify-center self-stretch text-4xl sm:text-6xl">{weather.icon}</span>
+              )}
             </div>
           )}
         </div>
       </div>
       
-      {allRouteIds.length > 0 && (
+      {displaySettings.showAlerts && allRouteIds.length > 0 && (
         <ServiceAlertBanner routeIds={allRouteIds} />
       )}
       

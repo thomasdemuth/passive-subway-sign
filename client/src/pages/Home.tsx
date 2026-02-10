@@ -115,7 +115,7 @@ export default function Home() {
     if (selectedStationIds.size > 0) {
       playSound("whoosh");
       const ids = Array.from(selectedStationIds).join(",");
-      navigate(`/departures/${ids}`);
+      navigate(`/settings/${ids}`);
     }
   };
   
