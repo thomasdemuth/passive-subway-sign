@@ -9,7 +9,7 @@ import { ServiceAlertBanner } from "@/components/ServiceAlertBanner";
 import { ArrowDownCircle, ArrowUpCircle, ArrowLeft, Loader2, PersonStanding, ZoomIn, ZoomOut, Maximize, Minimize, X, Volume2, VolumeX, GripVertical } from "lucide-react";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { useWeather } from "@/hooks/use-weather";
-import { loadDisplaySettings } from "@/pages/DisplaySettings";
+import { paramsToSettings } from "@/pages/DisplaySettings";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion, AnimatePresence } from "framer-motion";
@@ -392,7 +392,7 @@ export default function Departures() {
   const initialScaleCalculated = useRef(false);
   const { isMuted, toggleMute, playSound } = useSoundEffects();
   const { weather } = useWeather();
-  const [displaySettings] = useState(loadDisplaySettings);
+  const [displaySettings] = useState(() => paramsToSettings(window.location.search));
   
   const zoomIn = () => {
     playSound("zoom");

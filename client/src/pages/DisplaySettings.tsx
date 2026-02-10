@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "wouter";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { ArrowLeft, ArrowRight, Clock, Bell, CloudSun } from "lucide-react";
@@ -30,18 +30,42 @@ const DEFAULT_SETTINGS: DisplaySettingsData = {
   showTemperature: true,
 };
 
-export function loadDisplaySettings(): DisplaySettingsData {
-  try {
-    const stored = localStorage.getItem("displaySettings");
-    if (stored) {
-      return { ...DEFAULT_SETTINGS, ...JSON.parse(stored) };
+const PARAM_MAP: Record<keyof DisplaySettingsData, string> = {
+  showTimeAndDate: "time",
+  showTime: "t",
+  showDate: "d",
+  showAlerts: "alerts",
+  showWeather: "weather",
+  showWeatherIcon: "wi",
+  showConditions: "cond",
+  showTemperature: "temp",
+};
+
+const REVERSE_MAP: Record<string, keyof DisplaySettingsData> = Object.fromEntries(
+  Object.entries(PARAM_MAP).map(([k, v]) => [v, k as keyof DisplaySettingsData])
+);
+
+export function settingsToParams(settings: DisplaySettingsData): string {
+  const parts: string[] = [];
+  for (const [key, param] of Object.entries(PARAM_MAP)) {
+    const val = settings[key as keyof DisplaySettingsData];
+    if (val !== DEFAULT_SETTINGS[key as keyof DisplaySettingsData]) {
+      parts.push(`${param}=${val ? "1" : "0"}`);
     }
-  } catch {}
-  return DEFAULT_SETTINGS;
+  }
+  return parts.join("&");
 }
 
-function saveDisplaySettings(settings: DisplaySettingsData) {
-  localStorage.setItem("displaySettings", JSON.stringify(settings));
+export function paramsToSettings(search: string): DisplaySettingsData {
+  const params = new URLSearchParams(search);
+  const settings = { ...DEFAULT_SETTINGS };
+  for (const [param, key] of Object.entries(REVERSE_MAP)) {
+    const val = params.get(param);
+    if (val !== null) {
+      settings[key] = val === "1";
+    }
+  }
+  return settings;
 }
 
 interface SettingRowProps {
@@ -77,11 +101,7 @@ export default function DisplaySettings() {
   const [location, navigate] = useLocation();
   const stationIds = location.startsWith("/settings/") ? location.replace("/settings/", "") : "";
   const { playSound } = useSoundEffects();
-  const [settings, setSettings] = useState<DisplaySettingsData>(loadDisplaySettings);
-
-  useEffect(() => {
-    saveDisplaySettings(settings);
-  }, [settings]);
+  const [settings, setSettings] = useState<DisplaySettingsData>(() => paramsToSettings(window.location.search));
 
   const update = (key: keyof DisplaySettingsData, value: boolean) => {
     playSound("click");
@@ -105,13 +125,17 @@ export default function DisplaySettings() {
         next.showConditions = true;
         next.showTemperature = true;
       }
+      const qs = settingsToParams(next);
+      const newUrl = `${window.location.pathname}${qs ? `?${qs}` : ""}`;
+      window.history.replaceState(null, "", newUrl);
       return next;
     });
   };
 
   const handleContinue = () => {
     playSound("whoosh");
-    navigate(`/departures/${stationIds}`);
+    const qs = settingsToParams(settings);
+    navigate(`/departures/${stationIds}${qs ? `?${qs}` : ""}`);
   };
 
   const handleBack = () => {
