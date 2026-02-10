@@ -1,9 +1,7 @@
-import { useState } from "react";
 import { useAlertsForRoutes } from "@/hooks/use-alerts";
 import { RouteIcon } from "@/components/RouteIcon";
-import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
 import type { ServiceAlert } from "@shared/schema";
 
 interface ServiceAlertBannerProps {
@@ -53,7 +51,6 @@ function getAlertTiming(alert: ServiceAlert): string | null {
 }
 
 function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: boolean }) {
-  const [expanded, setExpanded] = useState(false);
   const timing = getAlertTiming(alert) || "";
   
   const severityColor = alert.severity >= 30 
@@ -101,31 +98,12 @@ function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: 
             </span>
           </div>
           <p 
-            className={cn("text-muted-foreground mt-0.5", expanded ? "" : "line-clamp-2")}
+            className="text-muted-foreground mt-0.5"
             data-testid={`text-alert-header-${alert.id}`}
           >
             {alert.headerText}
           </p>
-          {alert.descriptionText && expanded && (
-            <p 
-              className="text-muted-foreground/80 mt-2 whitespace-pre-wrap text-xs"
-              data-testid={`text-alert-description-${alert.id}`}
-            >
-              {alert.descriptionText}
-            </p>
-          )}
         </div>
-        {alert.descriptionText && (
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-shrink-0 p-1"
-            onClick={() => setExpanded(!expanded)}
-            data-testid={`button-expand-alert-${alert.id}`}
-          >
-            {expanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-          </Button>
-        )}
       </div>
     </div>
   );
@@ -133,7 +111,6 @@ function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: 
 
 export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   const { data: alerts, isLoading } = useAlertsForRoutes(routeIds);
-  const [expanded, setExpanded] = useState(false);
   
   if (isLoading || !alerts || alerts.length === 0) {
     return null;
@@ -195,12 +172,7 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   return (
     <div className="bg-background/90 backdrop-blur-md border-b border-white/10 sticky top-0 z-40">
       <div className="px-3 sm:px-6 py-3 sm:py-4 flex justify-center">
-        <div className="flex items-center gap-3">
-          <button 
-            className="flex items-center gap-3 flex-1 flex-wrap"
-            onClick={() => setExpanded(!expanded)}
-            data-testid="button-toggle-alerts"
-          >
+        <div className="flex items-center gap-3" data-testid="container-alert-summary">
             <AlertTriangle className={cn(
               "w-5 h-5 sm:w-6 sm:h-6 flex-shrink-0",
               highSeverityCount > 0 ? "text-red-500" : mediumSeverityCount > 0 ? "text-orange-500" : "text-yellow-500"
@@ -230,28 +202,8 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
                 </div>
               ))}
             </div>
-            {expanded ? <ChevronUp className="w-4 h-4 ml-auto flex-shrink-0" /> : <ChevronDown className="w-4 h-4 ml-auto flex-shrink-0" />}
-          </button>
         </div>
-        
       </div>
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="overflow-hidden flex justify-center px-3 sm:px-6"
-          >
-            <div className="pt-3 pb-2 space-y-2 max-h-[40vh] overflow-y-auto" data-testid="container-alerts-list">
-              {visibleAlerts.map((alert) => (
-                <AlertItem key={alert.id} alert={alert} compact />
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
