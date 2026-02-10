@@ -644,10 +644,10 @@ export default function Departures() {
           {weather && (
             <div className="absolute right-3 sm:right-6 flex items-center gap-1.5" data-testid="weather-display">
               <div className="flex flex-col items-end">
-                <span className="text-sm sm:text-base font-semibold text-white tabular-nums" data-testid="text-temperature">{weather.temperature}°F</span>
-                <span className="text-[10px] sm:text-xs text-zinc-400 leading-tight" data-testid="text-conditions">{weather.description}</span>
+                <span className="text-3xl sm:text-5xl font-bold text-white tabular-nums" data-testid="text-temperature">{weather.temperature}°F</span>
+                <span className="text-xs sm:text-sm text-muted-foreground leading-tight" data-testid="text-conditions">{weather.description}</span>
               </div>
-              <span className="text-lg sm:text-xl">{weather.icon}</span>
+              <span className="text-3xl sm:text-5xl">{weather.icon}</span>
             </div>
           )}
         </div>
