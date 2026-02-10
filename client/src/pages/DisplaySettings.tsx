@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useParams } from "wouter";
+import { useLocation } from "wouter";
 import { useSoundEffects } from "@/hooks/use-sound";
 import { ArrowLeft, ArrowRight, Clock, Bell, CloudSun } from "lucide-react";
 import { motion } from "framer-motion";
@@ -74,9 +74,8 @@ function SettingRow({ label, checked, onCheckedChange, testId, indent, disabled 
 }
 
 export default function DisplaySettings() {
-  const params = useParams<{ ids: string }>();
-  const stationIds = params.ids || "";
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
+  const stationIds = location.startsWith("/settings/") ? location.replace("/settings/", "") : "";
   const { playSound } = useSoundEffects();
   const [settings, setSettings] = useState<DisplaySettingsData>(loadDisplaySettings);
 
