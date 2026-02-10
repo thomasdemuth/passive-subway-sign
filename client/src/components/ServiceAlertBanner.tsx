@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useAlertsForRoutes } from "@/hooks/use-alerts";
 import { RouteIcon } from "@/components/RouteIcon";
-import { AlertTriangle, ChevronDown, ChevronUp, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ServiceAlert } from "@shared/schema";
@@ -134,10 +133,9 @@ function AlertItem({ alert, compact = false }: { alert: ServiceAlert; compact?: 
 
 export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
   const { data: alerts, isLoading } = useAlertsForRoutes(routeIds);
-  const [dismissed, setDismissed] = useState(false);
   const [expanded, setExpanded] = useState(false);
   
-  if (isLoading || !alerts || alerts.length === 0 || dismissed) {
+  if (isLoading || !alerts || alerts.length === 0) {
     return null;
   }
   
@@ -234,15 +232,6 @@ export function ServiceAlertBanner({ routeIds }: ServiceAlertBannerProps) {
             </div>
             {expanded ? <ChevronUp className="w-4 h-4 ml-auto flex-shrink-0" /> : <ChevronDown className="w-4 h-4 ml-auto flex-shrink-0" />}
           </button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="flex-shrink-0 p-1.5"
-            onClick={() => setDismissed(true)}
-            data-testid="button-dismiss-alerts"
-          >
-            <X className="w-4 h-4" />
-          </Button>
         </div>
         
       </div>
