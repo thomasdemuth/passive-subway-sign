@@ -254,18 +254,16 @@ export async function registerRoutes(
                         // Get dynamic destination from GTFS - last stop in the trip
                         let destination = direction;
                         const stopTimeUpdates = entity.tripUpdate?.stopTimeUpdate || [];
-                        if (stopTimeUpdates.length > 0) {
-                          // Sort stops by sequence number, falling back to arrival time if sequence not available
-                          const sortedStops = [...stopTimeUpdates].sort((a, b) => {
-                            const seqA = a.stopSequence || 0;
-                            const seqB = b.stopSequence || 0;
-                            if (seqA !== seqB) return seqA - seqB;
-                            // Fallback to arrival time if sequence numbers are equal
-                            const timeA = Number(a.arrival?.time || a.departure?.time || 0);
-                            const timeB = Number(b.arrival?.time || b.departure?.time || 0);
-                            return timeA - timeB;
-                          });
-                          // Get the last stop in the sorted sequence
+                        // Sort stops by sequence number, falling back to arrival time if sequence not available
+                        const sortedStops = [...stopTimeUpdates].sort((a, b) => {
+                          const seqA = a.stopSequence || 0;
+                          const seqB = b.stopSequence || 0;
+                          if (seqA !== seqB) return seqA - seqB;
+                          const timeA = Number(a.arrival?.time || a.departure?.time || 0);
+                          const timeB = Number(b.arrival?.time || b.departure?.time || 0);
+                          return timeA - timeB;
+                        });
+                        if (sortedStops.length > 0) {
                           const lastStop = sortedStops[sortedStops.length - 1];
                           const lastStopId = lastStop?.stopId?.replace(/[NS]$/, '') || '';
                           if (lastStopId && STOP_NAMES[lastStopId]) {
@@ -326,17 +324,26 @@ export async function registerRoutes(
                           destination = dests[routeId] || direction;
                         }
 
-                        // Track this route for dynamic line detection
-                        // This allows the UI to show any train that GTFS reports
-                        addDynamicRoute(stationId, routeId);
+                        // Filter out trains that are terminating at this station
+                        // (their last stop IS this station - they're not going anywhere)
+                        const lastStopBaseId = sortedStops.length > 0 
+                          ? (sortedStops[sortedStops.length - 1]?.stopId?.replace(/[NS]$/, '') || '')
+                          : '';
+                        const isTerminatingHere = lastStopBaseId && stopIdsToQuery.includes(lastStopBaseId);
                         
-                        allArrivals.push({
-                          routeId,
-                          destination,
-                          arrivalTime: arrivalDate.toISOString(),
-                          direction,
-                          status: "On Time"
-                        });
+                        if (!isTerminatingHere) {
+                          // Track this route for dynamic line detection
+                          // This allows the UI to show any train that GTFS reports
+                          addDynamicRoute(stationId, routeId);
+                          
+                          allArrivals.push({
+                            routeId,
+                            destination,
+                            arrivalTime: arrivalDate.toISOString(),
+                            direction,
+                            status: "On Time"
+                          });
+                        }
                      }
                    }
                 }
